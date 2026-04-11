@@ -3,4 +3,4 @@ services:
     name: qubix
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn qubix_project.wsgi:application --bind 0.0.0.0:$PORT
+    startCommand: python manage.py migrate && python manage.py loaddata data.json && gunicorn qubix_project.wsgi:application --bind 0.0.0.0:$PORT

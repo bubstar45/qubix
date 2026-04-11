@@ -1,4 +1,5 @@
 import os
+import dj_database_url
 from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore', '.*Unexpectedly, UWP app.*')
@@ -69,10 +70,7 @@ WSGI_APPLICATION = 'qubix_project.wsgi.application'
 # ============= DATABASE =============
 # Keep SQLite for now (can upgrade to PostgreSQL later)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
 }
 
 AUTH_PASSWORD_VALIDATORS = [
