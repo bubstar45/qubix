@@ -18,7 +18,7 @@ Pillow==10.4.0
 # PDF Generation
 reportlab==4.2.2
 weasyprint==63.0
-playwright==1.46.0
+playwright==1.50.0
 qrcode==7.4.2
 
 # Email
@@ -30,6 +30,6 @@ pytz==2024.2
 # Parsing
 python-dateutil==2.9.0
 
-# Forms (FIXED - was crispy-forms, now django-crispy-forms)
+# Forms
 django-crispy-forms==2.3
 crispy-tailwind==1.0.0
