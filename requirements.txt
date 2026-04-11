@@ -33,3 +33,5 @@ python-dateutil==2.9.0
 # Forms
 django-crispy-forms==2.3
 crispy-tailwind==1.0.0
+
+gunicorn

@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: qubix
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn qubix_project.wsgi:application --bind 0.0.0.0:$PORT
