@@ -166,3 +166,17 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = 'DENY'
+
+# Extreme memory optimization for Render free tier
+if not DEBUG:
+    # Disable all unused features
+    MIDDLEWARE = [m for m in MIDDLEWARE if 'debug' not in m.lower()]
+    
+    # Reduce database queries
+    CONN_MAX_AGE = 0  # Close connection after each request
+    
+    # Disable password validators (they use memory)
+    AUTH_PASSWORD_VALIDATORS = []
+    
+    # Use less memory for sessions
+    SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'    
