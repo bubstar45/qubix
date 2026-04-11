@@ -1,0 +1,72 @@
+{% extends 'core/emails/base_email.html' %}
+
+{% block header_title %}
+<h1 style="color: #D4AF37; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Welcome Aboard</h1>
+<p style="color: #94a3b8; margin: 8px 0 0;">Your journey to financial freedom starts here</p>
+{% endblock %}
+
+{% block content %}
+<p class="greeting">Dear {{ user_name }},</p>
+<p class="greeting-light">Welcome to Qubix — where traditional wealth meets digital innovation. We're thrilled to have you as part of our growing community of smart investors.</p>
+
+<div class="info-box success">
+    <strong>✅ Account Successfully Created</strong><br>
+    Your account is now active and ready for investment.
+</div>
+
+<h3 style="font-size: 16px; font-weight: 700; margin: 24px 0 12px;">Quick Start Guide</h3>
+
+<table style="width: 100%; margin: 16px 0;">
+    <tr>
+        <td style="width: 40px; vertical-align: top;">1.</td>
+        <td><strong>Complete Your Profile</strong><br><span style="color: #64748b; font-size: 13px;">Add your phone number and preferred wallet address for withdrawals</span></td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top;">2.</td>
+        <td><strong>Make Your First Deposit</strong><br><span style="color: #64748b; font-size: 13px;">Deposit using BTC, ETH, USDT, or bank transfer — min $10</span></td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top;">3.</td>
+        <td><strong>Start Investing</strong><br><span style="color: #64748b; font-size: 13px;">Browse 68+ assets including stocks, minerals, real estate, and precious metals</span></td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top;">4.</td>
+        <td><strong>Secure Your Account</strong><br><span style="color: #64748b; font-size: 13px;">Enable two-factor authentication for enhanced security</span></td>
+    </tr>
+</table>
+
+<div style="text-align: center;">
+    <a href="{{ dashboard_url }}" class="btn">Go to Dashboard →</a>
+</div>
+
+<div class="divider"></div>
+
+<div style="background: #f8fafc; border-radius: 12px; padding: 20px; margin-top: 16px;">
+    <table style="width: 100%;">
+        <tr>
+            <td style="text-align: center;">
+                <div style="font-size: 24px; font-weight: 700; color: #0f172a;">68+</div>
+                <div style="font-size: 11px; color: #64748b;">Assets Available</div>
+            </td>
+            <td style="text-align: center;">
+                <div style="font-size: 24px; font-weight: 700; color: #0f172a;">$2.1B+</div>
+                <div style="font-size: 11px; color: #64748b;">Total Volume</div>
+            </td>
+            <td style="text-align: center;">
+                <div style="font-size: 24px; font-weight: 700; color: #0f172a;">24/7</div>
+                <div style="font-size: 11px; color: #64748b;">Support</div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<p style="margin-top: 24px;">
+    Need assistance? Our dedicated support team is available around the clock.<br>
+    <a href="{{ support_url }}" style="color: #3b82f6; text-decoration: none;">Contact Support →</a>
+</p>
+
+<p style="margin-top: 24px;">
+    Best regards,<br>
+    <strong>The Qubix Team</strong>
+</p>
+{% endblock %}

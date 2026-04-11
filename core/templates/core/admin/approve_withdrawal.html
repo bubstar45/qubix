@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+    <div class="w-full max-w-md bg-[#111] rounded-3xl p-10">
+        <h2 class="text-3xl font-semibold text-center">Approve Withdrawal</h2>
+        
+        <div class="mt-8 bg-white/5 rounded-3xl p-6">
+            <p><strong>User:</strong> {{ withdrawal.user.email }}</p>
+            <p><strong>Amount:</strong> ${{ withdrawal.amount|floatformat:2 }}</p>
+            <p><strong>Wallet Address:</strong> {{ withdrawal.wallet_address }}</p>
+            <p><strong>Date:</strong> {{ withdrawal.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        
+        <form method="post" class="mt-8">
+            {% csrf_token %}
+            <div class="flex gap-4">
+                <button type="submit" 
+                        class="flex-1 h-12 bg-green-500 text-white font-semibold rounded-3xl hover:bg-green-600">
+                    Confirm Approval
+                </button>
+                <a href="{% url 'admin_pending_withdrawals' %}" 
+                   class="flex-1 h-12 bg-gray-500 text-white font-semibold rounded-3xl text-center leading-10 hover:bg-gray-600">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Annual Report — Qubix Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --gold:#f0b90b; --gold-dark:#c9960a; --gold-pale:#fdf6dc;
+    --navy:#0d1f3c; --slate:#2c3e5d; --slate-light:#3d5278;
+    --text:#1a1a2e; --muted:#5a6a84; --border:#c8d4e8;
+    --bg:#fff; --subtle:#f5f7fa; --green:#1a7a4a; --red:#c0392b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Source Sans 3',sans-serif; background:#d8dde8; display:flex; justify-content:center; padding:40px 20px; color:var(--text); }
+  .document { background:var(--bg); max-width:800px; width:100%; box-shadow:0 8px 60px rgba(13,31,60,0.2); }
+
+  /* Cover strip */
+  .cover-strip { background:linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%); padding:36px 48px 28px; color:white; }
+  .cs-logo { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:700; letter-spacing:5px; margin-bottom:2px; }
+  .cs-div { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:28px; }
+  .cs-year { font-family:'Cormorant Garamond',serif; font-size:52px; font-weight:300; line-height:1; color:rgba(255,255,255,.15); position:absolute; right:48px; top:32px; }
+  .cs-title { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; margin-bottom:5px; }
+  .cs-prop { font-size:13px; color:rgba(255,255,255,.55); }
+  .accent { height:4px; background:linear-gradient(to right, var(--gold), var(--gold-dark)); }
+
+  .body-pad { padding:36px 48px; position:relative; }
+
+  /* Section header */
+  .sec { margin-bottom:28px; }
+  .sec-lbl { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:var(--gold-dark); font-weight:700; margin-bottom:3px; }
+  .sec-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; color:var(--navy); border-bottom:2px solid var(--gold); padding-bottom:7px; margin-bottom:16px; }
+
+  /* Performance hero */
+  .perf-hero { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); margin-bottom:24px; }
+  .ph-cell { background:var(--bg); padding:18px 14px; text-align:center; }
+  .ph-cell.gold-bg { background:var(--gold-pale); }
+  .ph-cell.dark-bg { background:var(--navy); }
+  .ph-cell .pk { font-size:8px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .ph-cell.dark-bg .pk { color:rgba(255,255,255,.45); }
+  .ph-cell .pv { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; color:var(--navy); }
+  .ph-cell .pv.gold { color:var(--gold-dark); }
+  .ph-cell.dark-bg .pv { color:var(--gold); }
+  .ph-cell .ps { font-size:9px; color:var(--muted); margin-top:3px; }
+  .ph-cell.dark-bg .ps { color:rgba(255,255,255,.35); }
+
+  /* Income/expense table */
+  .fin-table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+  .fin-table thead tr { background:var(--navy); }
+  .fin-table thead th { padding:10px 14px; text-align:left; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.6); font-weight:600; }
+  .fin-table thead th:last-child { text-align:right; }
+  .fin-table tbody tr { border-bottom:1px solid var(--border); }
+  .fin-table tbody tr:nth-child(even) { background:var(--subtle); }
+  .fin-table tbody td { padding:11px 14px; font-size:12.5px; }
+  .fin-table tbody td:last-child { text-align:right; font-weight:600; }
+  .fin-table tbody td.deduct { color:var(--muted); }
+  .fin-table tfoot tr { border-top:2px solid var(--navy); }
+  .fin-table tfoot td { padding:12px 14px; font-size:14px; font-weight:700; }
+  .fin-table tfoot td:last-child { text-align:right; color:var(--green); font-size:16px; }
+  .cat-header td { background:var(--subtle); font-weight:700; color:var(--navy); font-size:12px; letter-spacing:1px; padding:8px 14px !important; }
+
+  /* Monthly dividend bar chart (CSS only) */
+  .chart-section { margin-bottom:24px; }
+  .chart-bars { display:flex; align-items:flex-end; gap:6px; height:80px; padding-bottom:8px; border-bottom:1px solid var(--border); margin-bottom:6px; }
+  .bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; }
+  .bar { width:100%; background:var(--navy); transition:background .2s; min-height:4px; }
+  .bar.gold { background:var(--gold-dark); }
+  .bar-label { font-size:8px; color:var(--muted); margin-top:5px; letter-spacing:.5px; }
+  .chart-note { font-size:9px; color:var(--muted); text-align:center; }
+
+  /* Occupancy meter */
+  .occ-row { display:flex; align-items:center; gap:16px; margin-bottom:14px; }
+  .occ-label { font-size:12px; font-weight:600; width:100px; flex-shrink:0; }
+  .occ-bar-bg { flex:1; height:12px; background:var(--border); }
+  .occ-bar-fill { height:100%; background:linear-gradient(to right, var(--navy), var(--slate-light)); }
+  .occ-pct { font-size:13px; font-weight:700; color:var(--navy); width:44px; text-align:right; flex-shrink:0; }
+
+  /* Tax K1 summary */
+  .tax-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .tax-card { border:1px solid var(--border); padding:16px 18px; }
+  .tax-card .tl { font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .tax-card .tv { font-size:16px; font-weight:700; color:var(--navy); }
+  .tax-card .ts { font-size:10px; color:var(--muted); margin-top:3px; }
+
+  /* Appreciation */
+  .appr-row { display:flex; justify-content:space-between; align-items:center; background:var(--subtle); border:1px solid var(--border); padding:16px 20px; margin-bottom:20px; }
+  .ar-left .al { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+  .ar-left .av { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; color:var(--navy); }
+  .ar-right .al { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:5px; text-align:right; }
+  .ar-right .av { font-size:22px; font-weight:700; color:var(--green); text-align:right; }
+
+  .note { font-size:10px; color:var(--muted); line-height:1.7; border:1px solid var(--border); padding:13px 17px; background:var(--subtle); margin-top:20px; }
+  .footer { border-top:4px solid var(--gold); padding:13px 48px; display:flex; justify-content:space-between; background:var(--subtle); font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  @media print { body { background:white; padding:0; } .document { box-shadow:none; } }
+</style>
+</head>
+<body>
+<div class="document">
+  <div class="cover-strip" style="position:relative;">
+    <div class="cs-logo">QUBIX</div>
+    <div class="cs-div">Real Estate Division</div>
+    <div class="cs-year">{{ fiscal_year }}</div>
+    <div class="cs-title">Annual Property Report</div>
+    <div class="cs-prop">{{ property_name }} · {{ fiscal_year }}</div>
+  </div>
+  <div class="accent"></div>
+
+  <div class="body-pad">
+
+    <!-- Performance KPI strip -->
+    <div class="sec">
+      <div class="sec-lbl">Overview</div>
+      <div class="sec-title">{{ fiscal_year }} Performance Summary</div>
+      <div class="perf-hero">
+        <div class="ph-cell gold-bg">
+          <div class="pk">Total Dividends Paid</div>
+          <div class="pv gold">{{ total_dividends_paid }}</div>
+          <div class="ps">Your share this year</div>
+        </div>
+        <div class="ph-cell">
+          <div class="pk">Annual Rental Yield</div>
+          <div class="pv">{{ annual_rental_yield }}</div>
+          <div class="ps">Gross</div>
+        </div>
+        <div class="ph-cell">
+          <div class="pk">Avg. Occupancy</div>
+          <div class="pv">{{ avg_occupancy }}</div>
+          <div class="ps">{{ fiscal_year }}</div>
+        </div>
+        <div class="ph-cell dark-bg">
+          <div class="pk">Property Value</div>
+          <div class="pv">{{ property_value_eoy }}</div>
+          <div class="ps">End of year</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Income & expenses -->
+    <div class="sec">
+      <div class="sec-lbl">Financials</div>
+      <div class="sec-title">Rental Income &amp; Expenses Breakdown</div>
+      <table class="fin-table">
+        <thead><tr><th>Item</th><th>Description</th><th>Amount</th></tr></thead>
+        <tbody>
+          <tr class="cat-header"><td colspan="3">INCOME</td></tr>
+          <tr><td>Gross Rental Income</td><td>12 months of collected rent</td><td>{{ gross_rental_income }}</td></tr>
+          <tr><td>Other Income</td><td>Parking, storage, fees</td><td>{{ other_income }}</td></tr>
+          <tr class="cat-header"><td colspan="3">EXPENSES</td></tr>
+          <tr><td class="deduct">Property Management</td><td class="deduct">Management fees</td><td class="deduct">— {{ mgmt_fee_total }}</td></tr>
+          <tr><td class="deduct">Maintenance &amp; Repairs</td><td class="deduct">Ongoing upkeep</td><td class="deduct">— {{ maintenance_total }}</td></tr>
+          <tr><td class="deduct">Insurance</td><td class="deduct">Annual premium</td><td class="deduct">— {{ insurance_total }}</td></tr>
+          <tr><td class="deduct">Property Tax</td><td class="deduct">Annual assessment</td><td class="deduct">— {{ property_tax }}</td></tr>
+          <tr><td class="deduct">Platform Fee</td><td class="deduct">Qubix platform fee</td><td class="deduct">— {{ platform_fee_total }}</td></tr>
+          <tr><td class="deduct">Reserve Fund</td><td class="deduct">Capital expenditure</td><td class="deduct">— {{ reserve_total }}</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="2">Net Income Available for Distribution</td><td>{{ net_income }}</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Occupancy -->
+    <div class="sec">
+      <div class="sec-lbl">Operations</div>
+      <div class="sec-title">Occupancy &amp; Rental Performance</div>
+      <div class="occ-row">
+        <div class="occ-label">Q1 {{ fiscal_year }}</div>
+        <div class="occ-bar-bg"><div class="occ-bar-fill" style="width:{{ q1_occupancy_pct }}%"></div></div>
+        <div class="occ-pct">{{ q1_occupancy }}</div>
+      </div>
+      <div class="occ-row">
+        <div class="occ-label">Q2 {{ fiscal_year }}</div>
+        <div class="occ-bar-bg"><div class="occ-bar-fill" style="width:{{ q2_occupancy_pct }}%"></div></div>
+        <div class="occ-pct">{{ q2_occupancy }}</div>
+      </div>
+      <div class="occ-row">
+        <div class="occ-label">Q3 {{ fiscal_year }}</div>
+        <div class="occ-bar-bg"><div class="occ-bar-fill" style="width:{{ q3_occupancy_pct }}%"></div></div>
+        <div class="occ-pct">{{ q3_occupancy }}</div>
+      </div>
+      <div class="occ-row">
+        <div class="occ-label">Q4 {{ fiscal_year }}</div>
+        <div class="occ-bar-bg"><div class="occ-bar-fill" style="width:{{ q4_occupancy_pct }}%"></div></div>
+        <div class="occ-pct">{{ q4_occupancy }}</div>
+      </div>
+    </div>
+
+    <!-- Property appreciation -->
+    <div class="sec">
+      <div class="sec-lbl">Capital Growth</div>
+      <div class="sec-title">Property Appreciation</div>
+      <div class="appr-row">
+        <div class="ar-left">
+          <div class="al">Property Value (Start of Year)</div>
+          <div class="av">{{ property_value_boy }}</div>
+        </div>
+        <div style="font-size:28px;color:var(--border);">→</div>
+        <div class="ar-left">
+          <div class="al">Property Value (End of Year)</div>
+          <div class="av">{{ property_value_eoy }}</div>
+        </div>
+        <div class="ar-right">
+          <div class="al">Appreciation</div>
+          <div class="av">+{{ property_appreciation }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tax K1 summary -->
+    <div class="sec">
+      <div class="sec-lbl">Tax Information</div>
+      <div class="sec-title">K-1 Summary — {{ fiscal_year }}</div>
+      <div class="tax-grid">
+        <div class="tax-card"><div class="tl">Ordinary Business Income</div><div class="tv">{{ ordinary_income }}</div><div class="ts">Box 1 — K-1</div></div>
+        <div class="tax-card"><div class="tl">Rental Real Estate Income</div><div class="tv">{{ rental_income_k1 }}</div><div class="ts">Box 2 — K-1</div></div>
+        <div class="tax-card"><div class="tl">Total Dividends Received</div><div class="tv">{{ total_dividends_paid }}</div><div class="ts">Your share, paid out</div></div>
+        <div class="tax-card"><div class="tl">Deductible Expenses (Share)</div><div class="tv">{{ deductible_expenses }}</div><div class="ts">Your pro-rata share</div></div>
+      </div>
+      <div class="note">
+        <strong>Tax Notice:</strong> This is a summary for reference only. A full Schedule K-1 (Form 1065) will be
+        issued separately and should be used for tax filing purposes. Consult your tax advisor regarding the
+        treatment of real estate income, depreciation, and deductions applicable to your specific situation.
+        Qubix Real Estate Ltd. does not provide tax advice.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>Qubix Real Estate — All rights reserved</span>
+    <span>Generated: {% now "d M Y, H:i" %} UTC · Page 1 of 1</span>
+  </div>
+</div>
+</body>
+</html>

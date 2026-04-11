@@ -1,0 +1,38 @@
+# Core Django
+Django==5.2.9
+gunicorn==21.2.0
+
+# Database
+psycopg2-binary==2.9.10
+dj-database-url==2.2.0
+
+# Static files
+whitenoise==6.7.0
+
+# Environment variables
+python-decouple==3.8
+
+# Images & Media
+Pillow==10.4.0
+
+# PDF Generation
+reportlab==4.2.2
+weasyprint==63.0
+playwright==1.46.0
+qrcode==7.4.2
+
+# Email
+sendgrid==6.11.0
+
+# Timezone
+pytz==2024.2
+
+# Parsing
+python-dateutil==2.9.0
+
+# Forms
+crispy-forms==2.3
+crispy-tailwind==1.0.0
+
+# Production database URL parsing
+dj-database-url==2.2.0

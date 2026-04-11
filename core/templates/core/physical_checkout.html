@@ -1,0 +1,276 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Checkout | Qubix{% endblock %}
+
+{% block body_class %}shop-page{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── MAIN ── */
+.main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 28px;
+}
+
+/* BREADCRUMB */
+.breadcrumb {
+  margin-bottom: 32px;
+  font-size: 12px;
+  color: var(--muted2);
+}
+.breadcrumb a { color: var(--muted2); text-decoration: none; }
+.breadcrumb a:hover { color: var(--gold); }
+.breadcrumb span { color: var(--text); }
+
+/* DELIVERY OPTIONS */
+.delivery-options {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.delivery-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.option-card {
+  background: var(--surface3);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.option-card:hover {
+  border-color: var(--gold);
+  background: rgba(240,185,11,0.05);
+}
+.option-card.selected {
+  border-color: var(--gold);
+  background: rgba(240,185,11,0.1);
+}
+.option-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--muted2);
+  background: transparent;
+  flex-shrink: 0;
+  position: relative;
+}
+.option-card.selected .option-radio {
+  border-color: var(--gold);
+}
+.option-card.selected .option-radio::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.option-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--surface);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.option-content {
+  flex: 1;
+}
+.option-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.option-desc {
+  font-size: 12px;
+  color: var(--muted2);
+}
+.option-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ORDER SUMMARY */
+.order-summary {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.summary-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.summary-item:last-child { border-bottom: none; }
+.summary-label { color: var(--muted2); font-size: 13px; }
+.summary-value { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+/* ACTION BUTTONS */
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+.btn {
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.btn-secondary {
+  background: var(--surface3);
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.btn-secondary:hover { background: var(--surface); color: var(--text); }
+.btn-primary {
+  background: var(--gold);
+  color: #000;
+}
+.btn-primary:hover { background: #f5c800; box-shadow: 0 0 20px rgba(240,185,11,0.3); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .option-card { flex-wrap: wrap; }
+  .action-buttons { flex-direction: column; }
+  .btn { text-align: center; }
+  .main { padding: 20px 16px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="breadcrumb">
+    <a href="{% url 'physical_investments' %}">Physical Investments</a> / 
+    <a href="{% url 'physical_cart' %}">Cart</a> / 
+    <span>Checkout</span>
+  </div>
+
+  <form method="POST" id="checkoutForm">
+    {% csrf_token %}
+    
+    <!-- Delivery Options -->
+    <div class="delivery-options">
+      <div class="delivery-title"><i class="fas fa-truck"></i> Delivery Method</div>
+      
+      <div class="option-card {% if delivery_method == 'vault' %}selected{% endif %}" onclick="selectMethod('vault')">
+        <div class="option-radio"></div>
+        <div class="option-icon"><i class="fas fa-vault"></i></div>
+        <div class="option-content">
+          <div class="option-name">Qubix Vault Storage</div>
+          <div class="option-desc">Store securely in our insured vault • Instant liquidity • No shipping fees</div>
+        </div>
+        <div class="option-price">Free</div>
+      </div>
+      
+      <div class="option-card {% if delivery_method == 'shipping' %}selected{% endif %}" onclick="selectMethod('shipping')">
+        <div class="option-radio"></div>
+        <div class="option-icon"><i class="fas fa-shipping-fast"></i></div>
+        <div class="option-content">
+          <div class="option-name">Home Delivery</div>
+          <div class="option-desc">Insured shipping to your address • Tracking provided • 7-10 business days</div>
+        </div>
+        <div class="option-price">Calculated at next step</div>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+      <div class="summary-title"><i class="fas fa-receipt"></i> Order Summary</div>
+      <div class="summary-item">
+        <span class="summary-label">Subtotal ({{ item_count }} items)</span>
+        <span class="summary-value">${{ subtotal|floatformat:2 }}</span>
+      </div>
+      <div class="summary-item" id="shippingRow" style="display: none;">
+        <span class="summary-label">Shipping</span>
+        <span class="summary-value">Calculated later</span>
+      </div>
+      <div class="summary-item" style="border-bottom: none; padding-top: 16px;">
+        <span class="summary-label" style="font-weight: 800;">Total</span>
+        <span class="summary-value" style="font-size: 18px; color: var(--gold);">${{ subtotal|floatformat:2 }}</span>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-secondary" type="button" onclick="window.location.href='{% url 'physical_cart' %}'">
+        <i class="fas fa-arrow-left"></i> Back to Cart
+      </button>
+      <button class="btn btn-primary" type="submit" id="continueBtn">
+        Continue <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+    
+    <input type="hidden" name="delivery_method" id="deliveryMethod" value="{{ delivery_method|default:'vault' }}">
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedMethod = '{{ delivery_method|default:"vault" }}';
+
+function selectMethod(method) {
+  selectedMethod = method;
+  document.getElementById('deliveryMethod').value = method;
+  
+  // Update UI
+  document.querySelectorAll('.option-card').forEach(card => {
+    card.classList.remove('selected');
+  });
+  event.currentTarget.classList.add('selected');
+  
+  // Show/hide shipping row in summary
+  const shippingRow = document.getElementById('shippingRow');
+  if (method === 'shipping') {
+    shippingRow.style.display = 'flex';
+  } else {
+    shippingRow.style.display = 'none';
+  }
+}
+
+// Form submission
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+  // Form will submit normally to Django view
+  // The view will redirect based on delivery_method
+});
+</script>
+{% endblock %}

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qubix • {% block title %}Dashboard{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg: #0e0f13;
+            --surface: #16181f;
+            --surface2: #1e2029;
+            --border: rgba(255,255,255,0.07);
+            --text: #f0f1f5;
+            --muted: #6b7080;
+            --accent: #4f8ef7;
+            --green: #22c55e;
+            --red: #ef4444;
+            --gold: #f59e0b;
+            --purple: #a855f7;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #0e0f13;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
+        }
+        
+        /* Navigation Styling */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            height: 58px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 17px;
+            color: var(--text);
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #000;
+        }
+        
+        .nav-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            background: rgba(255,255,255,0.03);
+            padding: 4px 8px;
+            border-radius: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-center a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+        
+        .nav-center a:hover {
+            color: var(--text);
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .nav-center a.active {
+            color: white;
+            background: var(--accent);
+            box-shadow: 0 2px 8px rgba(79,142,247,0.3);
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+        
+        .nav-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .nav-icon:hover {
+            background: var(--surface);
+            color: var(--text);
+            transform: translateY(-1px);
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4f8ef7, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .avatar:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 2px rgba(79,142,247,0.3);
+        }
+        
+        /* Main content */
+        .main-content {
+            padding-top: 20px;
+            min-height: calc(100vh - 58px);
+        }
+        
+        /* Card styling */
+        .dashboard-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+        
+        /* Utilities */
+        .price-up { color: var(--green); }
+        .price-down { color: var(--red); }
+        
+        @media (max-width: 768px) {
+            .nav-center {
+                position: static;
+                transform: none;
+                gap: 8px;
+                padding: 4px;
+                overflow-x: auto;
+                margin: 0 10px;
+            }
+            .nav-center a {
+                padding: 6px 12px;
+                font-size: 12px;
+                white-space: nowrap;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <!-- Left side - Logo -->
+        <div class="logo">
+            <div class="logo-icon">⊕</div>
+            <span>Qubix</span>
+        </div>
+        
+        <!-- Center - Navigation Links -->
+        <div class="nav-center">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="{% if '/dashboard' in request.path %}active{% endif %}">Portfolio</a>
+                <a href="{% url 'stocks' %}" class="{% if '/stocks' in request.path %}active{% endif %}">Stocks</a>
+                <a href="{% url 'minerals' %}" class="{% if '/minerals' in request.path %}active{% endif %}">Minerals</a>
+                <a href="{% url 'real_estate_list' %}" class="{% if '/real-estate' in request.path %}active{% endif %}">Real Estate</a>
+                <a href="{% url 'market_news' %}" class="{% if '/news' in request.path %}active{% endif %}">News</a>
+            {% endif %}
+        </div>
+        
+        <!-- Right side - User Menu -->
+        <div class="nav-right">
+            <button class="nav-icon">🔍</button>
+            <button class="nav-icon">🔔</button>
+            <div class="avatar">
+                {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1"|default:user.username|slice:":1" }}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="fixed bottom-4 right-4 z-50 space-y-2">
+        {% for message in messages %}
+        <div class="px-6 py-3 rounded-2xl shadow-lg animate-fade-in-up 
+            {% if message.tags == 'success' %}bg-green-500
+            {% elif message.tags == 'error' %}bg-red-500
+            {% elif message.tags == 'warning' %}bg-yellow-500
+            {% elif message.tags == 'info' %}bg-blue-500
+            {% else %}bg-gray-500{% endif %} text-white">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <script>
+        // Auto-hide messages after 5 seconds
+        setTimeout(() => {
+            const messages = document.querySelectorAll('.animate-fade-in-up');
+            messages.forEach(msg => {
+                msg.style.opacity = '0';
+                msg.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => msg.remove(), 300);
+            });
+        }, 5000);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

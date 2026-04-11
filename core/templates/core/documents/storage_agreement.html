@@ -1,0 +1,550 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storage Agreement — Qubix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap');
+
+  :root {
+    --gold: #f0b90b;
+    --gold-light: #fdf3d0;
+    --gold-dark: #c9960a;
+    --text: #1a1a2e;
+    --muted: #5a5a72;
+    --border: #d0ccc4;
+    --bg: #ffffff;
+    --subtle: #faf9f7;
+    --paper: #fffef9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Lora', serif;
+    background: #d8d4cc;
+    color: var(--text);
+    padding: 40px 20px;
+  }
+
+  .document-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--paper);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.16);
+    position: relative;
+  }
+
+  /* Legal paper texture border */
+  .legal-border {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 28px,
+      #f0b90b33 28px,
+      #f0b90b33 29px
+    );
+    border-right: 2px solid rgba(240,185,11,0.3);
+  }
+
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-family: 'Playfair Display', serif;
+    font-size: 80px;
+    font-weight: 700;
+    color: rgba(240,185,11,0.04);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .document-inner {
+    padding: 50px 55px 50px 70px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Document header */
+  .doc-header {
+    text-align: center;
+    margin-bottom: 35px;
+    padding-bottom: 25px;
+    border-bottom: 2px solid var(--gold);
+    position: relative;
+  }
+  .doc-header::before,
+  .doc-header::after {
+    content: '◆';
+    position: absolute;
+    bottom: -10px;
+    color: var(--gold);
+    font-size: 14px;
+    background: var(--paper);
+    padding: 0 8px;
+  }
+  .doc-header::before { left: 50%; transform: translateX(-50%); }
+  .doc-header::after { display: none; }
+
+  .logo-centered {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+  .logo-centered span { color: var(--gold); }
+  .logo-tagline {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .doc-title-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .doc-title-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* Agreement parties box */
+  .parties-box {
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    padding: 20px 24px;
+    margin: 28px 0;
+  }
+  .parties-box .pb-title {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .parties-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .party-item .p-role {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  .party-item .p-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .party-item .p-detail {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    font-style: italic;
+  }
+
+  .agreement-date {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin: 5px 0 25px;
+  }
+  .agreement-date strong { color: var(--text); font-style: normal; }
+
+  /* Preamble */
+  .preamble {
+    font-size: 13.5px;
+    line-height: 2;
+    color: var(--text);
+    margin-bottom: 25px;
+    text-align: justify;
+  }
+  .preamble strong { font-weight: 600; }
+
+  /* Section style */
+  .clause-section {
+    margin-bottom: 22px;
+  }
+  .clause-num {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .cn-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold-dark);
+    min-width: 24px;
+    padding-top: 1px;
+  }
+  .cn-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-top: 3px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 5px;
+    flex: 1;
+  }
+  .clause-text {
+    font-size: 12.5px;
+    line-height: 1.9;
+    color: var(--text);
+    padding-left: 38px;
+    text-align: justify;
+  }
+  .clause-text p { margin-bottom: 8px; }
+
+  /* Key terms table */
+  .key-terms {
+    margin: 20px 0;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .key-terms .kt-header {
+    background: var(--text);
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .kt-row {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    font-size: 12.5px;
+  }
+  .kt-row:last-child { border-bottom: none; }
+  .kt-row:nth-child(even) { background: var(--subtle); }
+  .kt-row .kt-label {
+    width: 45%;
+    padding: 10px 16px;
+    color: var(--muted);
+    border-right: 1px solid var(--border);
+    font-style: italic;
+  }
+  .kt-row .kt-val {
+    flex: 1;
+    padding: 10px 16px;
+    font-weight: 600;
+    font-family: 'Courier Prime', monospace;
+    color: var(--text);
+    font-size: 12px;
+  }
+  .kt-row .kt-val.highlight { color: var(--gold-dark); }
+
+  /* Signature execution block */
+  .execution-block {
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 2px solid var(--gold);
+  }
+  .execution-title {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+  }
+  .execution-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  .exec-party {
+    border: 1px solid var(--border);
+    padding: 20px;
+    background: var(--subtle);
+  }
+  .exec-party .ep-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .exec-party .sig-field {
+    height: 60px;
+    border-bottom: 1.5px solid var(--text);
+    margin-bottom: 8px;
+  }
+  .exec-party .ep-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .exec-party .ep-role { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .exec-party .ep-date { font-size: 10px; color: var(--muted); margin-top: 6px; }
+
+  /* Handwritten signature style for Authorised Signatory only */
+  .handwritten-sig {
+    font-family: 'Brush Script MT', 'Segoe Script', 'Zapfino', cursive;
+    font-size: 28px;
+    font-weight: normal;
+    color: #1a1a2e;
+    line-height: 1;
+    display: inline-block;
+    transform: rotate(-1deg);
+    letter-spacing: 1px;
+  }
+
+  /* Footer */
+  .doc-footer {
+    margin-top: 30px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .footer-right { text-align: right; }
+
+  .security-strip {
+    background: var(--text);
+    padding: 8px 70px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .security-strip span {
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .security-strip .sec-id {
+    font-family: 'Courier Prime', monospace;
+    color: var(--gold);
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .document-wrapper { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== STORAGE AGREEMENT / TERMS OF SERVICE ====== -->
+<div class="document-wrapper">
+
+  <div class="legal-border"></div>
+  <div class="watermark">AGREEMENT</div>
+
+  <div class="document-inner">
+
+    <!-- Document header -->
+    <div class="doc-header">
+      <div class="logo-centered">Q<span>U</span>BIX</div>
+      <div class="logo-tagline">Precious Metals Investment Platform</div>
+      <div class="doc-title-main">Terms of Service &amp; Storage Agreement</div>
+      <div class="doc-title-sub">Custody, Storage, Insurance and Client Rights</div>
+    </div>
+
+    <!-- Agreement date + parties -->
+    <div class="agreement-date">
+      This Agreement is entered into on <strong>{{ agreement_date }}</strong>
+    </div>
+
+    <div class="parties-box">
+      <div class="pb-title">Agreement Parties</div>
+      <div class="parties-grid">
+        <div class="party-item">
+          <div class="p-role">Service Provider ("Custodian")</div>
+          <div class="p-name">Qubix Investments Ltd.</div>
+          <div class="p-detail">Registered No. 12345678 · FCA Ref. 987654<br>One Qubix Tower, EC2V 7AB London, UK</div>
+        </div>
+        <div class="party-item">
+          <div class="p-role">Client ("Owner")</div>
+          <div class="p-name">{{ user_name }}</div>
+          <div class="p-detail">Registered Qubix Account Holder<br>Agreement Date: {{ agreement_date }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preamble -->
+    <div class="preamble">
+      WHEREAS, the Client wishes to purchase and store physical precious metals through the Qubix platform;
+      and WHEREAS, the Custodian provides secure, allocated, segregated vault storage services;
+      NOW THEREFORE, in consideration of the mutual covenants herein, the parties agree as follows:
+    </div>
+
+    <!-- Key terms summary -->
+    <div class="key-terms">
+      <div class="kt-header">Key Commercial Terms</div>
+      <div class="kt-row">
+        <span class="kt-label">Annual Storage Fee Rate</span>
+        <span class="kt-val highlight">{{ storage_fee_rate }}</span>
+      </div>
+      <div class="kt-row">
+        <span class="kt-label">Insurance Coverage</span>
+        <span class="kt-val highlight">{{ insurance_coverage }}</span>
+      </div>
+      <div class="kt-row">
+        <span class="kt-label">Vault Location</span>
+        <span class="kt-val">{{ vault_location }}</span>
+      </div>
+      <div class="kt-row">
+        <span class="kt-label">Storage Type</span>
+        <span class="kt-val">Allocated, Segregated (Non-Fungible)</span>
+      </div>
+      <div class="kt-row">
+        <span class="kt-label">Independent Auditor</span>
+        <span class="kt-val">PricewaterhouseCoopers LLP (PwC)</span>
+      </div>
+      <div class="kt-row">
+        <span class="kt-label">Governing Law</span>
+        <span class="kt-val">England and Wales</span>
+      </div>
+    </div>
+
+    <!-- Clause 1 -->
+    <div class="clause-section">
+      <div class="clause-num">
+        <span class="cn-number">1.</span>
+        <span class="cn-title">Storage &amp; Custody</span>
+      </div>
+      <div class="clause-text">
+        <p>1.1 The Custodian agrees to hold the Client's physical precious metals in fully allocated, individually segregated storage at <strong>{{ vault_location }}</strong>.</p>
+        <p>1.2 The assets held under this agreement are <strong>not</strong> part of the Custodian's balance sheet and are not available to creditors in any insolvency event.</p>
+        <p>1.3 The Client retains full beneficial ownership at all times. Assets may be recalled or redeemed upon written request subject to the terms herein.</p>
+      </div>
+    </div>
+
+    <!-- Clause 2 -->
+    <div class="clause-section">
+      <div class="clause-num">
+        <span class="cn-number">2.</span>
+        <span class="cn-title">Storage Fees</span>
+      </div>
+      <div class="clause-text">
+        <p>2.1 The Client agrees to pay an annual storage fee of <strong>{{ storage_fee_rate }}</strong> of the market value of the stored assets, calculated and billed quarterly.</p>
+        <p>2.2 Fees are deducted from the Client's Qubix account. Failure to maintain sufficient balance may result in service suspension.</p>
+        <p>2.3 Qubix reserves the right to revise storage fee rates with 60 days' written notice.</p>
+      </div>
+    </div>
+
+    <!-- Clause 3 -->
+    <div class="clause-section">
+      <div class="clause-num">
+        <span class="cn-number">3.</span>
+        <span class="cn-title">Insurance</span>
+      </div>
+      <div class="clause-text">
+        <p>3.1 All stored assets are insured to the value of <strong>{{ insurance_coverage }}</strong> against theft, loss, damage, and catastrophic events.</p>
+        <p>3.2 Insurance is arranged through Lloyd's of London syndicates and is independently verified annually.</p>
+        <p>3.3 The Client shall be entitled to a copy of the insurance certificate upon written request.</p>
+      </div>
+    </div>
+
+    <!-- Clause 4 -->
+    <div class="clause-section">
+      <div class="clause-num">
+        <span class="cn-number">4.</span>
+        <span class="cn-title">Audit &amp; Verification</span>
+      </div>
+      <div class="clause-text">
+        <p>4.1 All stored assets are subject to quarterly independent audit by PricewaterhouseCoopers LLP.</p>
+        <p>4.2 Audit reports confirming weights, counts, and serial numbers are published to clients on the Qubix platform.</p>
+      </div>
+    </div>
+
+    <!-- Clause 5 -->
+    <div class="clause-section">
+      <div class="clause-num">
+        <span class="cn-number">5.</span>
+        <span class="cn-title">Liability &amp; Risk</span>
+      </div>
+      <div class="clause-text">
+        <p>5.1 Qubix Investments Ltd. accepts no liability for market fluctuations, currency risk, or changes in the value of precious metals.</p>
+        <p>5.2 Liability for physical loss or damage is limited to the insured replacement value of the asset at the time of loss.</p>
+      </div>
+    </div>
+
+    <!-- Clause 6 -->
+    <div class="clause-section">
+      <div class="clause-num">
+        <span class="cn-number">6.</span>
+        <span class="cn-title">Governing Law &amp; Dispute Resolution</span>
+      </div>
+      <div class="clause-text">
+        <p>6.1 This Agreement is governed by the laws of England and Wales. Any disputes shall be referred to the courts of England and Wales.</p>
+        <p>6.2 The parties agree to attempt good-faith mediation before resorting to litigation.</p>
+      </div>
+    </div>
+
+    <!-- Execution / Signature block -->
+    <div class="execution-block">
+      <div class="execution-title">IN WITNESS WHEREOF, THE PARTIES HAVE EXECUTED THIS AGREEMENT</div>
+      <div class="execution-grid">
+        <div class="exec-party">
+          <div class="ep-label">Signed for Qubix Investments Ltd.</div>
+          <div class="sig-field">
+            <span class="handwritten-sig">Jonathan Ashworth</span>
+          </div>
+          <div class="ep-name">Authorised Signatory</div>
+          <div class="ep-role">Director, Qubix Investments Ltd.</div>
+          <div class="ep-date">Date: {{ agreement_date }}</div>
+        </div>
+        <div class="exec-party">
+          <div class="ep-label">Signed by Client</div>
+          <div class="sig-field"></div>
+          <div class="ep-name">{{ user_name }}</div>
+          <div class="ep-role">Account Holder</div>
+          <div class="ep-date">Date: {{ agreement_date }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="doc-footer">
+      <div>
+        <strong style="font-size:10px;letter-spacing:1px;">QUBIX INVESTMENTS LTD.</strong><br>
+        FCA Authorised & Regulated · Ref. 987654 · England & Wales No. 12345678
+      </div>
+      <div class="footer-right">
+        Generated: {% now "d M Y" %}<br>
+        Agreement Date: {{ agreement_date }} · Page 1 of 1
+      </div>
+    </div>
+
+  </div><!-- /document-inner -->
+
+  <div class="security-strip">
+    <span>Legal Agreement · Binding Document</span>
+    <span class="sec-id">AGREE-{% now "Ymd" %}</span>
+    <span>Qubix Investments Ltd. — All rights reserved</span>
+  </div>
+
+</div>
+
+</body>
+</html>

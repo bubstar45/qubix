@@ -1,0 +1,501 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Shipping Details | Qubix{% endblock %}
+
+{% block body_class %}shop-page{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── MAIN ── */
+.main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 28px;
+}
+
+/* BREADCRUMB */
+.breadcrumb {
+  margin-bottom: 32px;
+  font-size: 12px;
+  color: var(--muted2);
+}
+.breadcrumb a { color: var(--muted2); text-decoration: none; }
+.breadcrumb a:hover { color: var(--gold); }
+.breadcrumb span { color: var(--text); }
+
+/* ORDER SUMMARY */
+.order-summary {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.summary-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.summary-item:last-child { border-bottom: none; }
+.summary-label { color: var(--muted2); font-size: 13px; }
+.summary-value { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.product-detail {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.product-thumb {
+  width: 60px;
+  height: 60px;
+  background: var(--surface3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.product-info p { font-size: 11px; color: var(--muted2); }
+
+/* INFO SECTION */
+.info-section {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.info-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+}
+
+/* FORM STYLES */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted2);
+}
+.form-input {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s;
+}
+.form-input:focus {
+  border-color: var(--gold);
+}
+.form-input::placeholder {
+  color: var(--muted);
+}
+select.form-input {
+  cursor: pointer;
+}
+
+/* SHIPPING CALCULATOR */
+.shipping-calculator {
+  background: var(--surface3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+.calculator-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.calculator-label {
+  color: var(--muted2);
+  font-size: 13px;
+}
+.calculator-value {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--gold);
+}
+.shipping-note {
+  font-size: 11px;
+  color: var(--muted2);
+  margin-top: 12px;
+  padding: 8px;
+  background: rgba(61,126,255,0.1);
+  border-radius: 8px;
+}
+
+/* ACTION BUTTONS */
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+.btn {
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.btn-secondary {
+  background: var(--surface3);
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.btn-secondary:hover { background: var(--surface); color: var(--text); }
+.btn-primary {
+  background: var(--gold);
+  color: #000;
+}
+.btn-primary:hover { background: #f5c800; box-shadow: 0 0 20px rgba(240,185,11,0.3); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .form-row { grid-template-columns: 1fr; }
+  .action-buttons { flex-direction: column; }
+  .btn { text-align: center; }
+  .main { padding: 20px 16px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="breadcrumb">
+    <a href="{% url 'physical_investments' %}">Physical Investments</a> / 
+    {% if is_cart_checkout and cart_items %}
+      <a href="{% url 'physical_cart' %}">Cart</a> / 
+    {% else %}
+      <a href="{% url 'physical_product_detail_page' product.id %}">{{ product.name }}</a> / 
+    {% endif %}
+    <span>Shipping Details</span>
+  </div>
+
+  <div class="order-summary">
+    <div class="summary-title"><i class="fas fa-receipt"></i> Order Summary</div>
+    
+    {% if is_cart_checkout and cart_items %}
+      {# MULTIPLE ITEMS FROM CART #}
+      {% for item in cart_items %}
+      <div class="summary-item">
+        <div class="product-detail">
+          <div class="product-thumb">
+            {% if item.product_image %}
+              <img src="{{ item.product_image }}" alt="{{ item.product_name }}">
+            {% else %}
+              <i class="fas fa-box" style="font-size: 24px;"></i>
+            {% endif %}
+          </div>
+          <div class="product-info">
+            <h4>{{ item.product_name }} × {{ item.quantity }}</h4>
+            <p>{{ item.product_spec }}</p>
+          </div>
+        </div>
+        <div class="summary-value">${{ item.subtotal|floatformat:2 }}</div>
+      </div>
+      {% endfor %}
+      <div class="summary-item" style="border-top: 1px solid var(--border); margin-top: 8px; padding-top: 12px;">
+        <span class="summary-label" style="font-weight: 800;">SUBTOTAL</span>
+        <span class="summary-value" style="font-weight: 800;">${{ subtotal|floatformat:2 }}</span>
+      </div>
+    {% else %}
+      {# SINGLE PRODUCT #}
+      <div class="summary-item">
+        <div class="product-detail">
+          <div class="product-thumb">
+            {% if product.main_image %}<img src="{{ product.main_image.url }}" alt="{{ product.name }}">{% else %}<i class="fas fa-box" style="font-size: 24px;"></i>{% endif %}
+          </div>
+          <div class="product-info">
+            <h4>{{ product.name }} × {{ quantity }}</h4>
+            <p>{{ product.specification }} | Weight: {{ product.weight }}</p>
+          </div>
+        </div>
+        <div class="summary-value">${{ subtotal|floatformat:2 }}</div>
+      </div>
+    {% endif %}
+  </div>
+
+  <form id="shippingForm" method="POST" action="{% url 'physical_checkout_shipping_confirm' product.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="quantity" value="{{ quantity }}">
+    <input type="hidden" name="product_id" value="{{ product.id }}">
+    {% if is_cart_checkout %}
+      <input type="hidden" name="is_cart_checkout" value="true">
+    {% endif %}
+    
+    <div class="info-section">
+      <div class="info-title"><i class="fas fa-map-marker-alt"></i> Shipping Address</div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" class="form-input" name="full_name" required value="{{ user.get_full_name }}">
+        </div>
+        <div class="form-group">
+          <label>Phone *</label>
+          <input type="tel" class="form-input" name="phone" required placeholder="+1 555 000 0000">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Address Line 1 *</label>
+        <input type="text" class="form-input" name="address_line1" required>
+      </div>
+      
+      <div class="form-group">
+        <label>Address Line 2</label>
+        <input type="text" class="form-input" name="address_line2">
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>City *</label>
+          <input type="text" class="form-input" name="city" required>
+        </div>
+        <div class="form-group">
+          <label>State/Province *</label>
+          <input type="text" class="form-input" name="state" required>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Postal Code *</label>
+          <input type="text" class="form-input" name="postal_code" required>
+        </div>
+        <div class="form-group">
+          <label>Country *</label>
+          <select class="form-input" name="country" id="countrySelect" required onchange="calculateShipping()">
+            <option value="">Select Country</option>
+            <option value="US">United States</option>
+            <option value="CA">Canada</option>
+            <option value="GB">United Kingdom</option>
+            <option value="DE">Germany</option>
+            <option value="FR">France</option>
+            <option value="CH">Switzerland</option>
+            <option value="AE">UAE</option>
+            <option value="SG">Singapore</option>
+            <option value="AU">Australia</option>
+            <option value="JP">Japan</option>
+            <option value="KR">South Korea</option>
+            <option value="NL">Netherlands</option>
+            <option value="IT">Italy</option>
+            <option value="ES">Spain</option>
+            <option value="SE">Sweden</option>
+            <option value="NO">Norway</option>
+            <option value="DK">Denmark</option>
+            <option value="FI">Finland</option>
+            <option value="IE">Ireland</option>
+            <option value="NZ">New Zealand</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-section">
+      <div class="info-title"><i class="fas fa-calculator"></i> Shipping Cost Breakdown</div>
+      
+      <div class="shipping-calculator">
+        <div class="calculator-row">
+          <span class="calculator-label">Item Weight</span>
+          <span class="calculator-value">{{ product.weight }}</span>
+        </div>
+        <div class="calculator-row">
+          <span class="calculator-label">Base Shipping Rate</span>
+          <span class="calculator-value" id="baseRate">$0.00</span>
+        </div>
+        <div class="calculator-row">
+          <span class="calculator-label">Weight Factor ({{ quantity }} item{{ quantity|pluralize }})</span>
+          <span class="calculator-value" id="weightFactor">$0.00</span>
+        </div>
+        <div class="calculator-row">
+          <span class="calculator-label">Regional Surcharge</span>
+          <span class="calculator-value" id="regionalSurcharge">$0.00</span>
+        </div>
+        <div class="calculator-row">
+          <span class="calculator-label">Insurance (1% of value)</span>
+          <span class="calculator-value" id="insurance">$0.00</span>
+        </div>
+        <div class="calculator-row" style="border-bottom: 2px solid var(--gold);">
+          <span class="calculator-label" style="font-weight: 800;">Total Shipping</span>
+          <span class="calculator-value" style="font-size: 18px; color: var(--gold);" id="totalShipping">$0.00</span>
+        </div>
+        
+        <div class="shipping-note">
+          <i class="fas fa-info-circle"></i> Shipping cost includes handling, tracking, and insurance. Customs duties may apply for international shipments and will be calculated at checkout.
+        </div>
+      </div>
+      
+      <input type="hidden" name="shipping_cost" id="shippingCost" value="0">
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-secondary" type="button" onclick="window.location.href='{% if is_cart_checkout %}{% url 'physical_cart' %}{% else %}{% url 'physical_product_detail_page' product.id %}{% endif %}'">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <button class="btn btn-primary" type="submit">
+        Continue to Confirmation <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Get product data from Django template variables
+const productData = {
+    weight: "{{ product.weight }}",
+    price: {{ product.current_price }},
+    quantity: {{ quantity }},
+    subtotal: {{ subtotal }}
+};
+
+// Parse weight from string (e.g., "1 troy oz" -> 1)
+function parseWeight(weightStr) {
+    if (!weightStr) return 1;
+    let match = weightStr.match(/(\d+(?:\.\d+)?)/);
+    if (match) {
+        return parseFloat(match[1]);
+    }
+    return 1;
+}
+
+// Get item weight in ounces
+const itemWeightOz = parseWeight("{{ product.weight }}");
+const totalWeightOz = itemWeightOz * productData.quantity;
+
+// Shipping rate calculation based on country
+function calculateShipping() {
+    const countrySelect = document.getElementById('countrySelect');
+    if (!countrySelect) return;
+    
+    const country = countrySelect.value;
+    if (!country) return;
+    
+    let baseRate = 0;
+    let regionalSurcharge = 0;
+    let deliveryDays = 0;
+    
+    // Base rates by country
+    const rates = {
+        'US': { base: 8.99, surcharge: 0, days: 5 },
+        'CA': { base: 12.99, surcharge: 2, days: 7 },
+        'GB': { base: 14.99, surcharge: 3, days: 8 },
+        'GH': { base: 18.99, surcharge: 5, days: 10 },
+        'NG': { base: 19.99, surcharge: 6, days: 10 },
+        'ZA': { base: 17.99, surcharge: 4, days: 9 },
+        'DE': { base: 13.99, surcharge: 2, days: 7 },
+        'FR': { base: 13.99, surcharge: 2, days: 7 },
+        'CH': { base: 11.99, surcharge: 1, days: 6 },
+        'AE': { base: 16.99, surcharge: 4, days: 8 },
+        'SG': { base: 15.99, surcharge: 3, days: 7 },
+        'AU': { base: 19.99, surcharge: 6, days: 10 },
+        'JP': { base: 18.99, surcharge: 5, days: 9 },
+        'CN': { base: 17.99, surcharge: 4, days: 9 },
+        'IN': { base: 16.99, surcharge: 4, days: 8 },
+        'BR': { base: 22.99, surcharge: 8, days: 12 }
+    };
+    
+    const selected = rates[country];
+    if (selected) {
+        baseRate = selected.base;
+        regionalSurcharge = selected.surcharge;
+        deliveryDays = selected.days;
+    } else {
+        // International default
+        baseRate = 24.99;
+        regionalSurcharge = 10;
+        deliveryDays = 14;
+    }
+    
+    // Weight factor - heavier items cost more (capped at $25)
+    let weightFactor = totalWeightOz * 0.5;
+    if (weightFactor > 25) weightFactor = 25;
+    
+    // Insurance (1% of total value)
+    const insurance = productData.subtotal * 0.01;
+    
+    // Total shipping
+    const totalShipping = baseRate + weightFactor + regionalSurcharge + insurance;
+    
+    // Update display
+    const baseRateEl = document.getElementById('baseRate');
+    const weightFactorEl = document.getElementById('weightFactor');
+    const surchargeEl = document.getElementById('regionalSurcharge');
+    const insuranceEl = document.getElementById('insurance');
+    const totalShippingEl = document.getElementById('totalShipping');
+    const shippingCostInput = document.getElementById('shippingCost');
+    
+    if (baseRateEl) baseRateEl.textContent = '$' + baseRate.toFixed(2);
+    if (weightFactorEl) weightFactorEl.textContent = '$' + weightFactor.toFixed(2);
+    if (surchargeEl) surchargeEl.textContent = '$' + regionalSurcharge.toFixed(2);
+    if (insuranceEl) insuranceEl.textContent = '$' + insurance.toFixed(2);
+    if (totalShippingEl) totalShippingEl.textContent = '$' + totalShipping.toFixed(2);
+    if (shippingCostInput) shippingCostInput.value = totalShipping.toFixed(2);
+    
+    console.log('Shipping calculated:', {
+        country,
+        subtotal: productData.subtotal,
+        totalShipping: totalShipping.toFixed(2)
+    });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Shipping page loaded');
+    console.log('Product data:', productData);
+    
+    const countrySelect = document.getElementById('countrySelect');
+    if (countrySelect) {
+        countrySelect.addEventListener('change', calculateShipping);
+        // Trigger calculation if a country is pre-selected
+        if (countrySelect.value) {
+            calculateShipping();
+        }
+    }
+    
+    // Also calculate when page loads
+    calculateShipping();
+});
+</script>
+{% endblock %}

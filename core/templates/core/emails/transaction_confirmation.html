@@ -1,0 +1,77 @@
+{% extends 'core/emails/base_email.html' %}
+
+{% block header_title %}
+<h1 style="color: #D4AF37; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Transaction Confirmed</h1>
+<p style="color: #94a3b8; margin: 8px 0 0;">Your order has been executed</p>
+{% endblock %}
+
+{% block content %}
+<p class="greeting">Dear {{ user_name }},</p>
+<p class="greeting-light">Your transaction has been successfully processed. Here are the details:</p>
+
+<div class="info-box success">
+    <strong>✓ Transaction Complete</strong><br>
+    Status: <span style="color: #10b981;">Approved</span> • Date: {{ transaction_date }}
+</div>
+
+<table class="transaction-table">
+    <tr>
+        <td>Transaction ID</td>
+        <td>#{{ transaction_id }}</td>
+    </tr>
+    <tr>
+        <td>Type</td>
+        <td><span style="text-transform: uppercase;">{{ transaction_type }}</span></td>
+    </tr>
+    <tr>
+        <td>Asset</td>
+        <td><strong>{{ asset_name }}</strong> ({{ asset_symbol }})</td>
+    </tr>
+    <tr>
+        <td>Quantity</td>
+        <td>{{ quantity }}</td>
+    </tr>
+    <tr>
+        <td>Price per Unit</td>
+        <td>${{ price_per_unit|floatformat:2 }}</td>
+    </tr>
+    <tr>
+        <td style="border-bottom: 2px solid #e2e8f0;"><strong>Total Amount</strong></td>
+        <td style="border-bottom: 2px solid #e2e8f0;">
+            <strong class="{% if transaction_type == 'buy' %}amount-negative{% else %}amount-positive{% endif %}">
+                {% if transaction_type == 'buy' %}−{% else %}+{% endif %}${{ total_amount|floatformat:2 }}
+            </strong>
+        </td>
+    </tr>
+</table>
+
+<div style="text-align: center;">
+    <a href="{{ transaction_url }}" class="btn">View Transaction Details →</a>
+</div>
+
+<div class="divider"></div>
+
+<div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
+    <div style="font-weight: 700; margin-bottom: 8px;">What's Next?</div>
+    <p style="font-size: 13px; color: #475569; margin: 0;">
+        {% if transaction_type == 'buy' %}
+            Your {{ asset_name }} has been added to your portfolio. Track its performance in real-time from your dashboard.
+        {% else %}
+            The proceeds from your sale have been credited to your Qubix wallet. You can withdraw or reinvest immediately.
+        {% endif %}
+    </p>
+</div>
+
+<p style="margin-top: 24px; font-size: 13px; color: #64748b;">
+    Need a receipt? <a href="{{ invoice_url }}" style="color: #3b82f6;">Download Invoice (PDF)</a>
+</p>
+
+<p style="margin-top: 24px;">
+    Questions about this transaction?<br>
+    <a href="{{ support_url }}" style="color: #3b82f6;">Contact Support</a>
+</p>
+
+<p style="margin-top: 24px;">
+    Thank you for investing with Qubix.
+</p>
+{% endblock %}

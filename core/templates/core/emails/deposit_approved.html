@@ -1,0 +1,65 @@
+{% extends 'core/emails/base_email.html' %}
+
+{% block header_title %}
+<h1 style="color: #D4AF37; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Deposit Approved</h1>
+<p style="color: #94a3b8; margin: 8px 0 0;">Funds added to your account</p>
+{% endblock %}
+
+{% block content %}
+<p class="greeting">Dear {{ user.get_full_name|default:user.email }},</p>
+<p class="greeting-light">Great news! Your deposit has been approved and funds have been added to your account.</p>
+
+<div class="info-box success">
+    <strong>✓ Deposit Approved</strong><br>
+    Status: <span style="color: #10b981;">Completed</span> • Date: {{ date }}
+</div>
+
+<table class="transaction-table">
+    <tr>
+        <td>Deposit ID</th>
+        <td>#{{ deposit_id }}</th>
+    </tr>
+    <tr>
+        <td>Amount Added</th>
+        <td><strong class="amount-positive">+ {{ amount }}</strong></th>
+    </tr>
+    <tr>
+        <td>Crypto Currency</th>
+        <td>{{ crypto_symbol }}</th>
+    </tr>
+    <tr>
+        <td>Crypto Amount</th>
+        <td>{{ crypto_amount }}</th>
+    </tr>
+    <tr>
+        <td style="border-bottom: 2px solid #e2e8f0;"><strong>New Balance</strong></th>
+        <td style="border-bottom: 2px solid #e2e8f0;">
+            <strong style="color: #10b981;">{{ new_balance }}</strong>
+        </th>
+    </tr>
+</table>
+
+<div class="divider"></div>
+
+<div style="background: #f0fdf4; border-radius: 12px; padding: 20px; border-left: 4px solid #10b981;">
+    <div style="font-weight: 700; margin-bottom: 8px; color: #059669;">What you can do now:</div>
+    <p style="font-size: 13px; color: #475569; margin: 0;">
+        1. Start investing in stocks, minerals, or real estate<br>
+        2. Withdraw your funds to your crypto wallet<br>
+        3. Explore physical asset investments
+    </p>
+</div>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="/dashboard/" class="btn">Start Investing →</a>
+</div>
+
+<p style="margin-top: 24px;">
+    Questions about this deposit?<br>
+    <a href="/support/" style="color: #3b82f6;">Contact Support</a>
+</p>
+
+<p style="margin-top: 24px;">
+    Thank you for trusting Qubix.
+</p>
+{% endblock %}

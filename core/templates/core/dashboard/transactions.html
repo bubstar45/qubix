@@ -1,0 +1,802 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Transactions | Qubix{% endblock %}
+
+{% block body_class %}portfolio-page{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── SUMMARY STATS ── */
+.tx-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.tx-stat {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.tx-stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.tx-stat-val {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.5px;
+}
+
+/* ── FILTERS ── */
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.filter-btn:hover { border-color: var(--border2); color: var(--text); }
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.search-box {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 7px 14px;
+  transition: border-color 0.2s;
+}
+.search-box:focus-within { border-color: var(--border2); }
+.search-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'Syne', sans-serif;
+  width: 180px;
+}
+.search-box input::placeholder { color: var(--muted); }
+
+/* ── TABLE ── */
+.table-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+thead th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+thead th:hover { color: var(--text); }
+thead th.sort-asc::after { content: ' ↑'; color: var(--accent); }
+thead th.sort-desc::after { content: ' ↓'; color: var(--accent); }
+thead th:last-child { text-align: right; }
+
+tbody td {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+tbody tr:hover { background: rgba(61,126,255,0.04); }
+tbody tr:hover .row-arrow { opacity: 1; transform: translateX(0); }
+tbody tr:hover .asset-name { color: var(--accent); }
+
+.asset-cell { display: flex; align-items: center; gap: 12px; }
+.asset-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--surface3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.asset-name { font-size: 14px; font-weight: 700; transition: color 0.2s; }
+.asset-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+td.right { text-align: right; }
+.text-muted { color: var(--muted2); }
+
+/* Type pills */
+.type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.type-buy { background: var(--green-dim); color: var(--green); }
+.type-sell { background: var(--red-dim); color: var(--red); }
+.type-deposit { background: rgba(61,126,255,0.12); color: var(--accent); }
+.type-withdraw { background: var(--gold-dim); color: var(--gold); }
+
+/* Status pills */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.status-approved { background: var(--green-dim); color: var(--green); }
+.status-pending { background: var(--gold-dim); color: var(--gold); }
+.status-rejected { background: var(--red-dim); color: var(--red); }
+
+.amount-pos { color: var(--green); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.amount-neg { color: var(--red); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+.row-arrow {
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: all 0.2s;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+/* ── DRAWER ── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(500px, 100vw);
+  background: var(--surface);
+  border-left: 1px solid var(--border2);
+  z-index: 400;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.drawer.open { transform: translateX(0); }
+
+.drawer-top {
+  padding: 24px 28px 0;
+  flex-shrink: 0;
+}
+.drawer-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.drawer-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted2);
+  letter-spacing: 0.5px;
+}
+.drawer-close {
+  width: 32px;
+  height: 32px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+.drawer-close:hover { color: var(--text); border-color: var(--border2); }
+
+/* Transaction receipt style */
+.receipt {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.receipt-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.receipt-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.receipt-type {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.receipt-sub { font-size: 12px; color: var(--muted2); margin-top: 3px; }
+.receipt-amount {
+  padding: 20px 24px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.receipt-amount-val {
+  font-size: 40px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -1.5px;
+}
+.receipt-amount-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+  font-weight: 600;
+}
+.receipt-rows { padding: 0; }
+.receipt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.receipt-row:last-child { border-bottom: none; }
+.receipt-row-label { color: var(--muted); font-weight: 600; }
+.receipt-row-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; text-align: right; }
+
+/* Timeline */
+.tx-timeline {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.timeline-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.timeline-item {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.timeline-item:last-child { margin-bottom: 0; }
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.timeline-dot::after {
+  content: '';
+  position: absolute;
+  left: 4.5px;
+  top: 18px;
+  width: 1px;
+  height: calc(100% - 4px);
+  background: var(--border);
+}
+.timeline-item:last-child .timeline-dot::after { display: none; }
+.timeline-label { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.timeline-sub { font-size: 12px; color: var(--muted2); }
+
+/* Asset performance block */
+.perf-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.perf-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.perf-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+.perf-label { color: var(--muted2); }
+.perf-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 28px 20px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  table { display: block; overflow-x: auto; }
+  .search-box { margin-left: 0; width: 100%; }
+  .search-box input { width: 100%; }
+}
+@media (max-width: 600px) {
+  .tx-stats { grid-template-columns: 1fr 1fr; }
+  .page-title { font-size: 24px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">All <span>Transactions</span></h1>
+      <p class="page-sub">// Complete activity history • Click any row for details</p>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="tx-stats" id="txStats">
+    <div class="tx-stat">
+      <div class="tx-stat-label">Total Transactions</div>
+      <div class="tx-stat-val" id="statTotal">—</div>
+    </div>
+    <div class="tx-stat">
+      <div class="tx-stat-label">Total Bought</div>
+      <div class="tx-stat-val" style="color:var(--green)" id="statBought">—</div>
+    </div>
+    <div class="tx-stat">
+      <div class="tx-stat-label">Total Sold</div>
+      <div class="tx-stat-val" style="color:var(--red)" id="statSold">—</div>
+    </div>
+    <div class="tx-stat">
+      <div class="tx-stat-label">Deposits</div>
+      <div class="tx-stat-val" style="color:var(--accent)" id="statDeposits">—</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="buy">Buys</button>
+    <button class="filter-btn" data-filter="sell">Sells</button>
+    <button class="filter-btn" data-filter="deposit">Deposits</button>
+    <button class="filter-btn" data-filter="withdraw">Withdrawals</button>
+    <div class="search-box">
+      <span style="color:var(--muted); font-size:13px;">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search asset...">
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table id="txTable">
+      <thead>
+        <tr>
+          <th>Asset / Description</th>
+          <th>Type</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th class="right">Total</th>
+          <th>Status</th>
+          <th class="right">Date &amp; Time</th>
+        </tr>
+      </thead>
+      <tbody id="txBody">
+        {% for tx in transactions %}
+        <tr class="tx-row"
+            data-type="{{ tx.transaction_type }}"
+            data-sym="{% if tx.asset %}{{ tx.asset.symbol }}{% else %}—{% endif %}"
+            data-name="{% if tx.asset %}{{ tx.asset.name }}{% else %}{{ tx.get_transaction_type_display }}{% endif %}"
+            data-cat="{% if tx.asset %}{{ tx.asset.category }}{% else %}cash{% endif %}"
+            data-qty="{% if tx.quantity %}{{ tx.quantity }}{% else %}0{% endif %}"
+            data-price="{% if tx.price_at_time %}{{ tx.price_at_time }}{% else %}0{% endif %}"
+            data-total="{{ tx.effective_amount|default:tx.total_amount }}"
+            data-status="{{ tx.status }}"
+            data-date="{{ tx.effective_date|date:'M d, Y' }}"
+            data-time="{{ tx.effective_date|date:'H:i:s' }}"
+            data-datetime="{{ tx.effective_date|date:'M d, Y \a\t H:i' }}"
+            data-curprice="{% if tx.asset %}{{ tx.asset.current_price }}{% else %}0{% endif %}">
+
+          <td>
+            <div class="asset-cell">
+              <div class="asset-icon">
+                {% if tx.transaction_type == 'deposit' %}💰
+                {% elif tx.transaction_type == 'withdraw' %}🏦
+                {% elif tx.asset and tx.asset.category == 'mineral' %}⛏️
+                {% elif tx.asset and tx.asset.symbol == 'AAPL' %}🍎
+                {% elif tx.asset and tx.asset.symbol == 'TSLA' %}⚡
+                {% elif tx.asset and tx.asset.symbol == 'NVDA' %}🎮
+                {% elif tx.asset %}📈
+                {% else %}💳{% endif %}
+              </div>
+              <div>
+                <div class="asset-name">
+                  {% if tx.asset %}{{ tx.asset.symbol }}{% else %}{{ tx.get_transaction_type_display }}{% endif %}
+                </div>
+                <div class="asset-sub">
+                  {% if tx.asset %}{{ tx.asset.name }}{% else %}Wallet Transaction{% endif %}
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="type-pill type-{{ tx.transaction_type }}">
+              {% if tx.transaction_type == 'buy' %}▲ BUY
+              {% elif tx.transaction_type == 'sell' %}▼ SELL
+              {% elif tx.transaction_type == 'deposit' %}↓ DEPOSIT
+              {% elif tx.transaction_type == 'withdraw' %}↑ WITHDRAW
+              {% else %}{{ tx.get_transaction_type_display|upper }}{% endif %}
+            </span>
+          </td>
+
+          <td class="mono text-muted">
+            {% if tx.quantity %}{{ tx.quantity|floatformat:4 }}{% else %}—{% endif %}
+          </td>
+
+          <td class="mono text-muted">
+            {% if tx.price_at_time %}${{ tx.price_at_time|floatformat:2 }}{% else %}—{% endif %}
+          </td>
+
+          <td class="right">
+<span class="{% if tx.transaction_type == 'buy' or tx.transaction_type == 'withdraw' %}amount-neg{% else %}amount-pos{% endif %}">
+    {% if tx.transaction_type == 'buy' or tx.transaction_type == 'withdraw' %}−{% else %}+{% endif %}${{ tx.effective_amount|default:tx.total_amount|floatformat:2 }}
+</span>
+          </td>
+
+          <td>
+            <span class="status-pill status-{% if tx.status %}{{ tx.status }}{% else %}approved{% endif %}">
+              {% if tx.status == 'approved' %}✓ Approved
+              {% elif tx.status == 'pending' %}⏳ Pending
+              {% elif tx.status == 'rejected' %}✕ Rejected
+              {% else %}✓ Complete{% endif %}
+            </span>
+          </td>
+
+         <td class="right mono text-muted">
+    {{ tx.effective_date|date:"M d, Y" }}<br>
+    <span style="font-size:11px; color:var(--muted);">{{ tx.effective_date|date:"H:i" }}</span>
+</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align:center; padding:70px 20px; color:var(--muted);">
+            <div style="font-size:40px; margin-bottom:10px;">📭</div>
+            <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:6px;">No transactions yet</div>
+            <div>Your transaction history will appear here.</div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- DETAIL DRAWER -->
+<div class="drawer" id="txDrawer">
+  <div class="drawer-top">
+    <div class="drawer-topbar">
+      <div class="drawer-title" id="drawerTitle">TRANSACTION DETAILS</div>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+  </div>
+
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── STATS ──
+const allRows = document.querySelectorAll('.tx-row');
+let bought = 0, sold = 0, deposited = 0;
+allRows.forEach(r => {
+  const t = parseFloat(r.dataset.total) || 0;
+  if (r.dataset.type === 'buy') bought += t;
+  else if (r.dataset.type === 'sell') sold += t;
+  else if (r.dataset.type === 'deposit') deposited += t;
+});
+const fmt = v => '$' + v.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+document.getElementById('statTotal').textContent = allRows.length;
+document.getElementById('statBought').textContent = fmt(bought);
+document.getElementById('statSold').textContent = fmt(sold);
+document.getElementById('statDeposits').textContent = fmt(deposited);
+
+// ── FILTERS ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    applyFilter();
+  });
+});
+document.getElementById('searchInput').addEventListener('input', applyFilter);
+
+function applyFilter() {
+  const f = document.querySelector('.filter-btn.active').dataset.filter;
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.tx-row').forEach(row => {
+    const matchFilter = f === 'all' || row.dataset.type === f;
+    const matchSearch = !q || row.dataset.sym.toLowerCase().includes(q) || row.dataset.name.toLowerCase().includes(q);
+    row.style.display = matchFilter && matchSearch ? '' : 'none';
+  });
+}
+
+// ── CLOSE DRAWER ──
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('txDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── BUILD DRAWER CONTENT ──
+function buildDrawerContent(row) {
+  const type = row.dataset.type;
+  const sym = row.dataset.sym;
+  const name = row.dataset.name;
+  const cat = row.dataset.cat;
+  const qty = parseFloat(row.dataset.qty) || 0;
+  const price = parseFloat(row.dataset.price) || 0;
+  const total = parseFloat(row.dataset.total) || 0;
+  const status = row.dataset.status || 'approved';
+  const date = row.dataset.date;
+  const time = row.dataset.time;
+  const datetime = row.dataset.datetime;
+  const curPrice = parseFloat(row.dataset.curprice) || 0;
+
+  // Colors & config per type
+  const typeConfig = {
+    buy:      { color: 'var(--green)', dim: 'var(--green-dim)', icon: '📈', label: 'Purchase', amountPrefix: '−' },
+    sell:     { color: 'var(--red)', dim: 'var(--red-dim)', icon: '📉', label: 'Sale', amountPrefix: '+' },
+    deposit:  { color: 'var(--accent)', dim: 'rgba(61,126,255,0.12)', icon: '💰', label: 'Deposit', amountPrefix: '+' },
+    withdraw: { color: 'var(--gold)', dim: 'var(--gold-dim)', icon: '🏦', label: 'Withdrawal', amountPrefix: '−' },
+  };
+  const cfg = typeConfig[type] || typeConfig.buy;
+
+  // Status badge
+  const statusMap = {
+    approved: { label:'✓ Approved', color:'var(--green)', bg:'var(--green-dim)' },
+    pending:  { label:'⏳ Pending', color:'var(--gold)', bg:'var(--gold-dim)' },
+    rejected: { label:'✕ Rejected', color:'var(--red)', bg:'var(--red-dim)' },
+  };
+  const st = statusMap[status] || statusMap.approved;
+
+  let html = `
+    <div class="receipt">
+      <div class="receipt-header">
+        <div class="receipt-icon" style="background:${cfg.dim}">${cfg.icon}</div>
+        <div>
+          <div class="receipt-type">${cfg.label}</div>
+          <div class="receipt-sub">${sym !== '—' ? sym + ' · ' + name : name}</div>
+        </div>
+        <div style="margin-left:auto; text-align:right;">
+          <div style="display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:7px; background:${st.bg}; color:${st.color}; font-size:11px; font-weight:700;">${st.label}</div>
+        </div>
+      </div>
+      <div class="receipt-amount">
+        <div class="receipt-amount-val" style="color:${cfg.color}">${cfg.amountPrefix}$${total.toFixed(2)}</div>
+        <div class="receipt-amount-label">${type === 'deposit' ? 'Amount Credited' : type === 'withdraw' ? 'Amount Debited' : 'Total Transaction Value'}</div>
+      </div>
+      <div class="receipt-rows">
+        <div class="receipt-row">
+          <span class="receipt-row-label">Transaction ID</span>
+          <span class="receipt-row-val" style="color:var(--muted2)">#QBX-${Math.floor(Math.random()*900000+100000)}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-row-label">Date &amp; Time</span>
+          <span class="receipt-row-val">${datetime}</span>
+        </div>`;
+
+  if (qty > 0) {
+    html += `
+        <div class="receipt-row">
+          <span class="receipt-row-label">Quantity</span>
+          <span class="receipt-row-val">${qty.toFixed(4)} ${sym}</span>
+        </div>`;
+  }
+  if (price > 0) {
+    html += `
+        <div class="receipt-row">
+          <span class="receipt-row-label">${type === 'buy' ? 'Purchase Price' : 'Sale Price'}</span>
+          <span class="receipt-row-val">$${price.toFixed(2)} / unit</span>
+        </div>`;
+  }
+  html += `
+        <div class="receipt-row">
+          <span class="receipt-row-label">Type</span>
+          <span class="receipt-row-val" style="color:${cfg.color}">${cfg.label}</span>
+        </div>
+        <div class="receipt-row">
+          <span class="receipt-row-label">Asset Category</span>
+          <span class="receipt-row-val" style="color:var(--muted2)">${cat === 'mineral' ? '⛏️ Mineral' : cat === 'cash' ? '💵 Cash' : '📈 Stock'}</span>
+        </div>
+      </div>
+    </div>`;
+
+  // For buy/sell: show performance block
+  if ((type === 'buy' || type === 'sell') && qty > 0 && price > 0 && curPrice > 0) {
+    const priceDiff = curPrice - price;
+    const pctChange = ((curPrice - price) / price) * 100;
+    const gainLoss = priceDiff * qty;
+    const isUp = priceDiff >= 0;
+    const perfColor = isUp ? 'var(--green)' : 'var(--red)';
+    const sign = isUp ? '+' : '';
+
+    html += `
+    <div class="perf-block">
+      <div class="perf-title">${type === 'buy' ? 'How Your Investment Has Performed' : 'Performance Since Sale'}</div>
+      <div class="perf-row">
+        <span class="perf-label">${type === 'buy' ? 'Purchase Price' : 'Sale Price'}</span>
+        <span class="perf-val">$${price.toFixed(2)}</span>
+      </div>
+      <div class="perf-row">
+        <span class="perf-label">Current Market Price</span>
+        <span class="perf-val" style="color:${perfColor}">$${curPrice.toFixed(2)}</span>
+      </div>
+      <div class="perf-row">
+        <span class="perf-label">Price Change Per Unit</span>
+        <span class="perf-val" style="color:${perfColor}">${sign}$${priceDiff.toFixed(2)}</span>
+      </div>
+      <div class="perf-row">
+        <span class="perf-label">% Change</span>
+        <span class="perf-val" style="color:${perfColor}">${sign}${pctChange.toFixed(2)}%</span>
+      </div>
+      <div style="height:1px; background:var(--border); margin:10px 0;"></div>
+      <div class="perf-row" style="font-size:15px;">
+        <span class="perf-label" style="font-weight:700; color:var(--text);">${type === 'buy' ? 'Unrealized Gain/Loss' : 'Net P&amp;L on Trade'}</span>
+        <span class="perf-val" style="color:${perfColor}; font-size:16px;">${sign}$${gainLoss.toFixed(2)}</span>
+      </div>
+      ${type === 'buy' ? `<div style="margin-top:12px; font-size:12px; color:var(--muted2); line-height:1.6;">
+        You purchased ${qty.toFixed(4)} ${sym} at $${price.toFixed(2)}. The asset is currently trading at $${curPrice.toFixed(2)}, giving your position a ${isUp ? 'gain' : 'loss'} of ${sign}${pctChange.toFixed(2)}%.
+      </div>` : `<div style="margin-top:12px; font-size:12px; color:var(--muted2); line-height:1.6;">
+        You sold ${qty.toFixed(4)} ${sym} at $${price.toFixed(2)}. Since your sale, the asset has moved ${sign}${pctChange.toFixed(2)}% to $${curPrice.toFixed(2)}.
+      </div>`}
+    </div>`;
+  }
+
+  // Timeline
+  const timelineItems = [];
+  if (type === 'deposit') {
+    timelineItems.push(
+      { dot: 'var(--accent)', label: 'Deposit Initiated', sub: datetime },
+      { dot: 'var(--gold)', label: 'Processing Payment', sub: 'Payment gateway verification' },
+      { dot: status === 'approved' ? 'var(--green)' : status === 'pending' ? 'var(--gold)' : 'var(--red)', label: status === 'approved' ? 'Funds Credited to Wallet' : status === 'pending' ? 'Awaiting Confirmation' : 'Transaction Rejected', sub: `$${total.toFixed(2)} ${status === 'approved' ? 'added to your balance' : 'not processed'}` }
+    );
+  } else if (type === 'withdraw') {
+    timelineItems.push(
+      { dot: 'var(--gold)', label: 'Withdrawal Requested', sub: datetime },
+      { dot: 'var(--muted)', label: 'Under Review', sub: 'Compliance & verification check' },
+      { dot: status === 'approved' ? 'var(--green)' : 'var(--gold)', label: status === 'approved' ? 'Funds Sent' : 'Awaiting Approval', sub: status === 'approved' ? `$${total.toFixed(2)} dispatched to your account` : 'Usually takes 1–2 business days' }
+    );
+  } else if (type === 'buy') {
+    timelineItems.push(
+      { dot: 'var(--accent)', label: 'Order Placed', sub: datetime },
+      { dot: 'var(--gold)', label: 'Order Matching', sub: 'Matched with available sellers' },
+      { dot: 'var(--green)', label: 'Order Filled', sub: `${qty.toFixed(4)} ${sym} acquired at $${price.toFixed(2)}` }
+    );
+  } else if (type === 'sell') {
+    timelineItems.push(
+      { dot: 'var(--accent)', label: 'Sell Order Placed', sub: datetime },
+      { dot: 'var(--gold)', label: 'Order Matching', sub: 'Finding buyers in the market' },
+      { dot: 'var(--red)', label: 'Position Closed', sub: `${qty.toFixed(4)} ${sym} sold at $${price.toFixed(2)}` }
+    );
+  }
+
+  html += `
+    <div class="tx-timeline">
+      <div class="timeline-title">Transaction Timeline</div>`;
+  timelineItems.forEach(item => {
+    html += `
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background:${item.dot}; position:relative;"></div>
+        <div>
+          <div class="timeline-label">${item.label}</div>
+          <div class="timeline-sub">${item.sub}</div>
+        </div>
+      </div>`;
+  });
+  html += `</div>`;
+
+  return html;
+}
+
+// ── OPEN DRAWER ──
+function openDrawer(row) {
+  const type = row.dataset.type;
+  const typeLabels = { buy:'BUY ORDER', sell:'SELL ORDER', deposit:'DEPOSIT', withdraw:'WITHDRAWAL' };
+  document.getElementById('drawerTitle').textContent = typeLabels[type] || 'TRANSACTION';
+  document.getElementById('drawerBody').innerHTML = buildDrawerContent(row);
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('txDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+document.querySelectorAll('.tx-row').forEach(row => {
+  row.addEventListener('click', () => openDrawer(row));
+});
+
+// Staggered entrance
+document.querySelectorAll('.tx-row').forEach((row, i) => {
+  row.style.opacity = '0';
+  row.style.transition = 'opacity 0.3s ease, background 0.15s';
+  setTimeout(() => row.style.opacity = '1', 40 * i + 80);
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+</script>
+{% endblock %}

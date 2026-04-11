@@ -1,0 +1,574 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Frequently Asked Questions | Qubix{% endblock %}
+
+{% block extra_css %}
+<style>
+.faq-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.faq-categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.category-btn {
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--surface2);
+  color: var(--muted2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.category-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.category-btn.active {
+  background: var(--gold);
+  color: #000;
+  border-color: var(--gold);
+}
+
+.faq-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faq-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.faq-item:hover {
+  border-color: rgba(240,185,11,0.3);
+}
+
+.faq-question {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.faq-question:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.faq-question h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.faq-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  transition: transform 0.3s;
+}
+
+.faq-icon i {
+  font-size: 14px;
+}
+
+.faq-item.open .faq-icon {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+  padding: 0 24px;
+  border-top: none;
+}
+
+.faq-item.open .faq-answer {
+  max-height: 500px;
+  padding: 0 24px 20px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.faq-answer p {
+  font-size: 14px;
+  color: var(--muted2);
+  line-height: 1.7;
+  margin: 12px 0;
+}
+
+.faq-answer ul, .faq-answer ol {
+  margin: 10px 0 10px 20px;
+  color: var(--muted2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.faq-answer li {
+  margin: 6px 0;
+}
+
+.highlight {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.contact-section {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  margin-top: 48px;
+}
+
+.contact-section h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.contact-section p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 24px;
+}
+
+.contact-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.contact-btn.primary {
+  background: var(--gold);
+  color: #000;
+}
+
+.contact-btn.primary:hover {
+  background: #e0a800;
+  transform: translateY(-2px);
+}
+
+.contact-btn.secondary {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.contact-btn.secondary:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+
+.search-box {
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 14px 20px 14px 48px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--text);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.search-box i {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted2);
+  font-size: 16px;
+}
+
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted2);
+}
+
+.no-results i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+@media (max-width: 640px) {
+  .faq-question h3 {
+    font-size: 14px;
+  }
+  .contact-section {
+    padding: 28px 20px;
+  }
+  .contact-buttons {
+    flex-direction: column;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <h1 class="page-title">Frequently Asked <span>Questions</span></h1>
+    <p class="page-sub">// Everything you need to know about investing with Qubix</p>
+  </div>
+
+  <div class="faq-container">
+    <!-- Search Box -->
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchFaq" placeholder="Search questions..." onkeyup="filterFaqs()">
+    </div>
+
+    <!-- Categories -->
+    <div class="faq-categories">
+      <button class="category-btn active" data-category="all" onclick="filterCategory('all', this)">All</button>
+      <button class="category-btn" data-category="getting-started" onclick="filterCategory('getting-started', this)">Getting Started</button>
+      <button class="category-btn" data-category="investing" onclick="filterCategory('investing', this)">Investing</button>
+      <button class="category-btn" data-category="account" onclick="filterCategory('account', this)">Account</button>
+      <button class="category-btn" data-category="withdrawals" onclick="filterCategory('withdrawals', this)">Withdrawals</button>
+      <button class="category-btn" data-category="security" onclick="filterCategory('security', this)">Security</button>
+    </div>
+
+    <div class="faq-grid" id="faqGrid">
+      <!-- Getting Started -->
+      <div class="faq-item" data-category="getting-started" data-search="how do I start investing create account">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>How do I start investing with Qubix?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>Getting started with Qubix is simple:</p>
+          <ol>
+            <li><strong>Create an account</strong> – Sign up with your email and complete verification</li>
+            <li><strong>Deposit funds</strong> – Add cash to your account using cryptocurrency</li>
+            <li><strong>Browse investments</strong> – Explore Stocks, Minerals, Real Estate, or Physical Assets</li>
+            <li><strong>Start investing</strong> – Choose an asset and amount to invest</li>
+          </ol>
+          <p>You can start with as little as <span class="highlight">$100</span> for real estate or <span class="highlight">$10</span> for stocks.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="getting-started" data-search="what documents need to verify account">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>What documents do I need to verify my account?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>To verify your Qubix account, you'll need:</p>
+          <ul>
+            <li>A valid government-issued ID (Passport, Driver's License, or National ID)</li>
+            <li>Proof of address (Utility bill, bank statement, or government letter dated within 3 months)</li>
+            <li>A selfie for identity confirmation</li>
+          </ul>
+          <p>Verification typically takes <span class="highlight">1-2 business days</span>.</p>
+        </div>
+      </div>
+
+      <!-- Investing -->
+      <div class="faq-item" data-category="investing" data-search="what can I invest in stocks minerals real estate physical">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>What investment options are available on Qubix?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>Qubix offers a diverse range of investment opportunities:</p>
+          <ul>
+            <li><strong>Stocks</strong> – Invest in shares of major public companies</li>
+            <li><strong>Minerals</strong> – Gold, Silver, Platinum, and other precious metals</li>
+            <li><strong>Real Estate</strong> – Fractional ownership in income-generating properties</li>
+            <li><strong>Physical Assets</strong> – Vault-stored bullion with optional delivery</li>
+          </ul>
+          <p>Each asset class has different risk profiles and return potentials.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="investing" data-search="how are dividends calculated real estate">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>How are real estate dividends calculated?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>Real estate dividends are calculated based on:</p>
+          <ul>
+            <li><strong>Rental income</strong> collected from tenants</li>
+            <li><strong>Occupancy rates</strong> of the property</li>
+            <li><strong>Operating expenses</strong> (maintenance, management fees, insurance)</li>
+            <li><strong>Reserve funds</strong> set aside for future capital improvements</li>
+          </ul>
+          <p>Dividends are typically paid <span class="highlight">monthly or quarterly</span>, depending on the property.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="investing" data-search="what are the fees for trading">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>What fees does Qubix charge?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>Qubix maintains transparent, competitive fees:</p>
+          <ul>
+            <li><strong>Trading Fee:</strong> 0.5% per transaction (buy/sell)</li>
+            <li><strong>Real Estate Management:</strong> 1.5% of gross rental income</li>
+            <li><strong>Vault Storage:</strong> No fee for first year, then 0.5% annually</li>
+            <li><strong>Withdrawal Fee:</strong> 5% of withdrawal amount (covers processing)</li>
+            <li><strong>Deposit Fee:</strong> No fee for crypto deposits</li>
+          </ul>
+          <p>No hidden fees. All charges are clearly displayed before you confirm any transaction.</p>
+        </div>
+      </div>
+
+      <!-- Account -->
+      <div class="faq-item" data-category="account" data-search="how do I change my password">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>How do I change my password?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>To change your password:</p>
+          <ol>
+            <li>Click on your avatar in the top right corner</li>
+            <li>Select "Profile" from the dropdown</li>
+            <li>Scroll to the "Security" section</li>
+            <li>Click "Change Password" and follow the instructions</li>
+          </ol>
+          <p>For security reasons, you'll need to enter your current password before creating a new one.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="account" data-search="how do I update my profile information">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>How do I update my profile information?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>You can update your profile information at any time:</p>
+          <ol>
+            <li>Click on your avatar in the navigation bar</li>
+            <li>Go to "Profile" page</li>
+            <li>Edit your name, phone number, country, or wallet address</li>
+            <li>Click "Save Changes"</li>
+          </ol>
+          <p>Note: Email address and username cannot be changed. Contact support if you need assistance.</p>
+        </div>
+      </div>
+
+      <!-- Withdrawals -->
+      <div class="faq-item" data-category="withdrawals" data-search="how do I withdraw my money crypto">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>How do I withdraw my funds?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>To withdraw funds from your Qubix account:</p>
+          <ol>
+            <li>Go to the "Withdraw" page from your dashboard</li>
+            <li>Select your preferred cryptocurrency (BTC, ETH, USDT, or LTC)</li>
+            <li>Enter your wallet address and withdrawal amount</li>
+            <li>Pay the 5% processing fee</li>
+            <li>Confirm the withdrawal</li>
+          </ol>
+          <p>Withdrawals are typically processed within <span class="highlight">24-48 hours</span> after fee payment confirmation.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="withdrawals" data-search="how long does withdrawal take">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>How long do withdrawals take?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>Withdrawal processing times:</p>
+          <ul>
+            <li><strong>Fee payment confirmation:</strong> Immediate after blockchain confirmation</li>
+            <li><strong>Admin review:</strong> 1-2 business days</li>
+            <li><strong>Crypto transfer:</strong> 1-3 business days depending on network</li>
+            <li><strong>Total estimated time:</strong> 2-5 business days</li>
+          </ul>
+          <p>You can track your withdrawal status in the Transactions section of your dashboard.</p>
+        </div>
+      </div>
+
+      <!-- Security -->
+      <div class="faq-item" data-category="security" data-search="is my money safe secure">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>Is my money safe with Qubix?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>Security is our top priority at Qubix:</p>
+          <ul>
+            <li><strong>SSL Encryption</strong> – All data is encrypted in transit</li>
+            <li><strong>Two-Factor Authentication (2FA)</strong> – Optional extra security layer</li>
+            <li><strong>Cold Storage</strong> – Majority of crypto assets stored offline</li>
+            <li><strong>Vault Security</strong> – Physical assets stored in insured, guarded vaults</li>
+            <li><strong>Regular Audits</strong> – Independent security audits performed quarterly</li>
+          </ul>
+          <p>We never have direct access to your funds. All transactions require your explicit confirmation.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" data-category="security" data-search="what is 2FA two factor authentication">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h3>How do I enable Two-Factor Authentication (2FA)?</h3>
+          <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+        </div>
+        <div class="faq-answer">
+          <p>To enable 2FA on your account:</p>
+          <ol>
+            <li>Go to Profile → Security Settings</li>
+            <li>Click "Enable Two-Factor Authentication"</li>
+            <li>Scan the QR code with Google Authenticator or Authy</li>
+            <li>Enter the 6-digit code from your authenticator app</li>
+            <li>Save your backup codes in a secure location</li>
+          </ol>
+          <p>2FA adds an extra layer of security to your account, requiring a code from your phone to log in.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="noResults" class="no-results" style="display: none;">
+      <i class="fas fa-search"></i>
+      <h3>No matching questions found</h3>
+      <p>Try searching with different keywords or browse all categories</p>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="contact-section">
+      <h3>Still have questions?</h3>
+      <p>Our support team is here to help you 24/7</p>
+      <div class="contact-buttons">
+        <a href="{% url 'support_tickets' %}" class="contact-btn primary">
+          <i class="fas fa-headset"></i> Contact Support
+        </a>
+        <a href="mailto:support@qubix.io" class="contact-btn secondary">
+          <i class="fas fa-envelope"></i> support@qubix.io
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Toggle FAQ answer
+function toggleFaq(element) {
+  const faqItem = element.closest('.faq-item');
+  faqItem.classList.toggle('open');
+}
+
+// Filter by category
+function filterCategory(category, button) {
+  // Update active button
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  button.classList.add('active');
+  
+  // Filter items
+  const items = document.querySelectorAll('.faq-item');
+  let visibleCount = 0;
+  
+  items.forEach(item => {
+    if (category === 'all' || item.dataset.category === category) {
+      item.style.display = 'block';
+      visibleCount++;
+    } else {
+      item.style.display = 'none';
+    }
+  });
+  
+  // Clear search input when changing category
+  const searchInput = document.getElementById('searchFaq');
+  if (searchInput) searchInput.value = '';
+  
+  document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+}
+
+// Search FAQ
+function filterFaqs() {
+  const searchTerm = document.getElementById('searchFaq').value.toLowerCase();
+  const items = document.querySelectorAll('.faq-item');
+  let visibleCount = 0;
+  
+  items.forEach(item => {
+    const searchText = item.dataset.search || '';
+    const question = item.querySelector('.faq-question h3')?.innerText.toLowerCase() || '';
+    
+    if (searchTerm === '' || question.includes(searchTerm) || searchText.includes(searchTerm)) {
+      item.style.display = 'block';
+      visibleCount++;
+    } else {
+      item.style.display = 'none';
+    }
+  });
+  
+  document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+}
+
+// Open FAQ from URL hash
+function openFaqFromHash() {
+  const hash = window.location.hash.substring(1);
+  if (hash) {
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question h3')?.innerText || '';
+      if (question.toLowerCase().includes(hash.toLowerCase().replace(/-/g, ' '))) {
+        item.classList.add('open');
+        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  openFaqFromHash();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,534 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vault Storage Certificate — Qubix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap');
+
+  :root {
+    --gold: #f0b90b;
+    --gold-light: #fdf3d0;
+    --gold-dark: #c9960a;
+    --text: #1a1a2e;
+    --muted: #5a5a72;
+    --border: #d4c5a9;
+    --bg: #ffffff;
+    --subtle: #faf9f7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: #e8e4dc;
+    color: var(--text);
+    padding: 40px 20px;
+  }
+
+  .document-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--bg);
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+  }
+
+  /* Security border pattern */
+  .security-border {
+    position: absolute;
+    inset: 12px;
+    border: 1.5px solid var(--gold);
+    pointer-events: none;
+    z-index: 10;
+  }
+  .security-border::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 0.5px solid rgba(240,185,11,0.4);
+  }
+
+  /* Corner ornaments */
+  .corner {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    z-index: 11;
+  }
+  .corner-tl { top: 8px; left: 8px; border-top: 3px solid var(--gold); border-left: 3px solid var(--gold); }
+  .corner-tr { top: 8px; right: 8px; border-top: 3px solid var(--gold); border-right: 3px solid var(--gold); }
+  .corner-bl { bottom: 8px; left: 8px; border-bottom: 3px solid var(--gold); border-left: 3px solid var(--gold); }
+  .corner-br { bottom: 8px; right: 8px; border-bottom: 3px solid var(--gold); border-right: 3px solid var(--gold); }
+
+  /* Watermark */
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    font-family: 'Playfair Display', serif;
+    font-size: 100px;
+    font-weight: 700;
+    color: rgba(240,185,11,0.05);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+    letter-spacing: 8px;
+  }
+
+  .document-inner {
+    padding: 60px 60px 50px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Header */
+  .doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .logo-block .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--text);
+  }
+  .logo-block .logo-text span { color: var(--gold); }
+  .logo-block .logo-sub {
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .doc-meta {
+    text-align: right;
+  }
+  .doc-meta .cert-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .doc-meta .cert-number {
+    font-family: 'Courier Prime', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold-dark);
+    margin-top: 2px;
+  }
+  .doc-meta .issue-date {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* Title band */
+  .title-band {
+    background: linear-gradient(135deg, var(--text) 0%, #2d2d4e 100%);
+    margin: 0 -60px;
+    padding: 22px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .title-band::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .title-band::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .title-band h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .title-band .title-sub {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+
+  /* Certificate proclamation */
+  .proclamation {
+    text-align: center;
+    margin: 35px 0 30px;
+    padding: 0 20px;
+  }
+  .proclamation p {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    line-height: 1.8;
+  }
+  .proclamation .owner-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text);
+    display: block;
+    margin: 8px 0;
+  }
+
+  /* Asset details grid */
+  .asset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 28px 0;
+  }
+  .asset-cell {
+    background: var(--bg);
+    padding: 16px 20px;
+  }
+  .asset-cell.full { grid-column: 1 / -1; }
+  .asset-cell .label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  .asset-cell .value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .asset-cell .value.highlight {
+    color: var(--gold-dark);
+    font-family: 'Courier Prime', monospace;
+  }
+
+  /* Vault info banner */
+  .vault-banner {
+    background: var(--subtle);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 20px 0;
+  }
+  .vault-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--gold-light);
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .vault-info .vault-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .vault-info .vault-location {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 2px;
+  }
+  .vault-info .vault-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* QR + Seal section */
+  .validation-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid var(--border);
+    gap: 20px;
+  }
+
+  .qr-block { text-align: center; }
+  .qr-block img {
+    width: 90px;
+    height: 90px;
+    border: 2px solid var(--border);
+    padding: 6px;
+    display: block;
+    margin: 0 auto 6px;
+  }
+  .qr-block .qr-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .seal-block { text-align: center; }
+  .seal {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 6px;
+    position: relative;
+    background: radial-gradient(circle, var(--gold-light), #fff);
+  }
+  .seal::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 1px dashed var(--gold);
+  }
+  .seal .seal-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.3;
+    z-index: 1;
+  }
+  .seal-block .seal-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .signature-block { text-align: center; min-width: 160px; }
+  .sig-line {
+    width: 160px;
+    border-bottom: 2px solid var(--text);
+    height: 50px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 4px;
+  }
+  .sig-line .sig-img {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--text);
+    opacity: 0.6;
+  }
+  .sig-name { font-size: 11px; font-weight: 600; color: var(--text); margin-top: 5px; }
+  .sig-title { font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+
+  /* Footer */
+  .doc-footer {
+    margin-top: 35px;
+    padding-top: 18px;
+    border-top: 2px solid var(--gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-left { font-size: 9px; color: var(--muted); line-height: 1.7; }
+  .footer-right { text-align: right; font-size: 9px; color: var(--muted); line-height: 1.7; }
+  .footer-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 2px;
+    font-size: 10px;
+  }
+
+  /* Security strip */
+  .security-strip {
+    background: var(--text);
+    padding: 8px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .security-strip span {
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+  .security-strip .sec-id {
+    font-family: 'Courier Prime', monospace;
+    color: var(--gold);
+    font-size: 9px;
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .document-wrapper { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== VAULT STORAGE CERTIFICATE ====== -->
+<div class="document-wrapper">
+
+  <!-- Security decorations -->
+  <div class="security-border"></div>
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+  <div class="watermark">QUBIX</div>
+
+  <div class="document-inner">
+
+    <!-- Header: Logo + Certificate Number -->
+    <div class="doc-header">
+      <div class="logo-block">
+        <div class="logo-text">Q<span>U</span>BIX</div>
+        <div class="logo-sub">Precious Metals Investment Platform</div>
+      </div>
+      <div class="doc-meta">
+        <div class="cert-label">Certificate No.</div>
+        <div class="cert-number">{{ certificate_number }}</div>
+        <div class="issue-date">Issued: {{ issue_date }}</div>
+      </div>
+    </div>
+
+    <!-- Title band -->
+    <div class="title-band">
+      <h1>Vault Storage Certificate</h1>
+      <div class="title-sub">Official Record of Physical Asset Custody</div>
+    </div>
+
+    <!-- Proclamation text -->
+    <div class="proclamation">
+      <p>This certifies that</p>
+      <span class="owner-name">{{ user_name }}</span>
+      <p>is the registered beneficial owner of the following physical asset(s)<br>held in secure allocated storage under the custody of Qubix Investments Ltd.</p>
+    </div>
+
+    <!-- Asset Details Grid -->
+    <div class="asset-grid">
+      <div class="asset-cell">
+        <div class="label">Product Name</div>
+        <div class="value">{{ product_name }}</div>
+      </div>
+      <div class="asset-cell">
+        <div class="label">Quantity Held</div>
+        <div class="value highlight">{{ quantity }}</div>
+      </div>
+      <div class="asset-cell">
+        <div class="label">Specification / Type</div>
+        <div class="value">{{ specification }}</div>
+      </div>
+      <div class="asset-cell">
+        <div class="label">Purity</div>
+        <div class="value">{{ purity }}</div>
+      </div>
+      <div class="asset-cell">
+        <div class="label">Weight</div>
+        <div class="value">{{ weight }}</div>
+      </div>
+      <div class="asset-cell">
+        <div class="label">Mint / Manufacturer</div>
+        <div class="value">{{ mint }}</div>
+      </div>
+    </div>
+
+    <!-- Vault Location Banner -->
+    <div class="vault-banner">
+      <div class="vault-icon">🔒</div>
+      <div class="vault-info">
+        <div class="vault-label">Storage Location</div>
+        <div class="vault-location">{{ vault_location }}</div>
+        <div class="vault-sub">Segregated Allocated Storage · Fully Insured · Third-Party Audited</div>
+      </div>
+    </div>
+
+    <!-- Validation row: QR, Seal, Signature -->
+    <div class="validation-row">
+
+      <!-- QR Code for certificate verification -->
+      <div class="qr-block">
+        <img src="{{ qr_code_base64 }}" alt="Verification QR Code">
+        <div class="qr-label">Scan to Verify</div>
+      </div>
+
+      <!-- Official Seal -->
+      <div class="seal-block">
+        <div class="seal">
+          <div class="seal-text">QUBIX<br>CERTIFIED<br>VAULT</div>
+        </div>
+        <div class="seal-label">Official Seal</div>
+      </div>
+
+      <!-- Authorised Signatory -->
+      <div class="signature-block">
+        <div class="sig-line">
+          <span class="sig-img">Authorised</span>
+        </div>
+        <div class="sig-name">Chief Custody Officer</div>
+        <div class="sig-title">Qubix Investments Ltd.</div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="doc-footer">
+      <div class="footer-left">
+        <div class="footer-brand">QUBIX INVESTMENTS</div>
+        Registered in England & Wales · Company No. 12345678<br>
+        FCA Regulated · Reference No. 987654
+      </div>
+      <div class="footer-right">
+        Generated: {% now "d M Y" %}<br>
+        Page 1 of 1
+      </div>
+    </div>
+
+  </div><!-- /document-inner -->
+
+  <!-- Security strip at bottom -->
+  <div class="security-strip">
+    <span>Secured Document · Do Not Alter</span>
+    <span class="sec-id">CERT-{{ certificate_number }}</span>
+    <span>Qubix Investments Ltd. — All rights reserved</span>
+  </div>
+
+</div>
+
+</body>
+</html>

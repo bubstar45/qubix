@@ -1,0 +1,27 @@
+{% extends "admin/index.html" %}
+
+{% block sidebar %}
+<div id="content-related">
+  <div class="module" id="recent-actions-module">
+    <h2>Quick Actions</h2>
+    <ul style="list-style: none; padding-left: 0;">
+      <li style="margin-bottom: 8px;">
+        <a href="/staff/support/tickets/" style="display: block; padding: 8px 12px; background: #417690; color: white; text-decoration: none; border-radius: 4px;">
+          <i class="fas fa-headset"></i> Customer Support Dashboard
+        </a>
+      </li>
+      <li style="margin-bottom: 8px;">
+        <a href="/admin/core/supportticket/" style="display: block; padding: 8px 12px; background: #79aec8; color: white; text-decoration: none; border-radius: 4px;">
+          <i class="fas fa-ticket-alt"></i> View All Tickets
+        </a>
+      </li>
+      <li style="margin-bottom: 8px;">
+        <a href="/admin/core/scheduledcall/" style="display: block; padding: 8px 12px; background: #79aec8; color: white; text-decoration: none; border-radius: 4px;">
+          <i class="fas fa-calendar"></i> View Scheduled Calls
+        </a>
+      </li>
+    </ul>
+    {{ block.super }}
+  </div>
+</div>
+{% endblock %}

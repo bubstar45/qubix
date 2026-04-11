@@ -1,0 +1,422 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }}</title>
+    <style>
+        /* Reset styles */
+        body, table, td, p, a {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: #1e293b;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+        
+        .email-wrapper {
+            background-color: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Header Section */
+        .email-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 40px 32px 32px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo-wrapper {
+            margin-bottom: 16px;
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .logo-icon span {
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+        }
+        
+        .logo-text {
+            text-align: left;
+        }
+        
+ .logo-main {
+    font-size: 20px;
+    font-weight: 800;
+    color: #D4AF37;  /* Gold color */
+    letter-spacing: -0.3px;
+}
+        
+        .logo-sub {
+            font-size: 9px;
+            font-weight: 500;
+            color: #94a3b8;
+            letter-spacing: 1.5px;
+            margin-top: 2px;
+        }
+        
+        .header-divider {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #a855f7);
+            margin: 24px auto 0;
+            border-radius: 3px;
+        }
+        
+        /* Content Section */
+        .email-content {
+            padding: 40px 36px;
+        }
+        
+        .greeting {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+        
+        .greeting-light {
+            font-size: 16px;
+            color: #475569;
+            margin-bottom: 24px;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        
+        .info-box.alert {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .info-box.success {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .info-box.warning {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        /* Transaction Table */
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .transaction-table tr {
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .transaction-table td {
+            padding: 12px 0;
+        }
+        
+        .transaction-table td:first-child {
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .transaction-table td:last-child {
+            text-align: right;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        
+        .amount-positive {
+            color: #10b981;
+            font-weight: 700;
+        }
+        
+        .amount-negative {
+            color: #ef4444;
+            font-weight: 700;
+        }
+        
+        /* Verification Code Box */
+        .verification-code {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin: 24px 0;
+        }
+        
+        .code {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: 8px;
+            color: #0f172a;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            display: inline-block;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .expiry {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 12px;
+        }
+        
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            background: #3b82f6;
+            color: white !important;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin: 16px 0;
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #3b82f6 !important;
+        }
+        
+        .btn-small {
+            padding: 10px 20px;
+            font-size: 13px;
+        }
+        
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 28px 0;
+        }
+        
+        /* Footer Section */
+        .email-footer {
+            background: #f8fafc;
+            padding: 32px 36px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .social-links {
+            margin-bottom: 20px;
+        }
+        
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            margin: 0 6px;
+            text-decoration: none;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        
+        .social-link:hover {
+            background: #cbd5e1;
+            color: #0f172a;
+        }
+        
+        .footer-text {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.6;
+            margin: 16px 0;
+        }
+        
+        .footer-links {
+            margin: 16px 0;
+        }
+        
+        .footer-links a {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 12px;
+            margin: 0 10px;
+        }
+        
+        .footer-links a:hover {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+        
+        .copyright {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 16px;
+        }
+        
+        /* Security Badge */
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 16px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .email-container {
+                padding: 16px;
+            }
+            .email-content {
+                padding: 28px 24px;
+            }
+            .email-footer {
+                padding: 24px;
+            }
+            .greeting {
+                font-size: 20px;
+            }
+            .code {
+                font-size: 24px;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-wrapper">
+            <!-- Header -->
+            <div class="email-header">
+                <div class="logo-wrapper">
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <img src="https://qubixinvestments.com/static/images/logo-icon.png" alt="Qubix Logo">
+                        </div>
+                        <div class="logo-text">
+                            <div class="logo-main">QUBIX</div>
+                            <div class="logo-sub">INVESTMENT LTD</div>
+                        </div>
+                    </div>
+                </div>
+                {% block header_title %}{% endblock %}
+                <div class="header-divider"></div>
+            </div>
+            
+            <!-- Content -->
+            <div class="email-content">
+                {% block content %}{% endblock %}
+            </div>
+            
+            <!-- Footer -->
+            <div class="email-footer">
+                <div class="social-links">
+                    <a href="#" class="social-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                            <rect x="2" y="9" width="4" height="12"/>
+                            <circle cx="4" cy="4" r="2"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="4"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="M21 15l-5-4-3 3-4-4-5 5"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="footer-text">
+                    Qubix Investment Ltd is a registered financial services provider.<br>
+                    All investments are subject to market risk.
+                </div>
+                
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a> •
+                    <a href="#">Terms of Service</a> •
+                    <a href="#">Contact Support</a>
+                </div>
+                
+                <div class="security-badge">
+                    <span>🔒</span> 256-bit SSL Encrypted
+                    <span style="margin-left: 12px;">✓</span> SOC 2 Certified
+                </div>
+                
+                <div class="copyright">
+                    © 2025 Qubix Investment Ltd. All rights reserved.<br>
+                    21 Lombard Street, London EC3V 9AH, United Kingdom
+                </div>
+                
+                <div class="copyright" style="margin-top: 12px;">
+                    <a href="{{ unsubscribe_url }}" style="color: #94a3b8;">Unsubscribe</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

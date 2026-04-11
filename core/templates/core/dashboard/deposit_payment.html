@@ -1,0 +1,385 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Complete Payment | Qubix{% endblock %}
+
+{% block body_class %}portfolio-page{% endblock %}
+
+{% block extra_css %}
+<style>
+  .main-content {
+    flex: 1;
+    padding: 30px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 62px);
+  }
+
+  .payment-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 520px;
+    padding: 32px 28px;
+    position: relative;
+  }
+
+  .company-name { text-align: center; font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .amount-section { text-align: center; margin-bottom: 24px; }
+  .usd-amount { font-size: 28px; font-weight: 700; color: var(--text); }
+  .crypto-amount { 
+    font-size: 17px; 
+    color: var(--green); 
+    font-family: 'JetBrains Mono', monospace; 
+    margin-top: 6px; 
+    cursor: pointer; 
+    position: relative; 
+    display: inline-block;
+  }
+
+  .info-box { background: var(--surface); border-radius: 14px; padding: 16px; margin-bottom: 24px; }
+  .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+  .info-label { color: var(--muted); }
+  .info-value { color: var(--text); font-weight: 500; font-family: 'JetBrains Mono', monospace; }
+
+  .qr-timer-row { display: flex; align-items: flex-start; justify-content: center; gap: 24px; margin-bottom: 24px; }
+  .qr-code { background: white; padding: 12px; border-radius: 16px; display: inline-block; }
+  .qr-code img { width: 160px; height: 160px; }
+
+  .timer-card { 
+    background: rgba(245, 158, 11, 0.12); 
+    border-radius: 12px; 
+    padding: 14px 18px; 
+    text-align: center; 
+    min-width: 110px; 
+  }
+  .timer-label { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; }
+  .timer-value { font-size: 32px; font-weight: 700; color: var(--gold); font-family: 'JetBrains Mono', monospace; }
+
+  .address-section { margin-bottom: 24px; }
+  .address-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .address-wrapper { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    background: var(--surface); 
+    border-radius: 12px; 
+    padding: 14px; 
+    border: 1px solid var(--border); 
+    position: relative; 
+  }
+  .address-box { 
+    flex: 1; 
+    word-break: break-all; 
+    font-family: 'JetBrains Mono', monospace; 
+    font-size: 13px; 
+    color: var(--text); 
+    cursor: pointer; 
+    position: relative;
+  }
+
+  .copy-icon {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 20px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .copy-icon:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* Copy Tooltip */
+  .copy-tooltip {
+    position: fixed;
+    background: var(--green);
+    color: white;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-weight: 500;
+    z-index: 1000;
+    animation: fadeOut 1.5s ease forwards;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  @keyframes fadeOut {
+    0% { opacity: 1; transform: translateY(0); }
+    70% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-8px); visibility: hidden; }
+  }
+
+  .btn-paid {
+    width: 100%;
+    padding: 16px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+  }
+  .btn-paid:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+  }
+
+  .btn-cancel {
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 9999px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+  }
+
+  .warning { font-size: 11px; color: var(--muted); text-align: center; margin-top: 20px; }
+
+  /* Modals */
+  .modal-overlay {
+    display: none;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+    border-radius: 20px;
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  
+  .modal-content {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    max-width: 320px;
+    width: 90%;
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="payment-card" id="paymentCard">
+    <div class="company-name">Qubix • Deposit Funds</div>
+
+    <div class="amount-section">
+      <div class="usd-amount" id="usdAmount">$0.00</div>
+      <div class="crypto-amount" id="cryptoAmount" onclick="copyCryptoAmount(event)">0.00000000 BTC</div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-row">
+        <span class="info-label">Amount</span>
+        <span class="info-value" id="cryptoAmountDetail">0.00000000 BTC</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Network</span>
+        <span class="info-value" id="networkValue">BTC</span>
+      </div>
+    </div>
+
+    <div class="qr-timer-row">
+      <div class="qr-container">
+        <div class="qr-code">
+          <img id="qrImage" src="" alt="QR Code">
+        </div>
+      </div>
+      <div class="timer-card">
+        <div class="timer-label">TIME REMAINING</div>
+        <div class="timer-value" id="timer">19:53</div>
+      </div>
+    </div>
+
+    <div class="address-section">
+      <div class="address-label">WALLET ADDRESS</div>
+      <div class="address-wrapper">
+        <div class="address-box" id="walletAddress" onclick="copyAddress(event)">bc1qvu97du...w47q9j</div>
+        <button class="copy-icon" onclick="copyAddressButton(event)" title="Copy">📋</button>
+      </div>
+    </div>
+
+    <form method="post" id="paymentForm" action="{% url 'deposit_payment' %}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="confirm_payment">
+      <button type="button" class="btn-paid" id="paidBtn">
+        ✅ I've made the payment
+      </button>
+    </form>
+
+    <button type="button" class="btn-cancel" id="cancelBtn">Cancel deposit</button>
+
+    <div class="warning">
+      ⚠️ Send exactly the amount shown above. Any deviation may result in loss of funds.
+    </div>
+
+    <!-- Payment Confirm Modal -->
+    <div class="modal-overlay" id="paymentConfirmModal">
+      <div class="modal-content">
+        <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:12px;">Confirm Payment</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5;">
+          Please confirm you have sent the exact amount.<br><br>
+          Only click confirm after sending the payment.
+        </div>
+        <div style="display:flex;gap:12px;margin-top:24px;">
+          <button id="paymentModalCancelBtn" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">Cancel</button>
+          <button id="paymentModalConfirmBtn" style="flex:1;padding:12px;border-radius:10px;background:var(--green);color:white;border:none;cursor:pointer;">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancel Confirm Modal -->
+    <div class="modal-overlay" id="cancelConfirmModal">
+      <div class="modal-content">
+        <div style="font-size:48px;margin-bottom:16px;">❓</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:12px;">Cancel Deposit</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5;">Are you sure? This action cannot be undone.</div>
+        <div style="display:flex;gap:12px;margin-top:24px;">
+          <button id="cancelModalNoBtn" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">No, Go Back</button>
+          <button id="cancelModalYesBtn" style="flex:1;padding:12px;border-radius:10px;background:#ef4444;color:white;border:none;cursor:pointer;">Yes, Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Data from Django
+  const amount = {{ deposit_amount|default:"null" }};
+  const cryptoId = {{ deposit_crypto_id|default:"null" }};
+  const network = "{{ deposit_network|default:'' }}";
+
+  const cryptos = {
+    {% for crypto in cryptos %}
+    {{ crypto.id }}: {
+      symbol: "{{ crypto.symbol }}",
+      name: "{{ crypto.name }}",
+      rate: {{ crypto.rate_usd }},
+      wallet: "{{ crypto.wallet_address|default:'' }}"
+    },
+    {% endfor %}
+  };
+
+  const selectedCrypto = cryptos[cryptoId];
+
+  if (selectedCrypto && amount) {
+    const cryptoAmount = (parseFloat(amount) / parseFloat(selectedCrypto.rate)).toFixed(8);
+    document.getElementById('usdAmount').textContent = `$${parseFloat(amount).toFixed(2)} USD`;
+    document.getElementById('cryptoAmount').textContent = `≈ ${cryptoAmount} ${selectedCrypto.symbol}`;
+    document.getElementById('cryptoAmountDetail').textContent = `${cryptoAmount} ${selectedCrypto.symbol}`;
+    document.getElementById('networkValue').textContent = network || selectedCrypto.symbol;
+    document.getElementById('walletAddress').textContent = selectedCrypto.wallet || 'No address';
+
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(selectedCrypto.wallet)}`;
+    document.getElementById('qrImage').src = qrUrl;
+  }
+
+  // Timer
+  let timeLeft = 20 * 60;
+  function updateTimer() {
+    const min = Math.floor(timeLeft / 60);
+    const sec = timeLeft % 60;
+    document.getElementById('timer').textContent = `${min}:${sec.toString().padStart(2, '0')}`;
+    if (timeLeft <= 0) window.location.href = "{% url 'deposit' %}";
+    timeLeft--;
+  }
+  setInterval(updateTimer, 1000);
+  updateTimer();
+
+  // Show tooltip next to clicked element
+  function showTooltip(event, message) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'copy-tooltip';
+    tooltip.textContent = message;
+    
+    // Position near the clicked element
+    const rect = event.target.getBoundingClientRect();
+    tooltip.style.position = 'fixed';
+    tooltip.style.left = rect.right + 10 + 'px';
+    tooltip.style.top = rect.top + (rect.height / 2) - 10 + 'px';
+    
+    document.body.appendChild(tooltip);
+    
+    // Remove after animation
+    setTimeout(() => {
+      tooltip.remove();
+    }, 1500);
+  }
+
+  // Copy Address Functions
+  function copyAddress(event) {
+    const text = document.getElementById('walletAddress').textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      showTooltip(event, 'Copied!');
+    });
+  }
+
+  function copyAddressButton(event) {
+    event.stopPropagation();
+    const text = document.getElementById('walletAddress').textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      showTooltip(event, 'Copied!');
+    });
+  }
+
+  // Copy Crypto Amount
+  function copyCryptoAmount(event) {
+    let text = document.getElementById('cryptoAmount').textContent.trim();
+    const cleanAmount = text.replace('≈ ', '');
+    navigator.clipboard.writeText(cleanAmount).then(() => {
+      showTooltip(event, 'Copied!');
+    });
+  }
+
+  // Modals
+  document.getElementById('paidBtn').addEventListener('click', () => {
+    document.getElementById('paymentConfirmModal').classList.add('active');
+  });
+
+  document.getElementById('paymentModalCancelBtn').addEventListener('click', () => {
+    document.getElementById('paymentConfirmModal').classList.remove('active');
+  });
+
+  document.getElementById('paymentModalConfirmBtn').addEventListener('click', () => {
+    document.getElementById('paymentForm').submit();
+  });
+
+  document.getElementById('cancelBtn').addEventListener('click', () => {
+    document.getElementById('cancelConfirmModal').classList.add('active');
+  });
+
+  document.getElementById('cancelModalNoBtn').addEventListener('click', () => {
+    document.getElementById('cancelConfirmModal').classList.remove('active');
+  });
+
+  document.getElementById('cancelModalYesBtn').addEventListener('click', () => {
+    window.location.href = "{% url 'dashboard' %}";
+  });
+</script>
+{% endblock %}

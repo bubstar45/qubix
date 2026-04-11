@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+    <div class="w-full max-w-md bg-[#111] rounded-3xl p-10">
+        <h2 class="text-3xl font-semibold text-center">Sell {{ asset.symbol }}</h2>
+        <p class="text-center text-white/60 mt-2">{{ asset.name }}</p>
+        
+        <div class="mt-6 bg-white/5 rounded-3xl p-6">
+            <div class="flex justify-between text-lg">
+                <span>Current Price:</span>
+                <span class="font-bold text-[#00d4ff]">${{ asset.price|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between mt-2">
+                <span>Your Holdings:</span>
+                <span class="font-bold">{{ holding.quantity|floatformat:4 }} shares</span>
+            </div>
+            <div class="flex justify-between mt-2">
+                <span>Current Value:</span>
+                <span class="font-bold">${{ holding.current_value|floatformat:2 }}</span>
+            </div>
+        </div>
+        
+        <form method="post" class="mt-8 space-y-6">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium mb-2">Quantity to Sell</label>
+                <input type="number" name="quantity" step="0.0001" min="0.0001" max="{{ holding.quantity|floatformat:4 }}" 
+                       class="w-full bg-white/10 border border-white/20 rounded-3xl px-6 py-4 text-white focus:outline-none focus:border-[#00d4ff]"
+                       required>
+                <p class="text-xs text-white/40 mt-2">Available: {{ holding.quantity|floatformat:4 }} shares</p>
+            </div>
+            
+            <button type="submit" 
+                    class="w-full h-14 bg-red-500 text-white font-semibold rounded-3xl text-lg hover:bg-red-600 transition-colors">
+                Submit Sell Request
+            </button>
+        </form>
+        
+        <p class="text-center text-xs text-white/40 mt-6">
+            Your sell order will be reviewed by an admin and processed shortly.
+        </p>
+        
+        <div class="text-center mt-6">
+            <a href="{% url 'dashboard' %}" class="text-[#00d4ff] hover:underline">← Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

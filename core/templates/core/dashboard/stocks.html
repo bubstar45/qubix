@@ -1,0 +1,454 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Stocks | Qubix{% endblock %}
+
+{% block body_class %}stocks-page{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── FILTERS ── */
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.filter-btn:hover { border-color: var(--border2); color: var(--text); }
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── GRID ── */
+.stocks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+/* ── CARD ── */
+.stock-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.stock-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(61,126,255,0.04), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.stock-card:hover { 
+  transform: translateY(-3px); 
+  border-color: rgba(61,126,255,0.4);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(61,126,255,0.1);
+}
+.stock-card:hover::before { opacity: 1; }
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.badge-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.card-meta { flex: 1; padding-left: 12px; }
+
+.stock-symbol {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.3px;
+}
+
+.stock-name {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.sector-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.05);
+  color: var(--muted2);
+  margin-top: 6px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.card-price-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.stock-price {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  transition: color 0.3s;
+  letter-spacing: -0.5px;
+}
+
+.stock-price.flash-up { color: var(--green); }
+.stock-price.flash-down { color: var(--red); }
+
+.change-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.3s;
+}
+.change-pill.positive { background: var(--green-dim); color: var(--green); }
+.change-pill.negative { background: var(--red-dim); color: var(--red); }
+
+.sparkline-wrap {
+  margin-top: 14px;
+  height: 36px;
+  position: relative;
+}
+
+.sparkline-wrap svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Badge colors */
+.badge-aapl { background: #1c1c1e; }
+.badge-msft { background: #0a2463; }
+.badge-googl { background: #0f3460; }
+.badge-amzn { background: #1a1a2e; }
+.badge-meta { background: #0e2a5a; }
+.badge-tsla { background: #c40012; }
+.badge-nvda { background: #1a472a; }
+.badge-nke { background: #111; }
+.badge-ko { background: #8b0000; }
+.badge-mcd { background: #c08000; color: #fff; }
+.badge-sbux { background: #00704a; }
+.badge-jpm { background: #002060; }
+.badge-bac { background: #003087; }
+.badge-v { background: #1a1f71; }
+.badge-ma { background: #191919; }
+.badge-jnj { background: #8b0000; }
+.badge-pfe { background: #003087; }
+.badge-xom { background: #c84800; }
+.badge-cvx { background: #003057; }
+.badge-ba { background: #002c6d; }
+.badge-cat { background: #c59000; }
+.badge-vz { background: #c10000; }
+.badge-t { background: #007bc2; }
+.badge-adbe { background: #c10000; }
+.badge-crm { background: #008a9c; }
+.badge-orcl { background: #c00000; }
+.badge-ibm { background: #052fad; }
+.badge-intc { background: #005f8c; }
+.badge-amd { background: #8b0000; }
+.badge-qcom { background: #1a3380; }
+.badge-txn { background: #003a5c; }
+.badge-nflx { background: #8b0000; }
+.badge-dis { background: #005a9e; }
+.badge-hd { background: #c55000; }
+.badge-wmt { background: #005b9a; }
+.badge-pg { background: #003087; }
+.badge-unh { background: #005990; }
+.badge-abbv { background: #8b0000; }
+.badge-mrk { background: #004a8c; }
+.badge-pep { background: #001f4e; }
+.badge-cost { background: #003a7a; }
+.badge-cvs { background: #8b0000; }
+.badge-hon { background: #003a7a; }
+.badge-ups { background: #251008; }
+.badge-gs { background: #005a45; }
+.badge-c { background: #004b40; }
+.badge-gm { background: #004b8c; }
+.badge-f { background: #002a63; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .stocks-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+}
+@media (max-width: 600px) {
+  .stocks-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stock-price { font-size: 20px; }
+  .badge-icon { width: 36px; height: 36px; font-size: 16px; }
+}
+@media (max-width: 400px) {
+  .stocks-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Global <span>Stocks</span></h1>
+      <p class="page-sub">// Real-time prices • Live market data</p>
+    </div>
+    <div class="live-badge"><span class="live-dot"></span> LIVE MARKET</div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All Sectors</button>
+    <button class="filter-btn" data-filter="Technology">Technology</button>
+    <button class="filter-btn" data-filter="Financial">Financial</button>
+    <button class="filter-btn" data-filter="Consumer">Consumer</button>
+    <button class="filter-btn" data-filter="Healthcare">Healthcare</button>
+    <button class="filter-btn" data-filter="Energy">Energy</button>
+    <button class="filter-btn" data-filter="Industrial">Industrial</button>
+  </div>
+
+  <div class="stocks-grid" id="stocksGrid">
+    {% for stock in stocks %}
+    <div class="stock-card" 
+         onclick="window.location.href='{% url 'asset_detail' stock.id %}'"
+         data-sector="{% if stock.symbol in 'AAPL,MSFT,GOOGL,META,NVDA,AMD,ADBE,CRM,ORCL,IBM,INTC,QCOM,TXN' %}Technology{% elif stock.symbol in 'NKE,KO,MCD,SBUX,PEP' %}Consumer{% elif stock.symbol in 'JPM,BAC,V,MA,GS,C' %}Financial{% elif stock.symbol in 'JNJ,PFE,UNH,ABBV,MRK,CVS' %}Healthcare{% elif stock.symbol in 'XOM,CVX' %}Energy{% elif stock.symbol in 'BA,CAT,HON' %}Industrial{% elif stock.symbol in 'VZ,T' %}Telecom{% else %}Diversified{% endif %}"
+         data-base-price="{{ stock.current_price }}"
+         data-change="{{ stock.price_change_24h }}">
+      <div class="card-top">
+        <div class="badge-icon badge-{{ stock.symbol|lower }}">
+          {% if stock.symbol == 'AAPL' %}<i class="fab fa-apple"></i>
+          {% elif stock.symbol == 'MSFT' %}<i class="fab fa-microsoft"></i>
+          {% elif stock.symbol == 'GOOGL' %}<i class="fab fa-google"></i>
+          {% elif stock.symbol == 'AMZN' %}<i class="fab fa-amazon"></i>
+          {% elif stock.symbol == 'META' %}<i class="fab fa-facebook"></i>
+          {% elif stock.symbol == 'TSLA' %}⚡
+          {% elif stock.symbol == 'NVDA' %}<i class="fas fa-microchip"></i>
+          {% elif stock.symbol == 'NKE' %}👟
+          {% elif stock.symbol == 'KO' %}🥤
+          {% elif stock.symbol == 'MCD' %}🍟
+          {% elif stock.symbol == 'SBUX' %}☕
+          {% elif stock.symbol == 'JPM' %}🏦
+          {% elif stock.symbol == 'BAC' %}🏛️
+          {% elif stock.symbol == 'V' %}💳
+          {% elif stock.symbol == 'MA' %}💳
+          {% elif stock.symbol == 'JNJ' %}💊
+          {% elif stock.symbol == 'PFE' %}💊
+          {% elif stock.symbol == 'XOM' %}⛽
+          {% elif stock.symbol == 'CVX' %}⛽
+          {% elif stock.symbol == 'BA' %}✈️
+          {% elif stock.symbol == 'CAT' %}🚜
+          {% elif stock.symbol == 'ADBE' %}<i class="fab fa-adobe"></i>
+          {% elif stock.symbol == 'CRM' %}☁️
+          {% elif stock.symbol == 'ORCL' %}🗄️
+          {% elif stock.symbol == 'IBM' %}💻
+          {% elif stock.symbol == 'INTC' %}<i class="fas fa-microchip"></i>
+          {% elif stock.symbol == 'AMD' %}<i class="fas fa-microchip"></i>
+          {% elif stock.symbol == 'NFLX' %}<i class="fas fa-tv"></i>
+          {% elif stock.symbol == 'DIS' %}🏰
+          {% elif stock.symbol == 'WMT' %}🛒
+          {% elif stock.symbol == 'HD' %}🔨
+          {% elif stock.symbol == 'GS' %}💰
+          {% else %}<i class="fas fa-chart-line"></i>
+          {% endif %}
+        </div>
+        <div class="card-meta">
+          <div class="stock-symbol">{{ stock.symbol }}</div>
+          <div class="stock-name">{{ stock.name }}</div>
+          <div class="sector-tag">{% if stock.symbol in 'AAPL,MSFT,GOOGL,META,NVDA,AMD,ADBE,CRM,ORCL,IBM,INTC,QCOM,TXN' %}Technology{% elif stock.symbol in 'NKE,KO,MCD,SBUX,PEP' %}Consumer{% elif stock.symbol in 'JPM,BAC,V,MA,GS,C' %}Financial{% elif stock.symbol in 'JNJ,PFE,UNH,ABBV,MRK,CVS' %}Healthcare{% elif stock.symbol in 'XOM,CVX' %}Energy{% elif stock.symbol in 'BA,CAT,HON' %}Industrial{% elif stock.symbol in 'VZ,T' %}Telecom{% else %}Diversified{% endif %}</div>
+        </div>
+      </div>
+      <div class="card-price-row">
+        <div class="stock-price" data-price="${{ stock.current_price|floatformat:2 }}">${{ stock.current_price|floatformat:2 }}</div>
+        <div class="change-pill {% if stock.price_change_24h >= 0 %}positive{% else %}negative{% endif %}" data-change="{{ stock.price_change_24h }}">
+          {% if stock.price_change_24h >= 0 %}▲{% else %}▼{% endif %} {{ stock.price_change_24h|floatformat:2 }}%
+        </div>
+      </div>
+      <div class="sparkline-wrap">
+        <svg viewBox="0 0 200 36" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="sg-{{ stock.symbol }}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="{% if stock.price_change_24h >= 0 %}#0ecb81{% else %}#f6465d{% endif %}" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="{% if stock.price_change_24h >= 0 %}#0ecb81{% else %}#f6465d{% endif %}" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path class="sparkline-area" fill="url(#sg-{{ stock.symbol }})" d=""/>
+          <path class="sparkline-line" fill="none" stroke="{% if stock.price_change_24h >= 0 %}#0ecb81{% else %}#f6465d{% endif %}" stroke-width="1.5" d=""/>
+        </svg>
+      </div>
+    </div>
+    {% empty %}
+    <div style="grid-column:1/-1; text-align:center; padding:80px 20px; color: var(--muted);">
+      <div style="font-size:48px; margin-bottom:12px;">📈</div>
+      <div style="font-size:16px; font-weight:700; color:var(--text);">No stocks available</div>
+      <div style="font-size:13px; margin-top:6px;">Check back soon for new investment opportunities.</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── DEMO DATA (used when Django hasn't injected real data) ──
+const DEMO_STOCKS = [
+  { symbol:'AAPL', name:'Apple Inc.', price:189.84, change:1.23, sector:'Technology' },
+  { symbol:'MSFT', name:'Microsoft Corp.', price:415.32, change:0.87, sector:'Technology' },
+  { symbol:'GOOGL', name:'Alphabet Inc.', price:174.21, change:-0.42, sector:'Technology' },
+  { symbol:'AMZN', name:'Amazon.com Inc.', price:198.56, change:2.14, sector:'Technology' },
+  { symbol:'NVDA', name:'NVIDIA Corp.', price:875.39, change:3.67, sector:'Technology' },
+  { symbol:'META', name:'Meta Platforms', price:510.44, change:1.05, sector:'Technology' },
+  { symbol:'TSLA', name:'Tesla Inc.', price:245.18, change:-1.89, sector:'Consumer' },
+  { symbol:'JPM', name:'JPMorgan Chase', price:204.67, change:0.34, sector:'Financial' },
+  { symbol:'V', name:'Visa Inc.', price:280.55, change:0.61, sector:'Financial' },
+  { symbol:'JNJ', name:'Johnson & Johnson', price:156.78, change:-0.22, sector:'Healthcare' },
+  { symbol:'XOM', name:'Exxon Mobil', price:118.45, change:-0.95, sector:'Energy' },
+  { symbol:'KO', name:'Coca-Cola Co.', price:62.34, change:0.18, sector:'Consumer' },
+];
+
+// ── SPARKLINE GENERATOR ──
+function generateSparklinePath(basePrice, isPositive, w=200, h=36) {
+  const pts = 20;
+  const vals = [];
+  let v = basePrice * (0.97 + Math.random() * 0.03);
+  for (let i = 0; i < pts; i++) {
+    v += (Math.random() - (isPositive ? 0.42 : 0.58)) * basePrice * 0.008;
+    vals.push(v);
+  }
+  const minV = Math.min(...vals), maxV = Math.max(...vals);
+  const range = maxV - minV || 1;
+  const points = vals.map((v,i) => {
+    const x = (i / (pts - 1)) * w;
+    const y = h - ((v - minV) / range) * (h - 4) - 2;
+    return [x, y];
+  });
+  const line = points.map((p,i) => `${i===0?'M':'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const area = line + ` L${w},${h} L0,${h} Z`;
+  return { line, area };
+}
+
+// ── PRICE TICKER ──
+function buildTicker() {
+  const cards = document.querySelectorAll('.stock-card');
+  const items = [];
+  cards.forEach(c => {
+    const sym = c.querySelector('.stock-symbol');
+    const price = c.querySelector('.stock-price');
+    const chg = c.querySelector('.change-pill');
+    if (!sym) return;
+    const isPos = chg && chg.classList.contains('positive');
+    items.push(`<span class="ticker-item"><span class="ticker-sym">${sym.textContent}</span><span class="ticker-price">${price ? price.textContent : ''}</span><span class="ticker-chg ${isPos?'pos':'neg'}">${chg ? chg.textContent.trim() : ''}</span></span><span class="ticker-sep">|</span>`);
+  });
+  const html = items.join('') + items.join(''); // duplicate for seamless loop
+  const ti = document.getElementById('tickerInner');
+  if (ti) ti.innerHTML = html;
+}
+
+// ── INIT SPARKLINES ──
+function initSparklines() {
+  document.querySelectorAll('.stock-card').forEach(card => {
+    const priceEl = card.querySelector('.stock-price');
+    const pill = card.querySelector('.change-pill');
+    if (!priceEl) return;
+    const priceStr = priceEl.textContent.replace(/[^0-9.]/g,'');
+    const price = parseFloat(priceStr) || 100;
+    const isPos = pill && pill.classList.contains('positive');
+    const { line, area } = generateSparklinePath(price, isPos);
+    const lineEl = card.querySelector('.sparkline-line');
+    const areaEl = card.querySelector('.sparkline-area');
+    if (lineEl) lineEl.setAttribute('d', line);
+    if (areaEl) areaEl.setAttribute('d', area);
+  });
+}
+
+// ── LIVE PRICE SIMULATION ──
+function simulatePrices() {
+  document.querySelectorAll('.stock-card').forEach(card => {
+    const priceEl = card.querySelector('.stock-price');
+    const pill = card.querySelector('.change-pill');
+    if (!priceEl) return;
+
+    const current = parseFloat(priceEl.textContent.replace(/[^0-9.]/g,''));
+    if (!current) return;
+
+    const delta = (Math.random() - 0.5) * current * 0.002;
+    const newPrice = Math.max(0.01, current + delta);
+    const isUp = delta >= 0;
+
+    // Get stored original change
+    let baseChange = parseFloat(card.dataset.change || '0');
+    const changeAdjust = (delta / current) * 100;
+    baseChange = baseChange + changeAdjust * 0.1;
+
+    priceEl.textContent = '$' + newPrice.toFixed(2);
+    priceEl.classList.remove('flash-up','flash-down');
+    void priceEl.offsetWidth;
+    priceEl.classList.add(isUp ? 'flash-up' : 'flash-down');
+    setTimeout(() => priceEl.classList.remove('flash-up','flash-down'), 600);
+
+    if (pill) {
+      const sign = baseChange >= 0 ? '▲' : '▼';
+      pill.textContent = `${sign} ${Math.abs(baseChange).toFixed(2)}%`;
+      pill.className = `change-pill ${baseChange >= 0 ? 'positive' : 'negative'}`;
+    }
+
+    // Regen sparkline
+    const { line, area } = generateSparklinePath(newPrice, delta >= 0);
+    const lineEl = card.querySelector('.sparkline-line');
+    const areaEl = card.querySelector('.sparkline-area');
+    if (lineEl) lineEl.setAttribute('d', line);
+    if (areaEl) areaEl.setAttribute('d', area);
+  });
+  buildTicker();
+}
+
+// ── FILTERS ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const f = this.dataset.filter;
+    document.querySelectorAll('.stock-card').forEach(card => {
+      card.style.display = (f === 'all' || card.dataset.sector === f) ? '' : 'none';
+    });
+  });
+});
+
+// ── BOOT ──
+initSparklines();
+buildTicker();
+setInterval(simulatePrices, 3000);
+</script>
+{% endblock %}

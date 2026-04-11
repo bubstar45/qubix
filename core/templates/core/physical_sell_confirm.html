@@ -1,0 +1,221 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Confirm Sell | Qubix{% endblock %}
+
+{% block body_class %}shop-page{% endblock %}
+
+{% block extra_css %}
+<style>
+.main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+.card {
+  background: var(--surface2);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid var(--border);
+}
+.card-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--gold);
+}
+.card-sub {
+  font-size: 13px;
+  color: var(--muted2);
+  margin-bottom: 24px;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.summary-row:last-child {
+  border-bottom: none;
+}
+.summary-label {
+  font-size: 13px;
+  color: var(--muted2);
+}
+.summary-value {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.summary-value.green { color: var(--green); }
+.summary-value.red { color: var(--red); }
+.summary-value.gold { color: var(--gold); }
+.fee-breakdown {
+  background: var(--surface3);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 20px 0;
+}
+.fee-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+.fee-row.total {
+  border-top: 2px solid var(--gold);
+  margin-top: 8px;
+  padding-top: 12px;
+}
+.fee-row.total .fee-label {
+  font-weight: 800;
+  font-size: 16px;
+}
+.fee-row.total .fee-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--red);
+}
+.fee-label {
+  font-size: 13px;
+  color: var(--muted2);
+}
+.fee-value {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--gold);
+}
+.wallet-info {
+  background: rgba(61,126,255,0.08);
+  border: 1px solid rgba(61,126,255,0.15);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 20px 0;
+}
+.wallet-info h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+.wallet-info p {
+  font-size: 12px;
+  color: var(--muted2);
+  word-break: break-all;
+  font-family: 'JetBrains Mono', monospace;
+}
+.warning-box {
+  background: rgba(240,185,11,0.08);
+  border: 1px solid rgba(240,185,11,0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 20px 0;
+}
+.warning-box h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--gold);
+}
+.warning-box p {
+  font-size: 12px;
+  color: var(--muted2);
+  line-height: 1.5;
+}
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+.btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+  text-align: center;
+  text-decoration: none;
+}
+.btn-secondary {
+  background: var(--surface3);
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.btn-secondary:hover { background: var(--surface); color: var(--text); }
+.btn-primary {
+  background: var(--gold);
+  color: #000;
+}
+.btn-primary:hover { background: #f5c800; }
+@media (max-width: 768px) {
+  .action-buttons { flex-direction: column; }
+  .main { padding: 20px 16px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="card">
+    <div class="card-title">⚡ Confirm Sale</div>
+    <div class="card-sub">Review the details below before proceeding</div>
+
+    <div class="summary-row">
+      <span class="summary-label">Product</span>
+      <span class="summary-value">{{ holding.product.name }} × {{ holding.quantity|floatformat:3 }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Current Market Value</span>
+      <span class="summary-value gold">${{ current_value|floatformat:2 }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Purchase Cost</span>
+      <span class="summary-value">${{ purchase_cost|floatformat:2 }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="summary-label">Profit/Loss</span>
+      <span class="summary-value {% if profit_loss >= 0 %}green{% else %}red{% endif %}">
+        {% if profit_loss >= 0 %}+{% endif %}${{ profit_loss|floatformat:2 }} 
+        ({% if profit_percent >= 0 %}+{% endif %}{{ profit_percent|floatformat:2 }}%)
+      </span>
+    </div>
+
+    <div class="warning-box">
+      <h4><i class="fas fa-info-circle"></i> Important Information</h4>
+      <p>To complete your sale, you need to pay a <strong>{{ fee_percentage }}% processing fee</strong> ({{ fee_percentage|floatformat:1 }}% total). This fee is required to process your transaction and release the funds to your wallet.</p>
+      <p style="margin-top: 8px;">After paying the fee, our team will review and approve your sale. Once approved, the full market value of <strong>${{ current_value|floatformat:2 }}</strong> will be sent to your wallet below.</p>
+    </div>
+
+    <div class="fee-breakdown">
+      <div class="fee-row">
+        <span class="fee-label">Fee to Pay Now</span>
+        <span class="fee-value" style="color: var(--gold); font-weight: 800;">${{ fee_amount|floatformat:2 }}</span>
+      </div>
+      <div class="fee-row total">
+        <span class="fee-label">You Will Receive After Approval</span>
+        <span class="fee-value" style="color: var(--green); font-size: 20px;">${{ current_value|floatformat:2 }}</span>
+      </div>
+    </div>
+
+    <div class="wallet-info">
+      <h4><i class="fas fa-wallet"></i> Payout Wallet</h4>
+      <p><strong>Currency:</strong> {{ crypto_currency|upper }}</p>
+      <p><strong>Address:</strong> {{ wallet_address }}</p>
+    </div>
+
+    <div class="action-buttons">
+      <a href="{% url 'physical_investments' %}" class="btn btn-secondary">
+        <i class="fas fa-times"></i> Cancel
+      </a>
+      <form method="POST" action="{% url 'physical_sell_payment' holding.id %}" style="flex:1">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary" style="width:100%">
+          <i class="fas fa-credit-card"></i> Pay ${{ fee_amount|floatformat:2 }} Fee & Sell
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

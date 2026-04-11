@@ -1,0 +1,73 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Support Dashboard{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+  <h1>Customer Support Dashboard</h1>
+  
+  <!-- Stats -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 30px;">
+    <div style="background: #fff3e0; padding: 15px; border-radius: 8px;">
+      <h3>Open Tickets</h3>
+      <div style="font-size: 36px; font-weight: bold;">{{ open_count }}</div>
+    </div>
+    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
+      <h3>In Progress</h3>
+      <div style="font-size: 36px; font-weight: bold;">{{ in_progress_count }}</div>
+    </div>
+    <div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">
+      <h3>Resolved</h3>
+      <div style="font-size: 36px; font-weight: bold;">{{ resolved_count }}</div>
+    </div>
+  </div>
+  
+  <!-- Pending Calls -->
+  {% if pending_calls %}
+  <div style="margin-bottom: 30px;">
+    <h2>📞 Pending Scheduled Calls</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr><th>User</th><th>Phone</th><th>Date/Time</th><th>Type</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        {% for call in pending_calls %}
+        <tr style="border-bottom: 1px solid #ddd;">
+          <td>{{ call.user.email }}</td>
+          <td>{{ call.phone_number }}</td>
+          <td>{{ call.scheduled_date }} at {{ call.scheduled_time }}</td>
+          <td>{{ call.get_call_type_display }}</td>
+          <td><a href="{% url 'admin:confirm_call' call.id %}" class="button">Confirm</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  
+  <!-- Tickets -->
+  <div>
+    <h2>🎫 Support Tickets</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr><th>ID</th><th>User</th><th>Title</th><th>Type</th><th>Status</th><th>Messages</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+        <tr style="border-bottom: 1px solid #ddd;">
+          <td>#{{ ticket.id }}</td>
+          <td>{{ ticket.user.email }}</td>
+          <td>{{ ticket.title|truncatechars:40 }}</td>
+          <td>{{ ticket.get_ticket_type_display }}</td>
+          <td><span style="background: {% if ticket.status == 'open' %}#ff9800{% elif ticket.status == 'in_progress' %}#2196f3{% elif ticket.status == 'resolved' %}#4caf50{% else %}#9e9e9e{% endif %}; color: white; padding: 3px 8px; border-radius: 4px;">{{ ticket.get_status_display }}</span></td>
+          <td>{{ ticket.messages.count }}</td>
+          <td><a href="{% url 'admin:reply_ticket' ticket.id %}" class="button">Reply</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align: center;">No tickets found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,273 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K-1 Tax Summary — Qubix Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --gold:#f0b90b; --gold-dark:#c9960a; --gold-pale:#fdf6dc;
+    --navy:#0d1f3c; --slate:#2c3e5d;
+    --text:#1a1a2e; --muted:#5a6a84; --border:#c8d4e8;
+    --bg:#fff; --subtle:#f5f7fa; --green:#1a7a4a;
+    --irs-blue:#003087;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Source Sans 3',sans-serif; background:#d8dde8; display:flex; justify-content:center; padding:40px 20px; color:var(--text); }
+  .document { background:var(--bg); max-width:800px; width:100%; box-shadow:0 8px 60px rgba(13,31,60,0.2); }
+
+  /* Official-looking header matching IRS aesthetic */
+  .tax-hdr { border-bottom:3px solid var(--navy); padding:24px 44px 20px; }
+  .th-row1 { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+  .th-logo { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:700; letter-spacing:4px; color:var(--navy); }
+  .th-logo-sub { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--gold-dark); margin-top:3px; }
+  .th-form-id { text-align:right; }
+  .form-badge { background:var(--navy); color:white; font-size:18px; font-weight:700; padding:6px 16px; letter-spacing:2px; display:inline-block; font-family:'Courier New',monospace; }
+  .form-name { font-size:11px; color:var(--muted); margin-top:5px; text-align:right; }
+
+  .th-row2 { background:var(--navy); color:white; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; margin:0 -44px; padding:10px 60px; }
+  .th-row2 .left { font-size:12px; font-weight:600; letter-spacing:1px; }
+  .th-row2 .right { font-size:11px; color:rgba(255,255,255,.6); }
+
+  .body-pad { padding:24px 44px 36px; }
+
+  /* Tax year banner */
+  .tax-year-banner { background:var(--gold-pale); border:2px solid var(--gold); padding:14px 20px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+  .tyb-left .tyl { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--gold-dark); margin-bottom:4px; }
+  .tyb-left .tyv { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:700; color:var(--navy); }
+  .tyb-right { text-align:right; }
+  .tyb-right .tyl { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .tyb-right .tyv { font-size:15px; font-weight:700; }
+
+  /* Form-style box sections */
+  .form-section { border:1px solid var(--navy); margin-bottom:16px; }
+  .form-section-hdr { background:var(--navy); color:white; padding:7px 14px; display:flex; align-items:center; gap:12px; }
+  .fsh-box { background:var(--gold); color:var(--navy); font-weight:700; font-size:12px; padding:2px 8px; font-family:'Courier New',monospace; flex-shrink:0; }
+  .fsh-label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.8); }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; }
+  .form-grid.two { grid-template-columns:1fr 1fr; }
+  .form-cell { border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:10px 14px; }
+  .form-cell:last-child { border-right:none; }
+  .form-cell .fc-num { font-size:9px; font-weight:700; color:var(--navy); margin-bottom:2px; font-family:'Courier New',monospace; }
+  .form-cell .fc-label { font-size:9px; color:var(--muted); line-height:1.3; margin-bottom:6px; }
+  .form-cell .fc-value { font-size:16px; font-weight:700; color:var(--text); }
+  .form-cell .fc-value.green { color:var(--green); }
+  .form-cell .fc-value.deduct { color:#c0392b; }
+  .form-cell .fc-value.neutral { color:var(--navy); }
+
+  /* Partner info block */
+  .partner-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
+  .pg-card { border:1px solid var(--border); padding:13px 15px; }
+  .pg-card .lbl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .pg-card .val { font-size:14px; font-weight:600; }
+
+  /* Capital account analysis */
+  .capital-table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+  .capital-table thead tr { background:var(--navy); }
+  .capital-table thead th { padding:9px 14px; text-align:left; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.6); font-weight:600; }
+  .capital-table thead th:last-child { text-align:right; }
+  .capital-table tbody tr { border-bottom:1px solid var(--border); }
+  .capital-table tbody tr:nth-child(even) { background:var(--subtle); }
+  .capital-table tbody td { padding:10px 14px; font-size:13px; }
+  .capital-table tbody td:last-child { text-align:right; font-weight:600; }
+  .capital-table tfoot tr { border-top:2px solid var(--navy); }
+  .capital-table tfoot td { padding:11px 14px; font-size:14px; font-weight:700; }
+  .capital-table tfoot td:last-child { text-align:right; color:var(--green); font-size:15px; }
+
+  /* Official notice */
+  .official-notice { background:var(--subtle); border:1px solid var(--border); border-left:3px solid var(--navy); padding:13px 17px; font-size:10.5px; color:var(--muted); line-height:1.65; margin-bottom:16px; }
+  .official-notice strong { color:var(--text); }
+
+  /* Verification stamp */
+  .verify-row { display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-top:1px solid var(--border); margin-top:8px; }
+  .vr-ref { font-size:11px; color:var(--muted); }
+  .vr-ref strong { color:var(--text); font-family:'Courier New',monospace; }
+  .vr-stamp { border:2px solid var(--gold-dark); padding:6px 16px; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--gold-dark); }
+
+  .footer { border-top:4px solid var(--gold); padding:13px 44px; display:flex; justify-content:space-between; background:var(--subtle); font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  @media print { body { background:white; padding:0; } .document { box-shadow:none; } }
+</style>
+</head>
+<body>
+<div class="document">
+
+  <!-- Official header -->
+  <div class="tax-hdr">
+    <div class="th-row1">
+      <div>
+        <div class="th-logo">QUBIX</div>
+        <div class="th-logo-sub">Real Estate Division — Tax Documents</div>
+      </div>
+      <div class="th-form-id">
+        <div class="form-badge">SCHEDULE K-1</div>
+        <div class="form-name">Partner's Share of Income, Deductions, Credits, etc.</div>
+      </div>
+    </div>
+  </div>
+  <div class="th-row2" style="background:var(--navy);color:white;padding:10px 44px;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:12px;font-weight:600;letter-spacing:1px;">Form 1065 · Schedule K-1 Summary</span>
+    <span style="font-size:11px;color:rgba(255,255,255,.5);">Prepared by Qubix Real Estate Ltd. · For informational use</span>
+  </div>
+
+  <div class="body-pad">
+
+    <!-- Tax year banner -->
+    <div class="tax-year-banner">
+      <div class="tyb-left">
+        <div class="tyl">Tax Year</div>
+        <div class="tyv">{{ tax_year }}</div>
+      </div>
+      <div class="tyb-right">
+        <div class="tyl">Date Issued</div>
+        <div class="tyv">{{ issue_date }}</div>
+        <div class="tyl" style="margin-top:8px;">K-1 Reference</div>
+        <div class="tyv" style="font-family:'Courier New',monospace;font-size:12px;">{{ k1_reference }}</div>
+      </div>
+    </div>
+
+    <!-- Partner / Entity info -->
+    <div class="partner-grid">
+      <div class="pg-card"><div class="lbl">Partner Name (Investor)</div><div class="val">{{ investor_name }}</div></div>
+      <div class="pg-card"><div class="lbl">Partnership (Entity)</div><div class="val">{{ partnership_name }}</div></div>
+      <div class="pg-card"><div class="lbl">Ownership Percentage</div><div class="val" style="color:var(--gold-dark);">{{ ownership_percentage }}</div></div>
+      <div class="pg-card"><div class="lbl">Property</div><div class="val">{{ property_name }}</div></div>
+    </div>
+
+    <!-- Part I — Ordinary Income -->
+    <div class="form-section">
+      <div class="form-section-hdr">
+        <div class="fsh-box">PART I</div>
+        <div class="fsh-label">Partner's Share of Current Year Income, Deductions, Credits, and Other Items</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-cell">
+          <div class="fc-num">Box 1</div>
+          <div class="fc-label">Ordinary business income (loss)</div>
+          <div class="fc-value neutral">{{ ordinary_business_income }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Box 2</div>
+          <div class="fc-label">Net rental real estate income (loss)</div>
+          <div class="fc-value green">{{ rental_real_estate_income }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Box 3</div>
+          <div class="fc-label">Other net rental income (loss)</div>
+          <div class="fc-value neutral">{{ other_net_rental_income }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Box 4</div>
+          <div class="fc-label">Guaranteed payments for services</div>
+          <div class="fc-value neutral">{{ guaranteed_payments }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Box 5</div>
+          <div class="fc-label">Interest income</div>
+          <div class="fc-value green">{{ interest_income }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Box 6a</div>
+          <div class="fc-label">Ordinary dividends</div>
+          <div class="fc-value green">{{ ordinary_dividends }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Box 9a</div>
+          <div class="fc-label">Net long-term capital gain (loss)</div>
+          <div class="fc-value green">{{ net_ltcg }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Box 13</div>
+          <div class="fc-label">Other deductions</div>
+          <div class="fc-value deduct">{{ other_deductions }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Box 14</div>
+          <div class="fc-label">Self-employment earnings (loss)</div>
+          <div class="fc-value neutral">{{ self_employment }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Part II — Deductions -->
+    <div class="form-section">
+      <div class="form-section-hdr">
+        <div class="fsh-box">PART II</div>
+        <div class="fsh-label">Deductions &amp; Credits</div>
+      </div>
+      <div class="form-grid two">
+        <div class="form-cell">
+          <div class="fc-num">Depreciation (Real Property)</div>
+          <div class="fc-label">Your share of depreciation deduction</div>
+          <div class="fc-value deduct">{{ depreciation_deduction }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Operating Expense Deductions</div>
+          <div class="fc-label">Your share of deductible operating expenses</div>
+          <div class="fc-value deduct">{{ operating_expense_deductions }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Mortgage Interest</div>
+          <div class="fc-label">Deductible interest expense (if any)</div>
+          <div class="fc-value deduct">{{ mortgage_interest_deduction }}</div>
+        </div>
+        <div class="form-cell">
+          <div class="fc-num">Total Deductions</div>
+          <div class="fc-label">Aggregate deductible amount</div>
+          <div class="fc-value deduct">{{ total_deductions }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Part III — Capital Account Analysis -->
+    <div class="form-section">
+      <div class="form-section-hdr">
+        <div class="fsh-box">PART III</div>
+        <div class="fsh-label">Partner's Capital Account Analysis</div>
+      </div>
+      <div style="padding:16px;">
+        <table class="capital-table">
+          <thead><tr><th>Item</th><th>Description</th><th>Amount</th></tr></thead>
+          <tbody>
+            <tr><td>Beginning Capital Account</td><td>Balance at start of {{ tax_year }}</td><td>{{ beginning_capital }}</td></tr>
+            <tr><td>Capital Contributed</td><td>Contributions during {{ tax_year }}</td><td>{{ capital_contributed }}</td></tr>
+            <tr><td>Current Year Net Income</td><td>Allocated share of net income</td><td>{{ current_year_income }}</td></tr>
+            <tr><td>Distributions</td><td>Dividends paid during {{ tax_year }}</td><td style="color:#c0392b;">— {{ distributions_paid }}</td></tr>
+            <tr><td>Withdrawals</td><td>Capital withdrawals (if any)</td><td style="color:#c0392b;">— {{ withdrawals }}</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td colspan="2">Ending Capital Account Balance</td><td>{{ ending_capital }}</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Official notice -->
+    <div class="official-notice">
+      <strong>Important:</strong> This document is a Qubix-prepared summary of Schedule K-1 information for
+      your records. It is not a substitute for the official IRS Schedule K-1 (Form 1065) which will be issued
+      to you separately for tax filing purposes. Income, deductions, and credits as shown may be subject to
+      passive activity rules, at-risk rules, and other limitations under the Internal Revenue Code. Consult your
+      tax advisor for guidance on how to report these items on your individual return.
+    </div>
+
+    <!-- Verification -->
+    <div class="verify-row">
+      <div class="vr-ref">
+        Reference: <strong>{{ k1_reference }}</strong> · Tax Year: <strong>{{ tax_year }}</strong> ·
+        Investor: <strong>{{ investor_name }}</strong>
+      </div>
+      <div class="vr-stamp">Qubix Certified</div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>Qubix Real Estate — All rights reserved</span>
+    <span>Generated: {% now "d M Y, H:i" %} UTC · Page 1 of 1</span>
+  </div>
+</div>
+</body>
+</html>

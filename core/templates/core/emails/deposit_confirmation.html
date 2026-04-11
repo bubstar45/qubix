@@ -1,0 +1,71 @@
+{% extends 'core/emails/base_email.html' %}
+
+{% block header_title %}
+<h1 style="color: #D4AF37; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Deposit Initiated</h1>
+<p style="color: #94a3b8; margin: 8px 0 0;">Your deposit is pending verification</p>
+{% endblock %}
+
+{% block content %}
+<p class="greeting">Dear {{ user.get_full_name|default:user.email }},</p>
+<p class="greeting-light">We have received your deposit request. Our team will verify it shortly.</p>
+
+<div class="info-box warning">
+    <strong>⏳ Pending Verification</strong><br>
+    Status: <span style="color: #f59e0b;">Pending Review</span> • Date: {{ date }}
+</div>
+
+<table class="transaction-table">
+    <tr>
+        <td>Deposit ID</th>
+        <td>#{{ deposit_id }}</th>
+    </tr>
+    <tr>
+        <td>Amount</th>
+        <td><strong>{{ amount }}</strong></th>
+    </tr>
+    <tr>
+        <td>Crypto Currency</th>
+        <td>{{ crypto_symbol }}</th>
+    </tr>
+    <tr>
+        <td>Crypto Amount</th>
+        <td>{{ crypto_amount }}</th>
+    </tr>
+    <tr>
+        <td>Wallet Address</th>
+        <td><span style="font-family: monospace; font-size: 12px;">{{ wallet_address }}</span></th>
+    </tr>
+    <tr>
+        <td style="border-bottom: 2px solid #e2e8f0;"><strong>Status</strong></th>
+        <td style="border-bottom: 2px solid #e2e8f0;">
+            <span style="color: #f59e0b;">{{ status }}</span>
+        </th>
+    </tr>
+</table>
+
+<div class="divider"></div>
+
+<div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
+    <div style="font-weight: 700; margin-bottom: 8px;">What happens next?</div>
+    <p style="font-size: 13px; color: #475569; margin: 0;">
+        1. Our team will verify your deposit<br>
+        2. Once confirmed, funds will be added to your Qubix balance<br>
+        3. You'll receive a confirmation email when complete<br>
+        <br>
+        <strong>Processing time:</strong> Typically within 24 hours
+    </p>
+</div>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="/dashboard/" class="btn">Go to Dashboard →</a>
+</div>
+
+<p style="margin-top: 24px;">
+    Questions about this deposit?<br>
+    <a href="/support/" style="color: #3b82f6;">Contact Support</a>
+</p>
+
+<p style="margin-top: 24px;">
+    Thank you for investing with Qubix.
+</p>
+{% endblock %}

@@ -1,0 +1,277 @@
+{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+    <title>Register | Qubix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- intl-tel-input for phone number -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Crispy forms styling to match our theme */
+        .crispy-form input, 
+        .crispy-form select, 
+        .crispy-form textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .crispy-form input:focus,
+        .crispy-form select:focus,
+        .crispy-form textarea:focus {
+            outline: none;
+            border-color: #3d7eff;
+            ring: 2px solid #3d7eff;
+        }
+        .crispy-form label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+        .crispy-form .help-block,
+        .crispy-form .errorlist {
+            font-size: 0.75rem;
+            color: #ef4444;
+            margin-top: 0.25rem;
+        }
+        .crispy-form .errorlist {
+            list-style: none;
+            padding-left: 0;
+        }
+        /* Style select dropdown */
+        .crispy-form select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25rem;
+        }
+        /* Phone input styling */
+        .phone-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .country-code-select {
+            width: 120px;
+            flex-shrink: 0;
+        }
+        .phone-number-input {
+            flex: 1;
+        }
+        .iti {
+            width: 100%;
+        }
+        .iti__selected-flag {
+            background: #1e293b !important;
+            border-radius: 0.75rem 0 0 0.75rem;
+        }
+        .iti__country-list {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        .iti__country {
+            color: white;
+        }
+        .iti__country:hover {
+            background: #334155;
+        }
+        .iti__selected-dial-code {
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#f1f5f9] min-h-screen">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-md">
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <div class="flex justify-center mb-4">
+                    <img src="{% static 'images/logo-icon.png' %}" alt="Qubix Logo" class="w-16 h-16 rounded-xl shadow-lg">
+                </div>
+                <h2 class="text-3xl font-bold text-white">Create your free account</h2>
+                <p class="text-[#94a3b8] mt-2">Takes 30 seconds • Email verification</p>
+            </div>
+
+            <!-- Register Card -->
+            <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 shadow-2xl">
+                <form method="post" class="crispy-form space-y-5" id="registerForm">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                        <div>
+                            {% if field.name == 'country' %}
+                                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-[#94a3b8] mb-2">Country</label>
+                                <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="w-full px-4 py-3 bg-[#1e293b] border border-[#334155] rounded-xl text-white focus:outline-none focus:border-[#3d7eff] focus:ring-1 focus:ring-[#3d7eff] transition-colors" onchange="updateCountryCode(this.value)">
+                                    <!-- North America -->
+                                    <option value="US" data-code="+1" selected>United States (+1)</option>
+                                    <option value="CA" data-code="+1">Canada (+1)</option>
+                                    <option value="MX" data-code="+52">Mexico (+52)</option>
+                                    <!-- Europe -->
+                                    <option value="GB" data-code="+44">United Kingdom (+44)</option>
+                                    <option value="DE" data-code="+49">Germany (+49)</option>
+                                    <option value="FR" data-code="+33">France (+33)</option>
+                                    <option value="CH" data-code="+41">Switzerland (+41)</option>
+                                    <option value="IT" data-code="+39">Italy (+39)</option>
+                                    <option value="ES" data-code="+34">Spain (+34)</option>
+                                    <option value="NL" data-code="+31">Netherlands (+31)</option>
+                                    <option value="SE" data-code="+46">Sweden (+46)</option>
+                                    <option value="NO" data-code="+47">Norway (+47)</option>
+                                    <option value="DK" data-code="+45">Denmark (+45)</option>
+                                    <option value="FI" data-code="+358">Finland (+358)</option>
+                                    <option value="BE" data-code="+32">Belgium (+32)</option>
+                                    <option value="AT" data-code="+43">Austria (+43)</option>
+                                    <option value="IE" data-code="+353">Ireland (+353)</option>
+                                    <option value="PT" data-code="+351">Portugal (+351)</option>
+                                    <option value="GR" data-code="+30">Greece (+30)</option>
+                                    <option value="PL" data-code="+48">Poland (+48)</option>
+                                    <option value="CZ" data-code="+420">Czech Republic (+420)</option>
+                                    <option value="HU" data-code="+36">Hungary (+36)</option>
+                                    <!-- Asia -->
+                                    <option value="AE" data-code="+971">United Arab Emirates (+971)</option>
+                                    <option value="SG" data-code="+65">Singapore (+65)</option>
+                                    <option value="JP" data-code="+81">Japan (+81)</option>
+                                    <option value="KR" data-code="+82">South Korea (+82)</option>
+                                    <option value="IN" data-code="+91">India (+91)</option>
+                                    <option value="CN" data-code="+86">China (+86)</option>
+                                    <option value="HK" data-code="+852">Hong Kong (+852)</option>
+                                    <option value="TW" data-code="+886">Taiwan (+886)</option>
+                                    <option value="MY" data-code="+60">Malaysia (+60)</option>
+                                    <option value="TH" data-code="+66">Thailand (+66)</option>
+                                    <option value="VN" data-code="+84">Vietnam (+84)</option>
+                                    <option value="PH" data-code="+63">Philippines (+63)</option>
+                                    <option value="ID" data-code="+62">Indonesia (+62)</option>
+                                    <option value="IL" data-code="+972">Israel (+972)</option>
+                                    <option value="SA" data-code="+966">Saudi Arabia (+966)</option>
+                                    <option value="QA" data-code="+974">Qatar (+974)</option>
+                                    <option value="KW" data-code="+965">Kuwait (+965)</option>
+                                    <option value="TR" data-code="+90">Turkey (+90)</option>
+                                </select>
+                            {% elif field.name == 'phone' %}
+                                <label for="phone_number" class="block text-sm font-medium text-[#94a3b8] mb-2">Phone Number</label>
+                                <div class="phone-container">
+                                    <input type="tel" name="phone" id="phone_number" 
+                                           class="phone-number-input w-full px-4 py-3 bg-[#1e293b] border border-[#334155] rounded-xl text-white placeholder-[#64748b] focus:outline-none focus:border-[#3d7eff] focus:ring-1 focus:ring-[#3d7eff] transition-colors"
+                                           placeholder="(555) 555-1234">
+                                </div>
+                                <input type="hidden" name="phone_full" id="phone_full">
+                                <input type="hidden" name="country_code" id="country_code" value="+1">
+                                {% if field.errors %}
+                                    <div class="text-red-400 text-xs mt-1">{{ field.errors }}</div>
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <p class="text-[#64748b] text-xs mt-1">{{ field.help_text|safe }}</p>
+                                {% endif %}
+                            {% else %}
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-red-400 text-xs mt-1">{{ field.errors }}</div>
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <p class="text-[#64748b] text-xs mt-1">{{ field.help_text|safe }}</p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    
+                    <button type="submit" 
+                            class="w-full py-3 bg-gradient-to-r from-[#3d7eff] to-[#a855f7] text-white font-semibold rounded-xl text-lg hover:opacity-90 transition-all duration-200 shadow-lg mt-4">
+                        Send verification code to email
+                    </button>
+                </form>
+                
+                <div class="text-center text-sm mt-6">
+                    <span class="text-[#94a3b8]">Already have an account?</span>
+                    <a href="{% url 'login' %}" class="text-[#3d7eff] hover:text-[#a855f7] font-medium ml-1 transition-colors">Log in</a>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-white/10 text-center">
+                    <a href="{% url 'landing' %}" class="text-[#64748b] hover:text-[#94a3b8] text-sm transition-colors">← Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Country code mapping for America, Europe, Asia only
+        const countryCodes = {
+            // North America
+            'US': '+1', 'CA': '+1', 'MX': '+52',
+            // Europe
+            'GB': '+44', 'DE': '+49', 'FR': '+33', 'CH': '+41', 'IT': '+39',
+            'ES': '+34', 'NL': '+31', 'SE': '+46', 'NO': '+47', 'DK': '+45',
+            'FI': '+358', 'BE': '+32', 'AT': '+43', 'IE': '+353', 'PT': '+351',
+            'GR': '+30', 'PL': '+48', 'CZ': '+420', 'HU': '+36',
+            // Asia
+            'AE': '+971', 'SG': '+65', 'JP': '+81', 'KR': '+82', 'IN': '+91',
+            'CN': '+86', 'HK': '+852', 'TW': '+886', 'MY': '+60', 'TH': '+66',
+            'VN': '+84', 'PH': '+63', 'ID': '+62', 'IL': '+972', 'SA': '+966',
+            'QA': '+974', 'KW': '+965', 'TR': '+90'
+        };
+        
+        // Placeholders for each country
+        const placeholders = {
+            'US': '(555) 555-1234', 'CA': '(555) 555-1234', 'MX': '55 1234 5678',
+            'GB': '7123 456789', 'DE': '1512 3456789', 'FR': '6 12 34 56 78',
+            'CH': '79 123 45 67', 'IT': '312 345 6789', 'ES': '612 345 678',
+            'NL': '6 12345678', 'SE': '70 123 45 67', 'NO': '41 23 45 67',
+            'DK': '12 34 56 78', 'FI': '40 123 4567', 'BE': '471 12 34 56',
+            'AT': '664 1234567', 'IE': '85 123 4567', 'PT': '91 234 5678',
+            'GR': '691 234 5678', 'PL': '501 234 567', 'CZ': '601 123 456',
+            'HU': '20 123 4567', 'AE': '50 123 4567', 'SG': '9123 4567',
+            'JP': '90 1234 5678', 'KR': '10 1234 5678', 'IN': '98765 43210',
+            'CN': '131 2345 6789', 'HK': '5123 4567', 'TW': '912 345 678',
+            'MY': '12 345 6789', 'TH': '81 234 5678', 'VN': '91 234 5678',
+            'PH': '912 345 6789', 'ID': '812 3456 7890', 'IL': '50 123 4567',
+            'SA': '55 123 4567', 'QA': '33 123 456', 'KW': '51 234 567',
+            'TR': '531 234 5678'
+        };
+        
+        const phoneInput = document.querySelector("#phone_number");
+        const countryCodeHidden = document.querySelector("#country_code");
+        const phoneFullHidden = document.querySelector("#phone_full");
+        
+        function updateCountryCode(countryValue) {
+            const code = countryCodes[countryValue] || '+1';
+            countryCodeHidden.value = code;
+            phoneInput.placeholder = placeholders[countryValue] || '(555) 555-1234';
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const phoneNumber = phoneInput.value.trim();
+            const countryCode = countryCodeHidden.value;
+            if (phoneNumber) {
+                phoneFullHidden.value = countryCode + ' ' + phoneNumber;
+            }
+        });
+        
+        const countrySelect = document.querySelector('select[name="country"]');
+        if (countrySelect) {
+            updateCountryCode(countrySelect.value);
+            countrySelect.addEventListener('change', function() {
+                updateCountryCode(this.value);
+            });
+        }
+    </script>
+</body>
+</html>

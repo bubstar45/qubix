@@ -1,0 +1,337 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investment Certificate — Qubix Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --gold: #f0b90b;
+    --gold-dark: #c9960a;
+    --gold-pale: #fdf6dc;
+    --navy: #0d1f3c;
+    --navy-mid: #152c52;
+    --slate: #2c3e5d;
+    --text: #1a1a2e;
+    --muted: #5a6a84;
+    --border: #c8d4e8;
+    --bg: #ffffff;
+    --subtle: #f5f7fa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: #d8dde8;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    color: var(--text);
+  }
+
+  .document {
+    background: var(--bg);
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 8px 60px rgba(13,31,60,0.2);
+    position: relative;
+  }
+
+  /* Ornate triple border */
+  .border-outer { border: 1px solid var(--border); margin: 10px; }
+  .border-gold  { border: 4px solid var(--gold);  margin: 5px; }
+  .border-inner { border: 1px solid var(--border); margin: 5px; padding: 44px; position: relative; }
+
+  /* Architectural corner marks */
+  .corner { position: absolute; width: 32px; height: 32px; border-color: var(--navy); border-style: solid; }
+  .c-tl { top:-2px; left:-2px; border-width:2px 0 0 2px; }
+  .c-tr { top:-2px; right:-2px; border-width:2px 2px 0 0; }
+  .c-bl { bottom:-2px; left:-2px; border-width:0 0 2px 2px; }
+  .c-br { bottom:-2px; right:-2px; border-width:0 2px 2px 0; }
+
+  /* Background watermark */
+  .watermark {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 90px;
+    font-weight: 700;
+    color: rgba(13,31,60,0.04);
+    letter-spacing: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-block .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+  .logo-block .logo-div {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    margin-top: 2px;
+  }
+
+  .cert-ref { text-align: right; }
+  .cert-ref .ref-label { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+  .cert-ref .ref-val { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 3px; font-family: 'Courier New', monospace; }
+
+  /* ── TITLE BLOCK ── */
+  .title-block { text-align: center; margin: 20px 0 32px; }
+  .gold-rule { height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); margin: 12px auto; width: 75%; }
+  .cert-eyebrow { font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold-dark); }
+  .cert-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    font-weight: 600;
+    color: var(--navy);
+    margin: 6px 0;
+    letter-spacing: 1px;
+  }
+  .cert-subtitle { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+
+  /* ── CERTIFIES THAT ── */
+  .certifies {
+    text-align: center;
+    margin: 20px 0 28px;
+    padding: 0 30px;
+  }
+  .certifies .pre { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .certifies .owner-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--navy);
+    border-bottom: 1.5px solid var(--gold);
+    display: inline-block;
+    padding-bottom: 4px;
+    margin-bottom: 14px;
+  }
+  .certifies .statement {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: #444;
+    line-height: 1.75;
+  }
+
+  /* ── PROPERTY BANNER ── */
+  .property-banner {
+    background: var(--navy);
+    color: white;
+    padding: 20px 28px;
+    margin: 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .prop-info .prop-label { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 5px; }
+  .prop-info .prop-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--gold); }
+  .prop-info .prop-loc { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .prop-badge {
+    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+    background: var(--gold); color: var(--navy); font-weight: 700; padding: 5px 14px;
+  }
+
+  /* ── SHARES GRID ── */
+  .shares-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 0 0 28px;
+  }
+  .share-cell {
+    background: var(--bg);
+    padding: 18px 14px;
+    text-align: center;
+  }
+  .share-cell.highlight { background: var(--gold-pale); }
+  .share-cell .s-label { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .share-cell .s-value { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--navy); }
+  .share-cell .s-value.gold { color: var(--gold-dark); }
+
+  /* ── QR + SEAL + SIG ── */
+  .bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+
+  .qr-block { text-align: center; }
+  .qr-frame { width: 85px; height: 85px; border: 1px solid var(--border); background: var(--subtle); display: flex; align-items: center; justify-content: center; margin: 0 auto 5px; }
+  .qr-caption { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+  .seal {
+    width: 100px; height: 100px;
+    border: 3px double var(--gold);
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: radial-gradient(circle, #fffbee 60%, #fdf3cd);
+    margin: 0 auto 6px;
+  }
+  .seal-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9px; font-weight: 700;
+    color: var(--navy); text-align: center;
+    line-height: 1.4; letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .seal-sub { font-size: 7px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+  .sig-block { text-align: center; min-width: 160px; }
+  .sig-line { border-bottom: 1px solid var(--text); height: 44px; margin-bottom: 6px; }
+  .sig-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; }
+  .sig-role { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 4px solid var(--gold);
+    margin: 0 -44px -44px;
+    padding: 13px 44px;
+    display: flex;
+    justify-content: space-between;
+    background: var(--subtle);
+    font-size: 9px; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  @media print { body { background: white; padding: 0; } .document { box-shadow: none; } }
+</style>
+</head>
+<body>
+<div class="document">
+  <div class="border-outer">
+    <div class="border-gold">
+      <div class="border-inner">
+        <div class="corner c-tl"></div><div class="corner c-tr"></div>
+        <div class="corner c-bl"></div><div class="corner c-br"></div>
+        <div class="watermark">QUBIX</div>
+
+        <!-- Header -->
+        <div class="header">
+          <div class="logo-block">
+            <div class="logo">QUBIX</div>
+            <div class="logo-div">Real Estate Division</div>
+          </div>
+          <div class="cert-ref">
+            <div class="ref-label">Certificate Number</div>
+            <div class="ref-val">{{ certificate_number }}</div>
+            <div class="ref-label" style="margin-top:8px;">Issue Date</div>
+            <div class="ref-val" style="font-family:'Source Sans 3',sans-serif;font-size:12px;">{{ issue_date }}</div>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div class="title-block">
+          <div class="cert-eyebrow">Official Document · Real Estate</div>
+          <div class="gold-rule"></div>
+          <div class="cert-title">Investment Certificate</div>
+          <div class="cert-subtitle">Fractional Property Ownership</div>
+          <div class="gold-rule"></div>
+        </div>
+
+        <!-- Certifies that -->
+        <div class="certifies">
+          <div class="pre">This certifies that</div>
+          <div class="owner-name">{{ user_name }}</div>
+          <div class="statement">
+            is a registered fractional owner of the real estate property described herein,<br>
+            holding shares issued and recorded by Qubix Real Estate Ltd. in accordance<br>
+            with applicable securities and property regulations.
+          </div>
+        </div>
+
+        <!-- Property banner -->
+        <div class="property-banner">
+          <div class="prop-info">
+            <div class="prop-label">Property</div>
+            <div class="prop-name">{{ property_name }}</div>
+            <div class="prop-loc">{{ location }}</div>
+          </div>
+          <div class="prop-badge">Registered Asset</div>
+        </div>
+
+        <!-- Shares grid -->
+        <div class="shares-grid">
+          <div class="share-cell highlight">
+            <div class="s-label">Shares Owned</div>
+            <div class="s-value gold">{{ number_of_shares }}</div>
+          </div>
+          <div class="share-cell highlight">
+            <div class="s-label">Ownership %</div>
+            <div class="s-value gold">{{ ownership_percentage }}</div>
+          </div>
+          <div class="share-cell">
+            <div class="s-label">Amount Invested</div>
+            <div class="s-value">{{ amount_invested }}</div>
+          </div>
+          <div class="share-cell">
+            <div class="s-label">Issued</div>
+            <div class="s-value" style="font-size:14px;">{{ issue_date }}</div>
+          </div>
+        </div>
+
+        <!-- Bottom row -->
+        <div class="bottom-row">
+          <div class="qr-block">
+            <div class="qr-frame">
+              <img src="{{ qr_verification_url }}" width="75" height="75" alt="Verify"
+                onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:8px;color:#aaa\'>QR CODE</span>'">
+            </div>
+            <div class="qr-caption">Scan to Verify</div>
+          </div>
+
+          <div style="text-align:center;">
+            <div class="seal">
+              <div class="seal-text">QUBIX<br>REAL ESTATE<br>CERTIFIED</div>
+            </div>
+            <div class="seal-sub">Official Seal</div>
+          </div>
+
+          <div class="sig-block">
+            <div class="sig-line"></div>
+            <div class="sig-name">Authorised Signatory</div>
+            <div class="sig-role">Qubix Real Estate Ltd.</div>
+            <div class="sig-role" style="margin-top:3px;">Fund Manager</div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+          <span>Qubix Real Estate — All rights reserved</span>
+          <span>Generated: {% now "d M Y, H:i" %} UTC · Page 1 of 1</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

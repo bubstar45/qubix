@@ -1,0 +1,576 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Pay Withdrawal Fee | Qubix{% endblock %}
+
+{% block body_class %}portfolio-page{% endblock %}
+
+{% block extra_css %}
+<style>
+  .main-content {
+    flex: 1;
+    padding: 30px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    min-height: calc(100vh - 62px);
+  }
+
+  .fee-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 520px;
+    padding: 28px 32px;
+    position: relative;
+  }
+
+  .company-name {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .fee-summary {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .fee-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .fee-row.total {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    font-weight: 700;
+  }
+
+  .fee-label {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .fee-value {
+    color: var(--text);
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .fee-value.total {
+    color: var(--gold);
+    font-size: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+    padding: 4px 8px;
+    border-radius: 8px;
+    position: relative;
+    display: inline-block;
+  }
+
+  .fee-value.total:hover {
+    background: rgba(245, 158, 11, 0.1);
+  }
+
+  .qr-timer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .qr-container {
+    flex: 1;
+    text-align: center;
+  }
+
+  .qr-code {
+    background: white;
+    padding: 12px;
+    border-radius: 16px;
+    display: inline-block;
+  }
+
+  .qr-code img {
+    width: 140px;
+    height: 140px;
+  }
+
+  .timer-card {
+    background: rgba(245, 158, 11, 0.1);
+    border-radius: 14px;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .timer-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  .timer-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.2;
+  }
+
+  .address-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .address-box {
+    flex: 1;
+    word-break: break-all;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .address-box:hover {
+    background: rgba(79, 142, 247, 0.1);
+  }
+
+  .copy-icon {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .copy-icon:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* Copy Tooltip */
+  .copy-tooltip {
+    position: absolute;
+    background: var(--green);
+    color: white;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-weight: 500;
+    z-index: 100;
+    animation: fadeOut 1.5s ease forwards;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  @keyframes fadeOut {
+    0% { opacity: 1; transform: translateY(0); }
+    70% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-8px); visibility: hidden; }
+  }
+
+  .btn-paid {
+    width: 100%;
+    padding: 14px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+  }
+
+  .btn-paid:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+  }
+
+  .btn-paid:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-cancel {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+  }
+
+  /* Modals */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    max-width: 360px;
+    width: 90%;
+    text-align: center;
+    animation: modalIn 0.2s ease;
+  }
+
+  @keyframes modalIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .modal-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .modal-message {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .modal-buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  .modal-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+
+  .modal-btn.confirm {
+    background: var(--green);
+    color: white;
+  }
+
+  .modal-btn.confirm:hover {
+    background: #1ea34d;
+  }
+
+  .modal-btn.cancel {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .modal-btn.cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="fee-card">
+    <div class="company-name">Qubix • Withdrawal Fee</div>
+
+    <div class="fee-summary">
+      <div class="fee-row">
+        <span class="fee-label">Withdrawal Amount</span>
+        <span class="fee-value">${{ withdrawal_amount|floatformat:2 }}</span>
+      </div>
+      <div class="fee-row">
+        <span class="fee-label">Fee (5%)</span>
+        <span class="fee-value">${{ fee_amount|floatformat:2 }}</span>
+      </div>
+      <div class="fee-row total">
+        <span class="fee-label">Fee in {{ crypto_symbol }}</span>
+        <span class="fee-value total" id="feeCryptoAmount" onclick="copyFeeAmount(event)">
+          {{ fee_crypto_amount|floatformat:8 }} {{ crypto_symbol }}
+        </span>
+      </div>
+    </div>
+
+    <div class="qr-timer-row">
+      <div class="qr-container">
+        <div class="qr-code">
+          <img id="qrImage" src="" alt="QR Code">
+        </div>
+      </div>
+      <div class="timer-card">
+        <div class="timer-label">TIME REMAINING</div>
+        <div class="timer-value" id="timer">20:00</div>
+      </div>
+    </div>
+
+    <div class="address-section">
+      <div class="address-wrapper">
+        <div class="address-box" id="walletAddress" onclick="copyAddress(event)">Loading...</div>
+        <button class="copy-icon" onclick="copyAddressButton(event)" title="Copy address">📋</button>
+      </div>
+    </div>
+
+    <button class="btn-paid" id="paidBtn">✅ I've paid the fee</button>
+    <button class="btn-cancel" id="cancelBtn">Cancel</button>
+
+    <!-- Cancel Modal -->
+    <div class="modal-overlay" id="cancelModal">
+      <div class="modal-content">
+        <div class="modal-icon">❓</div>
+        <div class="modal-title">Cancel Withdrawal</div>
+        <div class="modal-message">
+          Are you sure you want to cancel this withdrawal?<br><br>
+          This action cannot be undone. You will be redirected back to the dashboard.
+        </div>
+        <div class="modal-buttons">
+          <button class="modal-btn cancel" id="cancelModalNoBtn">No, Go Back</button>
+          <button class="modal-btn confirm" id="cancelModalYesBtn">Yes, Cancel Withdrawal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+      <div class="modal-content">
+        <div class="modal-icon">⚠️</div>
+        <div class="modal-title">Confirm Fee Payment</div>
+        <div class="modal-message">
+          Please confirm that you have sent the exact fee amount to the wallet address above.<br><br>
+          <strong>Once confirmed, your withdrawal will be initiated and funds will be deducted from your balance.</strong><br><br>
+          This action cannot be undone.
+        </div>
+        <div class="modal-buttons">
+          <button class="modal-btn cancel" id="modalCancelBtn">Cancel</button>
+          <button class="modal-btn confirm" id="modalConfirmBtn">Confirm & Process Withdrawal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const withdrawalAmount = {{ withdrawal_amount|default:0 }};
+  const cryptoSymbol = "{{ crypto_symbol }}";
+  const feeCryptoAmount = "{{ fee_crypto_amount|default:0 }}";
+  const walletAddressStr = "{{ wallet_address }}";
+
+  // Set wallet address
+  document.getElementById('walletAddress').textContent = walletAddressStr;
+
+  // Generate QR code
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(walletAddressStr)}`;
+  document.getElementById('qrImage').src = qrUrl;
+
+  // Timer (20 minutes)
+  let timeLeft = 20 * 60;
+  let timerInterval;
+
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      alert('Payment session expired. Please start a new withdrawal.');
+      window.location.href = "{% url 'withdraw' %}";
+    }
+    timeLeft--;
+  }
+
+  timerInterval = setInterval(updateTimer, 1000);
+  updateTimer();
+
+  // Show tooltip next to clicked element
+  function showTooltip(event, message) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'copy-tooltip';
+    tooltip.textContent = message;
+    
+    // Position near the clicked element
+    const rect = event.target.getBoundingClientRect();
+    tooltip.style.position = 'fixed';
+    tooltip.style.left = rect.right + 10 + 'px';
+    tooltip.style.top = rect.top + (rect.height / 2) - 10 + 'px';
+    
+    document.body.appendChild(tooltip);
+    
+    // Remove after animation
+    setTimeout(() => {
+      tooltip.remove();
+    }, 1500);
+  }
+
+  // Copy Address from click on address box
+  function copyAddress(event) {
+    navigator.clipboard.writeText(walletAddressStr).then(() => {
+      showTooltip(event, 'Copied!');
+    });
+  }
+
+  // Copy Address from button click
+  function copyAddressButton(event) {
+    event.stopPropagation();
+    navigator.clipboard.writeText(walletAddressStr).then(() => {
+      showTooltip(event, 'Copied!');
+    });
+  }
+
+  // Copy Fee Amount
+  function copyFeeAmount(event) {
+    event.stopPropagation();
+    const feeText = event.currentTarget.textContent.trim();
+    navigator.clipboard.writeText(feeText).then(() => {
+      showTooltip(event, 'Copied!');
+    });
+  }
+
+  // Payment Confirmation Modal
+  const paidBtn = document.getElementById('paidBtn');
+  const confirmModal = document.getElementById('confirmModal');
+  const modalCancelBtn = document.getElementById('modalCancelBtn');
+  const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+
+  paidBtn.addEventListener('click', () => confirmModal.classList.add('active'));
+
+  modalCancelBtn.addEventListener('click', () => confirmModal.classList.remove('active'));
+
+  modalConfirmBtn.addEventListener('click', () => {
+    confirmModal.classList.remove('active');
+    const originalText = paidBtn.textContent;
+    paidBtn.textContent = 'Processing...';
+    paidBtn.disabled = true;
+
+    fetch("{% url 'withdraw_initiate' %}", {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ action: 'initiate_withdrawal' })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        window.location.href = "{% url 'withdraw_receipt' %}";
+      } else {
+        alert(data.error || 'Error processing withdrawal');
+        paidBtn.textContent = originalText;
+        paidBtn.disabled = false;
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error processing withdrawal');
+      paidBtn.textContent = originalText;
+      paidBtn.disabled = false;
+    });
+  });
+
+  // Cancel Modal
+  const cancelBtn = document.getElementById('cancelBtn');
+  const cancelModal = document.getElementById('cancelModal');
+  const cancelModalNoBtn = document.getElementById('cancelModalNoBtn');
+  const cancelModalYesBtn = document.getElementById('cancelModalYesBtn');
+
+  cancelBtn.addEventListener('click', () => cancelModal.classList.add('active'));
+
+  cancelModalNoBtn.addEventListener('click', () => cancelModal.classList.remove('active'));
+
+  cancelModalYesBtn.addEventListener('click', () => {
+    cancelModal.classList.remove('active');
+    window.location.href = "{% url 'dashboard' %}";
+  });
+
+  // Close modals when clicking outside
+  [confirmModal, cancelModal].forEach(modal => {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
+  });
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+{% endblock %}

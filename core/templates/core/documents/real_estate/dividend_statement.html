@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dividend Statement — Qubix Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --gold: #f0b90b; --gold-dark: #c9960a; --gold-pale: #fdf6dc;
+    --navy: #0d1f3c; --slate: #2c3e5d; --teal: #0f7b6c;
+    --text: #1a1a2e; --muted: #5a6a84; --border: #c8d4e8;
+    --bg: #ffffff; --subtle: #f5f7fa; --green: #1a7a4a; --green-bg: #e8f5ef;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Source Sans 3',sans-serif; background:#d8dde8; display:flex; justify-content:center; padding:40px 20px; color:var(--text); }
+  .document { background:var(--bg); max-width:800px; width:100%; box-shadow:0 8px 60px rgba(13,31,60,0.2); }
+
+  /* Header */
+  .hdr { background:var(--navy); padding:28px 44px; display:flex; justify-content:space-between; align-items:center; }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; letter-spacing:4px; color:white; }
+  .logo-div { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-top:3px; }
+  .hdr-right { text-align:right; }
+  .hdr-label { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.4); }
+  .hdr-val { font-size:13px; font-weight:600; color:var(--gold); margin-top:2px; }
+
+  .accent { height:4px; background:linear-gradient(to right, var(--gold), var(--gold-dark)); }
+
+  .body-pad { padding:36px 44px; }
+
+  /* Doc title row */
+  .title-row { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:28px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+  .doc-title { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:var(--navy); }
+  .doc-period { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-top:4px; }
+  .period-badge { background:var(--gold-pale); border:1px solid var(--gold); color:var(--gold-dark); font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:6px 14px; }
+
+  /* Investor + property summary */
+  .meta-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:24px; }
+  .meta-card { border:1px solid var(--border); padding:14px 16px; }
+  .meta-card .lbl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .meta-card .val { font-size:14px; font-weight:600; }
+  .meta-card .val.navy { color:var(--navy); }
+
+  /* Main payout hero */
+  .payout-hero {
+    background:linear-gradient(135deg, var(--navy) 0%, var(--slate) 100%);
+    color:white; padding:28px 32px; margin-bottom:24px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .payout-left .pl { font-size:9px; letter-spacing:2px; text-transform:uppercase; opacity:.5; margin-bottom:6px; }
+  .payout-left .pa { font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:700; color:var(--gold); line-height:1; }
+  .payout-left .ps { font-size:11px; opacity:.5; margin-top:6px; }
+  .payout-right { text-align:right; }
+  .payout-right .pr { font-size:9px; letter-spacing:2px; text-transform:uppercase; opacity:.5; margin-bottom:5px; }
+  .payout-right .pv { font-size:16px; font-weight:600; }
+
+  /* Breakdown table */
+  .breakdown { width:100%; border-collapse:collapse; margin-bottom:24px; }
+  .breakdown thead tr { background:var(--navy); }
+  .breakdown thead th { padding:10px 16px; text-align:left; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.6); font-weight:600; }
+  .breakdown thead th:last-child { text-align:right; }
+  .breakdown tbody tr { border-bottom:1px solid var(--border); }
+  .breakdown tbody tr:nth-child(even) { background:var(--subtle); }
+  .breakdown tbody td { padding:13px 16px; font-size:13px; }
+  .breakdown tbody td:last-child { text-align:right; font-weight:600; }
+  .breakdown tfoot tr { border-top:2px solid var(--navy); }
+  .breakdown tfoot td { padding:13px 16px; font-size:14px; font-weight:700; }
+  .breakdown tfoot td:last-child { text-align:right; color:var(--green); font-size:16px; }
+  .deduction { color:var(--muted); }
+
+  /* Property performance */
+  .perf-section { border:1px solid var(--border); padding:20px 24px; margin-bottom:24px; }
+  .perf-title { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+  .perf-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; }
+  .perf-cell { text-align:center; padding:12px 8px; background:var(--subtle); }
+  .perf-cell .pk { font-size:8px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+  .perf-cell .pv { font-size:16px; font-weight:700; color:var(--navy); }
+  .perf-cell .pv.up { color:var(--green); }
+
+  /* Payment confirmation */
+  .payment-confirm { background:var(--green-bg); border:1px solid #a0d8b8; padding:16px 20px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; }
+  .pc-left .pc-label { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#1a5a36; margin-bottom:4px; }
+  .pc-left .pc-val { font-size:14px; font-weight:700; color:var(--green); }
+  .pc-right { font-size:9px; letter-spacing:1px; text-transform:uppercase; color:#1a5a36; font-weight:700; background:var(--green); color:white; padding:5px 12px; }
+
+  /* Tx ref */
+  .tx-ref { font-size:10px; color:var(--muted); font-family:'Courier New',monospace; padding:8px 12px; background:var(--subtle); border-left:3px solid var(--gold); margin-bottom:0; }
+  .tx-ref .tx-lbl { font-family:'Source Sans 3',sans-serif; font-size:8px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+
+  .footer { border-top:4px solid var(--gold); padding:13px 44px; display:flex; justify-content:space-between; background:var(--subtle); font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  @media print { body { background:white; padding:0; } .document { box-shadow:none; } }
+</style>
+</head>
+<body>
+<div class="document">
+  <div class="hdr">
+    <div>
+      <div class="logo">QUBIX</div>
+      <div class="logo-div">Real Estate Division</div>
+    </div>
+    <div class="hdr-right">
+      <div class="hdr-label">Statement Reference</div>
+      <div class="hdr-val">{{ transaction_reference }}</div>
+      <div class="hdr-label" style="margin-top:8px;">Payment Date</div>
+      <div class="hdr-val">{{ payment_date }}</div>
+    </div>
+  </div>
+  <div class="accent"></div>
+
+  <div class="body-pad">
+    <!-- Title -->
+    <div class="title-row">
+      <div>
+        <div class="doc-title">Dividend Statement</div>
+        <div class="doc-period">Period: {{ dividend_period }}</div>
+      </div>
+      <div class="period-badge">{{ dividend_period }}</div>
+    </div>
+
+    <!-- Meta -->
+    <div class="meta-grid">
+      <div class="meta-card">
+        <div class="lbl">Investor</div>
+        <div class="val navy">{{ user_name }}</div>
+      </div>
+      <div class="meta-card">
+        <div class="lbl">Property</div>
+        <div class="val">{{ property_name }}</div>
+      </div>
+      <div class="meta-card">
+        <div class="lbl">Ownership Share</div>
+        <div class="val" style="color:var(--gold-dark);">{{ ownership_percentage }}</div>
+      </div>
+    </div>
+
+    <!-- Payout hero -->
+    <div class="payout-hero">
+      <div class="payout-left">
+        <div class="pl">Net Dividend Paid</div>
+        <div class="pa">{{ net_paid }}</div>
+        <div class="ps">Deposited {{ payment_date }}</div>
+      </div>
+      <div class="payout-right">
+        <div class="pr">Payment Date</div>
+        <div class="pv">{{ payment_date }}</div>
+        <div class="pr" style="margin-top:12px;">Transaction Ref.</div>
+        <div class="pv" style="font-family:'Courier New',monospace;font-size:13px;">{{ transaction_reference }}</div>
+      </div>
+    </div>
+
+    <!-- Breakdown table -->
+    <table class="breakdown">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Notes</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Gross Rental Income</td>
+          <td>Your {{ ownership_percentage }} share of collected rent</td>
+          <td>{{ gross_amount }}</td>
+        </tr>
+        <tr>
+          <td class="deduction">Platform Management Fee</td>
+          <td class="deduction">Property &amp; fund management</td>
+          <td class="deduction">— {{ management_fee }}</td>
+        </tr>
+        <tr>
+          <td class="deduction">Operating Expenses</td>
+          <td class="deduction">Maintenance, insurance, utilities</td>
+          <td class="deduction">— {{ operating_fees }}</td>
+        </tr>
+        <tr>
+          <td class="deduction">Reserve Fund Contribution</td>
+          <td class="deduction">Capital reserve (CapEx)</td>
+          <td class="deduction">— {{ reserve_fee }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">Net Dividend Paid to Investor</td>
+          <td>{{ net_paid }}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- Property performance -->
+    <div class="perf-section">
+      <div class="perf-title">Property Performance — {{ dividend_period }}</div>
+      <div class="perf-grid">
+        <div class="perf-cell">
+          <div class="pk">Occupancy Rate</div>
+          <div class="pv up">{{ occupancy_rate }}</div>
+        </div>
+        <div class="perf-cell">
+          <div class="pk">Gross Yield (Ann.)</div>
+          <div class="pv up">{{ gross_yield }}</div>
+        </div>
+        <div class="perf-cell">
+          <div class="pk">Property Value</div>
+          <div class="pv">{{ property_value }}</div>
+        </div>
+        <div class="perf-cell">
+          <div class="pk">Value Change</div>
+          <div class="pv up">{{ value_change }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment confirmation -->
+    <div class="payment-confirm">
+      <div class="pc-left">
+        <div class="pc-label">Payment Status</div>
+        <div class="pc-val">{{ net_paid }} transferred successfully</div>
+      </div>
+      <div class="pc-right">Paid ✓</div>
+    </div>
+
+    <!-- Tx reference -->
+    <div class="tx-ref">
+      <div class="tx-lbl">Transaction Reference</div>
+      {{ transaction_reference }}
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Qubix Real Estate — All rights reserved</span>
+    <span>Generated: {% now "d M Y, H:i" %} UTC · Page 1 of 1</span>
+  </div>
+</div>
+</body>
+</html>

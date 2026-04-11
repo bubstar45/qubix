@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capital Call Notice — Qubix Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&family=EB+Garamond:wght@400;500&display=swap');
+
+  :root {
+    --gold:#f0b90b; --gold-dark:#c9960a; --gold-pale:#fdf6dc;
+    --navy:#0d1f3c; --amber:#b45309; --amber-bg:#fef3c7;
+    --text:#1a1a2e; --muted:#5a6a84; --border:#c8d4e8;
+    --bg:#fff; --subtle:#f5f7fa;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'EB Garamond',serif; background:#d8dde8; display:flex; justify-content:center; padding:40px 20px; color:var(--text); }
+  .document { background:var(--bg); max-width:800px; width:100%; box-shadow:0 8px 60px rgba(13,31,60,0.2); }
+
+  /* Left accent bar */
+  .doc-wrap { display:flex; }
+  .accent-bar { width:7px; background:linear-gradient(to bottom, var(--gold), var(--gold-dark)); flex-shrink:0; }
+  .content { flex:1; padding:48px; }
+
+  /* Letterhead */
+  .ltrhead { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border); padding-bottom:24px; margin-bottom:28px; }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; letter-spacing:5px; color:var(--navy); }
+  .logo-div { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:var(--gold-dark); margin-top:3px; }
+  .co-addr { font-family:'Source Sans 3',sans-serif; text-align:right; font-size:10.5px; color:var(--muted); line-height:1.7; }
+
+  /* Urgent notice banner */
+  .urgent-banner { background:var(--amber-bg); border:1px solid #fcd34d; border-left:4px solid var(--amber); padding:14px 20px; margin-bottom:28px; display:flex; align-items:center; gap:14px; }
+  .ub-icon { font-size:20px; flex-shrink:0; }
+  .ub-text .ut { font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:700; color:var(--amber); margin-bottom:3px; }
+  .ub-text .us { font-family:'Source Sans 3',sans-serif; font-size:11px; color:#78350f; }
+
+  /* Title */
+  .notice-title { margin-bottom:24px; }
+  .nt-eyebrow { font-family:'Source Sans 3',sans-serif; font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--gold-dark); margin-bottom:8px; }
+  .nt-main { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:var(--navy); margin-bottom:4px; }
+  .gold-line { height:2px; background:var(--gold); width:56px; margin-top:10px; }
+
+  /* Reference row */
+  .ref-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:24px; }
+  .ref-card { border:1px solid var(--border); padding:12px 15px; font-family:'Source Sans 3',sans-serif; }
+  .rc-lbl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+  .rc-val { font-size:14px; font-weight:700; color:var(--navy); }
+
+  /* Amount hero */
+  .amount-hero { background:var(--navy); color:white; padding:24px 28px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+  .ah-left .al { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:6px; }
+  .ah-left .av { font-family:'Cormorant Garamond',serif; font-size:44px; font-weight:700; color:var(--gold); line-height:1; }
+  .ah-left .as { font-family:'Source Sans 3',sans-serif; font-size:11px; color:rgba(255,255,255,.4); margin-top:5px; }
+  .ah-right { text-align:right; }
+  .ah-right .al { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:5px; }
+  .ah-right .av { font-family:'Source Sans 3',sans-serif; font-size:15px; font-weight:700; }
+  .due-date { font-size:18px; font-weight:700; color:var(--gold) !important; }
+
+  /* Letter body */
+  .salutation { font-size:15px; margin-bottom:16px; }
+  .body-text p { font-size:14px; line-height:1.85; color:#333; margin-bottom:14px; text-align:justify; }
+
+  /* Purpose box */
+  .purpose-box { border-left:3px solid var(--gold); background:var(--subtle); padding:16px 20px; margin:20px 0; font-family:'Source Sans 3',sans-serif; }
+  .pb-title { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:12px; }
+  .pb-item { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .pb-item:last-child { border-bottom:none; }
+  .pb-item .pk { color:var(--muted); }
+  .pb-item .pv { font-weight:600; }
+
+  /* Payment instructions */
+  .pay-instruct { border:1px solid var(--border); padding:18px 20px; margin:20px 0; font-family:'Source Sans 3',sans-serif; }
+  .pi-title { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .pi-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+  .pi-row:last-child { border-bottom:none; }
+  .pi-row .pk { color:var(--muted); }
+  .pi-row .pv { font-weight:600; font-family:'Courier New',monospace; }
+
+  /* Consequence warning */
+  .warning { border:1px solid #fca5a5; background:#fef2f2; padding:13px 17px; font-family:'Source Sans 3',sans-serif; font-size:11px; color:#7f1d1d; line-height:1.6; margin-top:16px; }
+  .warning strong { color:#b91c1c; }
+
+  /* Signature */
+  .sig-section { margin-top:32px; border-top:1px solid var(--border); padding-top:24px; }
+  .sig-close { font-size:15px; margin-bottom:36px; }
+  .sig-line { border-bottom:1px solid var(--text); height:44px; width:220px; margin-bottom:6px; }
+  .sig-name { font-size:14px; font-weight:500; }
+  .sig-role { font-family:'Source Sans 3',sans-serif; font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+
+  .footer { border-top:4px solid var(--gold); padding:13px 48px; display:flex; justify-content:space-between; background:var(--subtle); font-family:'Source Sans 3',sans-serif; font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  @media print { body { background:white; padding:0; } .document { box-shadow:none; } }
+</style>
+</head>
+<body>
+<div class="document">
+  <div class="doc-wrap">
+    <div class="accent-bar"></div>
+    <div class="content">
+
+      <!-- Letterhead -->
+      <div class="ltrhead">
+        <div>
+          <div class="logo">QUBIX</div>
+          <div class="logo-div">Real Estate Division</div>
+        </div>
+        <div class="co-addr">
+          Qubix Real Estate Ltd.<br>
+          Notice Ref: {{ notice_reference }}<br>
+          Date: {{ notice_date }}
+        </div>
+      </div>
+
+      <!-- Urgent banner -->
+      <div class="urgent-banner">
+        <div class="ub-icon">⚡</div>
+        <div class="ub-text">
+          <div class="ut">Capital Call Notice — Action Required</div>
+          <div class="us">Payment due by {{ due_date }}. Please review and remit funds as instructed below.</div>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div class="notice-title">
+        <div class="nt-eyebrow">Qubix Real Estate — Official Notice</div>
+        <div class="nt-main">Capital Call Notice</div>
+        <div class="gold-line"></div>
+      </div>
+
+      <!-- Reference row -->
+      <div class="ref-row">
+        <div class="ref-card"><div class="rc-lbl">Notice Reference</div><div class="rc-val">{{ notice_reference }}</div></div>
+        <div class="ref-card"><div class="rc-lbl">Property</div><div class="rc-val">{{ property_name }}</div></div>
+        <div class="ref-card"><div class="rc-lbl">Investor</div><div class="rc-val">{{ investor_name }}</div></div>
+      </div>
+
+      <!-- Amount hero -->
+      <div class="amount-hero">
+        <div class="ah-left">
+          <div class="al">Amount Requested (Your Share)</div>
+          <div class="av">{{ amount_requested }}</div>
+          <div class="as">Pro-rata: {{ ownership_percentage }} of {{ total_capital_call }}</div>
+        </div>
+        <div class="ah-right">
+          <div class="al">Payment Due Date</div>
+          <div class="av due-date">{{ due_date }}</div>
+          <div class="al" style="margin-top:10px;">Notice Date</div>
+          <div class="av" style="font-size:13px;">{{ notice_date }}</div>
+        </div>
+      </div>
+
+      <!-- Letter body -->
+      <div class="salutation">Dear {{ investor_name }},</div>
+      <div class="body-text">
+        <p>Pursuant to the Operating Agreement governing your investment in <strong>{{ property_name }}</strong>,
+        Qubix Real Estate Ltd. hereby issues this Capital Call Notice requesting additional capital contribution
+        from all Members in proportion to their ownership interests.</p>
+        <p>Your pro-rata share of the capital call, based on your <strong>{{ ownership_percentage }}</strong>
+        ownership interest, is <strong>{{ amount_requested }}</strong>, due by <strong>{{ due_date }}</strong>.</p>
+      </div>
+
+      <!-- Purpose of funds -->
+      <div class="purpose-box">
+        <div class="pb-title">Purpose of Capital Call</div>
+        {% for item in capital_call_items %}
+        <div class="pb-item"><span class="pk">{{ item.description }}</span><span class="pv">{{ item.amount }}</span></div>
+        {% empty %}
+        <div class="pb-item"><span class="pk">{{ purpose_description }}</span><span class="pv">{{ amount_requested }}</span></div>
+        {% endfor %}
+      </div>
+
+      <!-- Payment instructions -->
+      <div class="pay-instruct">
+        <div class="pi-title">Payment Instructions</div>
+        <div class="pi-row"><span class="pk">Payment Method</span><span class="pv">{{ payment_method }}</span></div>
+        <div class="pi-row"><span class="pk">Reference / Memo</span><span class="pv">{{ notice_reference }}</span></div>
+        <div class="pi-row"><span class="pk">Amount Due</span><span class="pv">{{ amount_requested }}</span></div>
+        <div class="pi-row"><span class="pk">Due Date</span><span class="pv">{{ due_date }}</span></div>
+        {% if bank_account_details %}
+        <div class="pi-row"><span class="pk">Bank / Account</span><span class="pv">{{ bank_account_details }}</span></div>
+        {% endif %}
+      </div>
+
+      <!-- Warning -->
+      <div class="warning">
+        <strong>Failure to Fund:</strong> Failure to remit the required capital by the due date may result in
+        dilution of your ownership percentage, suspension of dividend distributions, or other remedies as
+        specified in the Operating Agreement. Please contact support@qubix.io immediately if you anticipate
+        difficulty meeting this deadline.
+      </div>
+
+      <!-- Signature -->
+      <div class="sig-section">
+        <div class="sig-close">Yours sincerely,</div>
+        <div class="sig-line"></div>
+        <div class="sig-name">Authorised Signatory</div>
+        <div class="sig-role">Qubix Real Estate Ltd. — Managing Member</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Qubix Real Estate — All rights reserved</span>
+    <span>Generated: {% now "d M Y, H:i" %} UTC · Page 1 of 1</span>
+  </div>
+</div>
+</body>
+</html>

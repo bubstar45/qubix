@@ -1,0 +1,73 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Verify Order #{{ transaction.id }}</h1>
+
+<div style="background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px;">
+    <h3>Order Details</h3>
+    <p><strong>User:</strong> {{ transaction.user.email }}</p>
+    <p><strong>Product:</strong> {{ transaction.product.name }}</p>
+    <p><strong>Quantity:</strong> {{ transaction.quantity }}</p>
+    <p><strong>Total Amount:</strong> ${{ transaction.total_amount|floatformat:2 }}</p>
+    <p><strong>Delivery Method:</strong> {{ transaction.get_delivery_method_display }}</p>
+    <p><strong>Payment Method:</strong> {{ transaction.payment_method }}</p>
+    <p><strong>Current Status:</strong> 
+        <span style="background: {% if transaction.status == 'under_review' %}#f0b90b20; color: #f0b90b{% elif transaction.status == 'confirmed_processing' %}#3d7eff20; color: #3d7eff{% elif transaction.status == 'confirmed_vault' %}#0ecb8120; color: #0ecb81{% elif transaction.status == 'shipped' %}#0ecb8120; color: #0ecb81{% elif transaction.status == 'delivered' %}#0ecb8120; color: #0ecb81{% elif transaction.status == 'cancelled' %}#f6465d20; color: #f6465d{% endif %}; padding: 4px 8px; border-radius: 4px;">
+            {{ transaction.get_status_display }}
+        </span>
+    </p>
+    <p><strong>Payment Recorded:</strong> {{ transaction.payment_confirmed_at|date:"Y-m-d H:i"|default:"Not yet" }}</p>
+    
+    {% if transaction.tracking_number %}
+    <p><strong>Tracking Number:</strong> {{ transaction.tracking_number }}</p>
+    {% endif %}
+    
+    {% if transaction.shipping_address %}
+    <h3>Shipping Address</h3>
+    <p>{{ transaction.shipping_address.full_name }}<br>
+    {{ transaction.shipping_address.address_line1 }}<br>
+    {% if transaction.shipping_address.address_line2 %}{{ transaction.shipping_address.address_line2 }}<br>{% endif %}
+    {{ transaction.shipping_address.city }}, {{ transaction.shipping_address.state }} {{ transaction.shipping_address.postal_code }}<br>
+    {{ transaction.shipping_address.country }}<br>
+    Phone: {{ transaction.shipping_address.phone }}</p>
+    {% endif %}
+</div>
+
+<form method="POST">
+    {% csrf_token %}
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+        
+        {% if transaction.status == 'under_review' %}
+        <button type="submit" name="action" value="confirm_payment" style="background: #0ecb81; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+            ✅ Confirm Payment
+        </button>
+        <button type="submit" name="action" value="reject" style="background: #f6465d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+            ❌ Reject Order
+        </button>
+        {% endif %}
+        
+        {% if transaction.delivery_method == 'shipping' and transaction.status == 'confirmed_processing' %}
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="tracking_number" placeholder="Enter tracking number" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+            <button type="submit" name="action" value="mark_shipped" style="background: #3d7eff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                📦 Mark as Shipped
+            </button>
+        </div>
+        {% endif %}
+        
+        {% if transaction.status == 'shipped' %}
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" name="tracking_number" placeholder="Update tracking number" value="{{ transaction.tracking_number }}" style="padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+            <button type="submit" name="action" value="update_tracking" style="background: #3d7eff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                🔄 Update Tracking
+            </button>
+            <button type="submit" name="action" value="mark_delivered" style="background: #0ecb81; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                ✅ Mark as Delivered
+            </button>
+        </div>
+        {% endif %}
+        
+    </div>
+</form>
+
+<a href="{% url 'physical_team_pending' %}" style="display: inline-block; margin-top: 20px;">← Back to pending orders</a>
+{% endblock %}

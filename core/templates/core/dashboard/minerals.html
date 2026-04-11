@@ -1,0 +1,365 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Minerals | Qubix{% endblock %}
+
+{% block body_class %}minerals-page{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── FILTERS ── */
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.filter-btn:hover { border-color: rgba(240,185,11,0.4); color: var(--text); }
+.filter-btn.active { background: var(--gold); border-color: var(--gold); color: #000; }
+
+/* ── GRID ── */
+.minerals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 16px;
+}
+
+/* ── CARD ── */
+.mineral-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.mineral-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(240,185,11,0.04), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.mineral-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(240,185,11,0.4);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.mineral-card:hover::before { opacity: 1; }
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.badge-icon {
+  width: 44px; height: 44px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.card-meta { flex: 1; padding-left: 12px; }
+
+.mineral-symbol {
+  font-size: 16px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text);
+}
+
+.mineral-name { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.type-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(240,185,11,0.1);
+  color: var(--gold);
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.card-price-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.mineral-price {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.5px;
+  transition: color 0.3s;
+}
+.mineral-price.flash-up { color: var(--green); }
+.mineral-price.flash-down { color: var(--red); }
+
+.change-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.3s;
+}
+.change-pill.positive { background: var(--green-dim); color: var(--green); }
+.change-pill.negative { background: var(--red-dim); color: var(--red); }
+
+.sparkline-wrap { margin-top: 14px; height: 36px; }
+.sparkline-wrap svg { width: 100%; height: 100%; }
+
+/* Badge styles */
+.badge-gold { background: linear-gradient(135deg, #b8860b, #ffd700); }
+.badge-silv { background: linear-gradient(135deg, #708090, #c0c0c0); }
+.badge-plat { background: linear-gradient(135deg, #7a8aaa, #d5d9e8); }
+.badge-pall { background: linear-gradient(135deg, #6e7e94, #b8c2cc); }
+.badge-copp { background: linear-gradient(135deg, #7d3a1a, #b87333); }
+.badge-lith { background: linear-gradient(135deg, #0e2a5a, #3b82f6); }
+.badge-nick { background: linear-gradient(135deg, #2a3040, #6b7280); }
+.badge-alu { background: linear-gradient(135deg, #374151, #9ca3af); }
+.badge-zinc { background: linear-gradient(135deg, #3d3530, #78716c); }
+.badge-uran { background: linear-gradient(135deg, #1a3a1a, #22c55e); }
+.badge-diam { background: linear-gradient(135deg, #2d1560, #9333ea); }
+.badge-baux { background: linear-gradient(135deg, #5c2a0a, #92400e); }
+.badge-iron { background: linear-gradient(135deg, #1f2020, #4b5563); }
+.badge-coal { background: linear-gradient(135deg, #1a1a1a, #2d2d2d); }
+.badge-rare { background: linear-gradient(135deg, #2d1060, #7c3aed); }
+.badge-mang { background: linear-gradient(135deg, #2a2520, #78716c); }
+.badge-coba { background: linear-gradient(135deg, #0e1a50, #2563eb); }
+.badge-graph { background: linear-gradient(135deg, #111, #2d2d2d); }
+.badge-phos { background: linear-gradient(135deg, #5c4800, #d97706); }
+.badge-pota { background: linear-gradient(135deg, #3b0d6e, #a855f7); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .minerals-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+}
+@media (max-width: 600px) {
+  .minerals-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mineral-price { font-size: 20px; }
+}
+@media (max-width: 400px) {
+  .minerals-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Minerals <span>&amp; Tokens</span></h1>
+      <p class="page-sub">// Physically backed • Sourced directly at origin</p>
+    </div>
+    <div class="live-badge"><span class="live-dot"></span> LIVE COMMODITIES</div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="Precious">Precious Metals</button>
+    <button class="filter-btn" data-filter="Base">Base Metals</button>
+    <button class="filter-btn" data-filter="Battery">Battery Materials</button>
+    <button class="filter-btn" data-filter="Gems">Gems &amp; Rare</button>
+    <button class="filter-btn" data-filter="Agricultural">Agricultural</button>
+  </div>
+
+  <div class="minerals-grid" id="mineralsGrid">
+    {% for mineral in minerals %}
+    <div class="mineral-card"
+         onclick="window.location.href='{% url 'asset_detail' mineral.id %}'"
+         data-type="{% if mineral.symbol in 'GOLD,SILV,PLAT,PALL' %}Precious{% elif mineral.symbol in 'COPP,NICK,ALU,ZINC,IRON,MANG' %}Base{% elif mineral.symbol in 'LITH,COBA,GRAPH' %}Battery{% elif mineral.symbol in 'DIAM,RARE,URAN' %}Gems{% elif mineral.symbol in 'PHOS,POTA,BAUX,COAL' %}Agricultural{% else %}Precious{% endif %}"
+         data-change="{{ mineral.price_change_24h }}">
+      <div class="card-top">
+        <div class="badge-icon badge-{{ mineral.symbol|lower }}">
+          {% if mineral.symbol == 'GOLD' %}🥇
+          {% elif mineral.symbol == 'SILV' %}🥈
+          {% elif mineral.symbol == 'PLAT' %}🔹
+          {% elif mineral.symbol == 'PALL' %}⚪
+          {% elif mineral.symbol == 'COPP' %}🔶
+          {% elif mineral.symbol == 'LITH' %}🔋
+          {% elif mineral.symbol == 'NICK' %}⚙️
+          {% elif mineral.symbol == 'ALU' %}🪙
+          {% elif mineral.symbol == 'ZINC' %}⚡
+          {% elif mineral.symbol == 'URAN' %}☢️
+          {% elif mineral.symbol == 'DIAM' %}💎
+          {% elif mineral.symbol == 'BAUX' %}🏺
+          {% elif mineral.symbol == 'IRON' %}⛓️
+          {% elif mineral.symbol == 'COAL' %}🪨
+          {% elif mineral.symbol == 'RARE' %}🧲
+          {% elif mineral.symbol == 'MANG' %}🔩
+          {% elif mineral.symbol == 'COBA' %}🔋
+          {% elif mineral.symbol == 'GRAPH' %}⚫
+          {% elif mineral.symbol == 'PHOS' %}🌾
+          {% elif mineral.symbol == 'POTA' %}🌱
+          {% else %}⛏️{% endif %}
+        </div>
+        <div class="card-meta">
+          <div class="mineral-symbol">{{ mineral.symbol }}</div>
+          <div class="mineral-name">{{ mineral.name }}</div>
+          <div class="type-tag">
+            {% if mineral.symbol in 'GOLD,SILV,PLAT,PALL' %}Precious Metal
+            {% elif mineral.symbol in 'LITH,COBA,GRAPH' %}Battery Grade
+            {% elif mineral.symbol == 'BAUX' %}Africa Origin
+            {% elif mineral.symbol == 'DIAM' %}GIA Certified
+            {% elif mineral.symbol == 'URAN' %}Nuclear Grade
+            {% else %}Tokenized Asset{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="card-price-row">
+        <div class="mineral-price">${{ mineral.current_price|floatformat:2 }}</div>
+        <div class="change-pill {% if mineral.price_change_24h >= 0 %}positive{% else %}negative{% endif %}" data-change="{{ mineral.price_change_24h }}">
+          {% if mineral.price_change_24h >= 0 %}▲{% else %}▼{% endif %} {{ mineral.price_change_24h|floatformat:2 }}%
+        </div>
+      </div>
+      <div class="sparkline-wrap">
+        <svg viewBox="0 0 200 36" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="mg-{{ mineral.symbol }}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="{% if mineral.price_change_24h >= 0 %}#0ecb81{% else %}#f6465d{% endif %}" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="{% if mineral.price_change_24h >= 0 %}#0ecb81{% else %}#f6465d{% endif %}" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path class="sparkline-area" fill="url(#mg-{{ mineral.symbol }})" d=""/>
+          <path class="sparkline-line" fill="none" stroke="{% if mineral.price_change_24h >= 0 %}#0ecb81{% else %}#f6465d{% endif %}" stroke-width="1.5" d=""/>
+        </svg>
+      </div>
+    </div>
+    {% empty %}
+    <div style="grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--muted);">
+      <div style="font-size:48px; margin-bottom:12px;">⛏️</div>
+      <div style="font-size:16px; font-weight:700; color:var(--text);">No minerals available</div>
+      <div style="font-size:13px; margin-top:6px;">Check back soon for new opportunities.</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function generateSparklinePath(basePrice, isPositive, w=200, h=36) {
+  const pts = 20;
+  const vals = [];
+  let v = basePrice * (0.97 + Math.random() * 0.03);
+  for (let i = 0; i < pts; i++) {
+    v += (Math.random() - (isPositive ? 0.42 : 0.58)) * basePrice * 0.008;
+    vals.push(v);
+  }
+  const minV = Math.min(...vals), maxV = Math.max(...vals);
+  const range = maxV - minV || 1;
+  const points = vals.map((v,i) => {
+    const x = (i / (pts-1)) * w;
+    const y = h - ((v - minV) / range) * (h-4) - 2;
+    return [x, y];
+  });
+  const line = points.map((p,i) => `${i===0?'M':'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  return { line, area: line + ` L${w},${h} L0,${h} Z` };
+}
+
+function buildTicker() {
+  const cards = document.querySelectorAll('.mineral-card');
+  let html = '';
+  cards.forEach(c => {
+    const sym = c.querySelector('.mineral-symbol');
+    const price = c.querySelector('.mineral-price');
+    const chg = c.querySelector('.change-pill');
+    if (!sym) return;
+    const isPos = chg && chg.classList.contains('positive');
+    html += `<span class="ticker-item"><span class="ticker-sym">${sym.textContent}</span><span class="ticker-price">${price ? price.textContent : ''}</span><span class="ticker-chg ${isPos?'pos':'neg'}">${chg ? chg.textContent.trim() : ''}</span></span><span style="color:rgba(255,255,255,0.1)">·</span>`;
+  });
+  const ti = document.getElementById('tickerInner');
+  if (ti) ti.innerHTML = html + html;
+}
+
+function initSparklines() {
+  document.querySelectorAll('.mineral-card').forEach(card => {
+    const priceEl = card.querySelector('.mineral-price');
+    const pill = card.querySelector('.change-pill');
+    if (!priceEl) return;
+    const price = parseFloat(priceEl.textContent.replace(/[^0-9.]/g,'')) || 100;
+    const isPos = pill && pill.classList.contains('positive');
+    const { line, area } = generateSparklinePath(price, isPos);
+    const lineEl = card.querySelector('.sparkline-line');
+    const areaEl = card.querySelector('.sparkline-area');
+    if (lineEl) lineEl.setAttribute('d', line);
+    if (areaEl) areaEl.setAttribute('d', area);
+  });
+}
+
+function simulatePrices() {
+  document.querySelectorAll('.mineral-card').forEach(card => {
+    const priceEl = card.querySelector('.mineral-price');
+    const pill = card.querySelector('.change-pill');
+    if (!priceEl) return;
+    const current = parseFloat(priceEl.textContent.replace(/[^0-9.]/g,''));
+    if (!current) return;
+    const delta = (Math.random() - 0.5) * current * 0.003;
+    const newPrice = Math.max(0.01, current + delta);
+    let baseChange = parseFloat(card.dataset.change || '0');
+    baseChange += (delta / current) * 100 * 0.15;
+
+    priceEl.textContent = '$' + newPrice.toFixed(2);
+    priceEl.classList.remove('flash-up','flash-down');
+    void priceEl.offsetWidth;
+    priceEl.classList.add(delta >= 0 ? 'flash-up' : 'flash-down');
+    setTimeout(() => priceEl.classList.remove('flash-up','flash-down'), 600);
+
+    if (pill) {
+      const sign = baseChange >= 0 ? '▲' : '▼';
+      pill.textContent = `${sign} ${Math.abs(baseChange).toFixed(2)}%`;
+      pill.className = `change-pill ${baseChange >= 0 ? 'positive' : 'negative'}`;
+    }
+    card.dataset.change = baseChange;
+
+    const { line, area } = generateSparklinePath(newPrice, delta >= 0);
+    const lineEl = card.querySelector('.sparkline-line');
+    const areaEl = card.querySelector('.sparkline-area');
+    if (lineEl) lineEl.setAttribute('d', line);
+    if (areaEl) areaEl.setAttribute('d', area);
+  });
+  buildTicker();
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const f = this.dataset.filter;
+    document.querySelectorAll('.mineral-card').forEach(card => {
+      card.style.display = (f === 'all' || card.dataset.type === f) ? '' : 'none';
+    });
+  });
+});
+
+initSparklines();
+buildTicker();
+setInterval(simulatePrices, 3000);
+</script>
+{% endblock %}

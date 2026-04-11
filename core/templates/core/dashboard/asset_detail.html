@@ -1,0 +1,1086 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ asset.name }} ({{ asset.symbol }}) | Qubix{% endblock %}
+
+{% block body_class %}stocks-page{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #080a0f;
+  --surface: #0d1017;
+  --surface2: #111520;
+  --surface3: #161b28;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --text: #eef0f6;
+  --text2: #9ba3b8;
+  --muted: #4a5268;
+  --accent: #3b82f6;
+  --green: #10b981;
+  --red: #f43f5e;
+  --gold: #f59e0b;
+  --purple: #8b5cf6;
+  --radius: 16px;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+.qx-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 32px 60px;
+}
+/* TOPBAR */
+.qx-topbar {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px; margin-bottom: 24px; flex-wrap: wrap;
+}
+.qx-asset-identity { display: flex; align-items: center; gap: 16px; }
+.qx-asset-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: linear-gradient(135deg,#1e3a5f,#0d2240);
+  border: 1px solid rgba(59,130,246,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+  box-shadow: 0 0 24px rgba(59,130,246,0.15);
+}
+.qx-symbol-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.qx-symbol { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+.qx-exchange-badge {
+  padding: 3px 8px; border-radius: 5px;
+  background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25);
+  font-size: 10px; font-weight: 700; color: var(--accent); letter-spacing: .6px;
+}
+.qx-category-badge {
+  padding: 3px 8px; border-radius: 5px;
+  background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.25);
+  font-size: 10px; font-weight: 700; color: var(--purple); letter-spacing: .6px;
+}
+.qx-fullname { font-size: 13px; color: var(--text2); }
+.qx-price-panel { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.qx-price-main { font-size: 40px; font-weight: 800; font-family: var(--font-mono); letter-spacing: -1.5px; line-height: 1; }
+.qx-price-row { display: flex; align-items: center; gap: 8px; }
+.qx-badge-chg {
+  padding: 4px 11px; border-radius: 7px;
+  font-size: 12px; font-weight: 700; font-family: var(--font-mono);
+}
+.qx-badge-chg.up { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+.qx-badge-chg.down { background: rgba(244,63,94,0.15); color: var(--red); border: 1px solid rgba(244,63,94,0.25); }
+.qx-price-sub { font-size: 11px; color: var(--muted); font-family: var(--font-mono); }
+/* QUICK STATS */
+.qx-quickstats {
+  display: grid; grid-template-columns: repeat(6,1fr);
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; margin-bottom: 22px;
+}
+.qx-qs {
+  background: var(--surface2); padding: 13px 16px;
+  display: flex; flex-direction: column; gap: 3px;
+  transition: background .18s;
+}
+.qx-qs:hover { background: var(--surface3); }
+.qx-qs-label { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; font-weight: 600; }
+.qx-qs-val { font-size: 14px; font-weight: 700; font-family: var(--font-mono); color: var(--text); }
+.qx-qs-sub { font-size: 9.5px; color: var(--muted); font-family: var(--font-mono); }
+/* BODY */
+.qx-body { display: grid; grid-template-columns: 1fr 330px; gap: 18px; }
+.qx-left { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.qx-right { display: flex; flex-direction: column; gap: 18px; }
+/* CARD */
+.qx-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.qx-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px 12px; border-bottom: 1px solid var(--border);
+}
+.qx-card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text2); }
+/* CHART */
+.qx-chart-controls { display: flex; align-items: center; gap: 4px; }
+.qx-tbtn {
+  padding: 5px 10px; border-radius: 7px;
+  background: none; border: 1px solid transparent;
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  cursor: pointer; transition: all .14s; font-family: var(--font-display);
+}
+.qx-tbtn:hover { color: var(--text); background: var(--surface3); }
+.qx-tbtn.active { background: var(--accent); color: white; border-color: var(--accent); }
+.qx-chart-indicators {
+  display: flex; align-items: center; gap: 12px;
+  padding: 7px 18px; border-bottom: 1px solid var(--border);
+  background: var(--surface); flex-wrap: wrap;
+}
+.qx-ind { display: flex; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; user-select: none; }
+.qx-ind-dot { width: 10px; height: 3px; border-radius: 2px; }
+.qx-ind-label { color: var(--muted); font-weight: 500; transition: color .15s; }
+.qx-ind.active .qx-ind-label { color: var(--text); }
+.qx-ind input[type=checkbox] { display: none; }
+.qx-chart-inner { padding: 18px 18px 12px; position: relative; }
+.qx-livetick {
+  position: absolute; top: 12px; right: 18px;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10px; font-family: var(--font-mono); color: var(--muted);
+}
+.qx-livedot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+  box-shadow: 0 0 7px var(--green);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.85)} }
+.qx-hover-info { font-size: 11px; color: var(--text2); font-family: var(--font-mono); margin-left: auto; }
+.qx-chart-foot { display: grid; grid-template-columns: repeat(5,1fr); border-top: 1px solid var(--border); }
+.qx-cf-item { padding: 11px 16px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 3px; }
+.qx-cf-item:last-child { border-right: none; }
+.qx-cf-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.qx-cf-val { font-size: 13px; font-weight: 700; font-family: var(--font-mono); color: var(--text); }
+.qx-cf-sub { font-size: 10px; font-family: var(--font-mono); color: var(--muted); }
+/* INFO GRID */
+.qx-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.qx-trow {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 18px; border-bottom: 1px solid var(--border);
+  transition: background .14s;
+}
+.qx-trow:last-child { border-bottom: none; }
+.qx-trow:hover { background: rgba(255,255,255,0.02); }
+.qx-tkey { font-size: 11.5px; color: var(--text2); }
+.qx-tval { font-size: 12px; font-weight: 600; font-family: var(--font-mono); color: var(--text); }
+.qx-tval.up { color: var(--green); }
+.qx-tval.down { color: var(--red); }
+.qx-tval.gold { color: var(--gold); }
+/* RANGE */
+.qx-range-section { padding: 14px 20px 18px; }
+.qx-range-bar { position: relative; height: 6px; background: linear-gradient(to right,var(--red),var(--gold),var(--green)); border-radius: 3px; margin: 18px 0 8px; }
+.qx-range-marker { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; background: white; border-radius: 50%; border: 2px solid var(--bg); box-shadow: 0 0 10px rgba(255,255,255,.4); }
+.qx-range-labels { display: flex; justify-content: space-between; font-size: 11px; font-family: var(--font-mono); }
+/* ANALYST */
+.qx-analyst { padding: 16px 18px 18px; }
+.qx-consensus { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.qx-cons-badge { padding: 5px 14px; border-radius: 8px; font-size: 12px; font-weight: 800; background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.qx-rbar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.qx-rbar-label { font-size: 10.5px; color: var(--text2); width: 72px; }
+.qx-rbar-track { flex: 1; height: 4px; background: var(--surface); border-radius: 2px; overflow: hidden; }
+.qx-rbar-fill { height: 100%; border-radius: 2px; transition: width .6s ease; }
+.qx-rbar-num { font-size: 11px; font-family: var(--font-mono); color: var(--text2); width: 20px; text-align: right; }
+.qx-target-box { background: var(--surface); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; }
+.qx-target-label { font-size: 11px; color: var(--text2); }
+.qx-target-val { font-size: 17px; font-weight: 800; font-family: var(--font-mono); }
+.qx-target-upside { font-size: 12px; color: var(--green); font-family: var(--font-mono); font-weight: 700; }
+/* PORTFOLIO */
+.qx-portfolio { padding: 18px; }
+.qx-portfolio-main { background: linear-gradient(135deg,#0f1f40,#091530); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.qx-pm-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 5px; }
+.qx-pm-val { font-size: 26px; font-weight: 800; font-family: var(--font-mono); line-height: 1; margin-bottom: 3px; }
+.qx-pm-sub { font-size: 11px; font-family: var(--font-mono); }
+.qx-port-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.qx-ps-item { background: var(--surface); border-radius: 9px; padding: 9px 11px; }
+.qx-ps-label { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
+.qx-ps-val { font-size: 14px; font-weight: 700; font-family: var(--font-mono); }
+.qx-ps-sub { font-size: 10px; font-family: var(--font-mono); color: var(--muted); margin-top: 1px; }
+/* ACTIONS */
+.qx-actions { display: flex; gap: 8px; }
+.qx-btn {
+  flex: 1; padding: 12px 8px; border: none; border-radius: 11px;
+  font-size: 13px; font-weight: 800; cursor: pointer; transition: all .18s;
+  font-family: var(--font-display); letter-spacing: .3px; position: relative; overflow: hidden;
+}
+.qx-btn-buy { background: var(--green); color: white; box-shadow: 0 4px 18px rgba(16,185,129,0.3); }
+.qx-btn-sell { background: var(--red); color: white; box-shadow: 0 4px 18px rgba(244,63,94,0.3); }
+.qx-btn-sell:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+.qx-btn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+.qx-btn:active:not(:disabled) { transform: scale(0.98); }
+/* CALC */
+.qx-calc { padding: 16px 18px; }
+.qx-calc-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.qx-field-label { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; font-weight: 600; }
+.qx-field { width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: 9px; padding: 9px 11px; color: var(--text); font-size: 13px; font-family: var(--font-mono); outline: none; transition: border-color .18s; }
+.qx-field:focus { border-color: var(--accent); }
+.qx-calc-results { background: var(--surface); border-radius: 11px; padding: 4px 0; border: 1px solid var(--border); }
+.qx-cr-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 13px; }
+.qx-cr-row:hover { background: var(--surface2); }
+.qx-cr-label { font-size: 11.5px; color: var(--text2); }
+.qx-cr-val { font-size: 12.5px; font-weight: 700; font-family: var(--font-mono); color: var(--text); }
+.qx-cr-val.pos { color: var(--green); }
+.qx-cr-val.neg { color: var(--red); }
+/* DESCRIPTION */
+.qx-desc { padding: 16px 18px; }
+.qx-desc-text { font-size: 13px; color: var(--text2); line-height: 1.75; }
+/* NEWS */
+.qx-news-item { padding: 11px 18px; border-bottom: 1px solid var(--border); transition: background .14s; cursor: pointer; }
+.qx-news-item:last-child { border-bottom: none; }
+.qx-news-item:hover { background: rgba(255,255,255,.02); }
+.qx-news-source { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+.qx-news-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.qx-news-src { font-size: 10px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+.qx-news-time { font-size: 10px; color: var(--muted); font-family: var(--font-mono); margin-left: auto; }
+.qx-news-title { font-size: 12.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+/* ANIMATIONS */
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.qx-topbar,.qx-quickstats,.qx-card { animation: fadeUp .3s ease both; }
+.qx-quickstats { animation-delay:.06s; }
+.qx-left>*:nth-child(1){animation-delay:.1s} .qx-left>*:nth-child(2){animation-delay:.14s}
+.qx-left>*:nth-child(3){animation-delay:.18s} .qx-left>*:nth-child(4){animation-delay:.22s}
+.qx-right>*:nth-child(1){animation-delay:.1s} .qx-right>*:nth-child(2){animation-delay:.15s}
+.qx-right>*:nth-child(3){animation-delay:.2s} .qx-right>*:nth-child(4){animation-delay:.25s}
+@media(max-width:1100px){.qx-body{grid-template-columns:1fr}.qx-quickstats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.qx-page{padding:14px}.qx-quickstats{grid-template-columns:repeat(2,1fr)}.qx-info-grid{grid-template-columns:1fr}}
+::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:transparent} ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px}
+
+/* Modal styles */
+.modal-bg {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+  z-index: 200; align-items: center; justify-content: center;
+}
+.modal-bg.open { display: flex; }
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 24px;
+  width: 90%; max-width: 420px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  animation: modalIn .25s ease;
+}
+@keyframes modalIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-size: 17px; font-weight: 800; color: var(--text); }
+.modal-close { width: 28px; height: 28px; border-radius: 7px; background: var(--surface2); border: none; color: var(--text2); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { color: var(--text); }
+
+.modal-input-label { font-size: 11px; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+.modal-input {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 11px 14px; color: var(--text);
+  font-size: 16px; font-family: var(--font-mono); outline: none;
+  transition: border-color .18s; margin-bottom: 16px;
+}
+.modal-input:focus { border-color: var(--accent); }
+
+.modal-btn {
+  width: 100%; padding: 12px; border-radius: 12px;
+  font-size: 14px; font-weight: 800; border: none;
+  cursor: pointer; font-family: var(--font-display); transition: all .18s;
+}
+.modal-btn-row { display: flex; gap: 10px; }
+.modal-btn-row .modal-btn:first-child { background: var(--surface2); color: var(--text); flex: 0 0 90px; }
+.modal-btn-row .modal-btn:first-child:hover { background: var(--surface3); }
+
+.receipt {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; margin-bottom: 18px;
+}
+.receipt-header { text-align: center; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px dashed var(--border2); }
+.receipt-sym { font-size: 24px; font-weight: 800; color: var(--text); font-family: var(--font-mono); }
+.receipt-name { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.receipt-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12.5px; }
+.receipt-row:last-child { margin-bottom: 0; }
+.receipt-key { color: var(--text2); }
+.receipt-val { color: var(--text); font-weight: 600; font-family: var(--font-mono); }
+.receipt-total { font-size: 18px; font-weight: 800; color: var(--green); font-family: var(--font-mono); }
+.receipt-sell-total { font-size: 18px; font-weight: 800; color: var(--red); font-family: var(--font-mono); }
+.receipt-divider { border: none; border-top: 1px dashed var(--border2); margin: 10px 0; }
+
+/* Toast Notification */
+.toast {
+  position: fixed; bottom: 22px; right: 22px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 14px 18px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+  z-index: 300; min-width: 280px; max-width: 360px;
+  animation: toastIn .3s cubic-bezier(.34,1.56,.64,1);
+  transition: opacity .3s, transform .3s;
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(20px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+.toast.hiding { opacity: 0; transform: translateY(12px); }
+
+.toast-head { display: flex; align-items: center; gap: 10px; margin-bottom: 3px; }
+.toast-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.toast-icon.success { background: rgba(16,185,129,0.15); }
+.toast-icon.error { background: rgba(244,63,94,0.15); }
+.toast-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.toast-msg { font-size: 12px; color: var(--text2); padding-left: 38px; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="qx-page">
+
+  <!-- TOPBAR -->
+  <div class="qx-topbar">
+    <div class="qx-asset-identity">
+      <div class="qx-asset-icon">📈</div>
+      <div>
+        <div class="qx-symbol-row">
+          <span class="qx-symbol">{{ asset.symbol }}</span>
+          <span class="qx-exchange-badge">NASDAQ</span>
+          <span class="qx-category-badge">{{ asset.get_category_display }}</span>
+        </div>
+        <div class="qx-fullname">{{ asset.name }}</div>
+      </div>
+    </div>
+    <div class="qx-price-panel">
+      <div class="qx-price-main">${{ asset.current_price|floatformat:2 }}</div>
+      <div class="qx-price-row">
+        <span class="qx-badge-chg {% if asset.price_change_24h >= 0 %}up{% else %}down{% endif %}">
+          {% if asset.price_change_24h >= 0 %}▲{% else %}▼{% endif %} {{ asset.price_change_24h|floatformat:2 }}%
+        </span>
+        <span class="qx-price-sub">24h change</span>
+      </div>
+      <div class="qx-price-sub" id="headerTime">—</div>
+    </div>
+  </div>
+
+  <!-- QUICK STATS STRIP -->
+  <div class="qx-quickstats">
+    <div class="qx-qs">
+      <div class="qx-qs-label">Open</div>
+      <div class="qx-qs-val">${{ asset.current_price|floatformat:2 }}</div>
+      <div class="qx-qs-sub">Today's open</div>
+    </div>
+    <div class="qx-qs">
+      <div class="qx-qs-label">Day High</div>
+      <div class="qx-qs-val" id="qs-high" style="color:var(--green)">—</div>
+      <div class="qx-qs-sub">Session high</div>
+    </div>
+    <div class="qx-qs">
+      <div class="qx-qs-label">Day Low</div>
+      <div class="qx-qs-val" id="qs-low" style="color:var(--red)">—</div>
+      <div class="qx-qs-sub">Session low</div>
+    </div>
+    <div class="qx-qs">
+      <div class="qx-qs-label">Volume (24h)</div>
+      <div class="qx-qs-val">{{ asset.volume_24h|default:"—" }}</div>
+      <div class="qx-qs-sub">Shares traded</div>
+    </div>
+    <div class="qx-qs">
+      <div class="qx-qs-label">Market Cap</div>
+      <div class="qx-qs-val">{{ asset.market_cap|default:"—" }}</div>
+      <div class="qx-qs-sub">Total capitalization</div>
+    </div>
+    <div class="qx-qs">
+      <div class="qx-qs-label">P/E Ratio</div>
+      <div class="qx-qs-val">{{ asset.pe_ratio|default:"—" }}</div>
+      <div class="qx-qs-sub">Trailing twelve months</div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="qx-body">
+
+    <!-- LEFT -->
+    <div class="qx-left">
+
+      <!-- CHART -->
+      <div class="qx-card">
+        <div class="qx-card-head">
+          <div class="qx-card-title">Price Chart</div>
+          <div class="qx-chart-controls">
+            <button class="qx-tbtn" data-period="1D">1D</button>
+            <button class="qx-tbtn active" data-period="1W">1W</button>
+            <button class="qx-tbtn" data-period="1M">1M</button>
+            <button class="qx-tbtn" data-period="3M">3M</button>
+            <button class="qx-tbtn" data-period="1Y">1Y</button>
+            <button class="qx-tbtn" data-period="5Y">5Y</button>
+          </div>
+        </div>
+        <div class="qx-chart-indicators">
+          <label class="qx-ind active">
+            <input type="checkbox" checked onchange="toggleLine('price',this)">
+            <div class="qx-ind-dot" style="background:#e2e8f0"></div>
+            <span class="qx-ind-label">Price</span>
+          </label>
+          <label class="qx-ind active">
+            <input type="checkbox" checked onchange="toggleLine('ma20',this)">
+            <div class="qx-ind-dot" style="background:#3b82f6"></div>
+            <span class="qx-ind-label">MA 20</span>
+          </label>
+          <label class="qx-ind active">
+            <input type="checkbox" checked onchange="toggleLine('ma50',this)">
+            <div class="qx-ind-dot" style="background:#f59e0b"></div>
+            <span class="qx-ind-label">MA 50</span>
+          </label>
+          <label class="qx-ind">
+            <input type="checkbox" onchange="toggleLine('bb',this)">
+            <div class="qx-ind-dot" style="background:#8b5cf6;opacity:.5"></div>
+            <span class="qx-ind-label">Bollinger</span>
+          </label>
+          <label class="qx-ind">
+            <input type="checkbox" onchange="toggleLine('vol',this)">
+            <div class="qx-ind-dot" style="background:#06b6d4;opacity:.5"></div>
+            <span class="qx-ind-label">Volume</span>
+          </label>
+          <div class="qx-hover-info" id="hoverPrice"></div>
+        </div>
+        <div class="qx-chart-inner">
+          <div class="qx-livetick">
+            <div class="qx-livedot"></div><span>LIVE</span>
+          </div>
+          <canvas id="mainChart" style="height:300px;width:100%;"></canvas>
+        </div>
+        <div class="qx-chart-foot">
+          <div class="qx-cf-item">
+            <div class="qx-cf-label">52W High</div>
+            <div class="qx-cf-val" style="color:var(--green)">${{ asset.price_max|default:"—" }}</div>
+            <div class="qx-cf-sub">All time high</div>
+          </div>
+          <div class="qx-cf-item">
+            <div class="qx-cf-label">52W Low</div>
+            <div class="qx-cf-val" style="color:var(--red)">${{ asset.price_min|default:"—" }}</div>
+            <div class="qx-cf-sub">All time low</div>
+          </div>
+          <div class="qx-cf-item">
+            <div class="qx-cf-label">Avg Volume</div>
+            <div class="qx-cf-val">{{ asset.volume_24h|default:"—" }}</div>
+            <div class="qx-cf-sub">30-day avg</div>
+          </div>
+          <div class="qx-cf-item">
+            <div class="qx-cf-label">ATH</div>
+            <div class="qx-cf-val" id="cf-ath">—</div>
+            <div class="qx-cf-sub" id="cf-ath-sub">—</div>
+          </div>
+          <div class="qx-cf-item">
+            <div class="qx-cf-label">ATL</div>
+            <div class="qx-cf-val" id="cf-atl">—</div>
+            <div class="qx-cf-sub" id="cf-atl-sub">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 52-WEEK RANGE -->
+      <div class="qx-card">
+        <div class="qx-card-head"><div class="qx-card-title">52-Week Price Range</div></div>
+        <div class="qx-range-section">
+          <div class="qx-range-bar">
+            <div class="qx-range-marker" id="rangeMarker" style="left:65%"></div>
+          </div>
+          <div class="qx-range-labels">
+            <span style="color:var(--red)">${{ asset.price_min|default:"—" }}</span>
+            <span style="color:var(--text);font-weight:700" id="rangeCurrentLabel">${{ asset.current_price|floatformat:2 }}</span>
+            <span style="color:var(--green)">${{ asset.price_max|default:"—" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FUNDAMENTALS TABLES -->
+      <div class="qx-info-grid">
+        <div class="qx-card">
+          <div class="qx-card-head"><div class="qx-card-title">Market Data</div></div>
+          <div class="qx-trow"><span class="qx-tkey">Market Capitalization</span><span class="qx-tval">{{ asset.market_cap|default:"N/A" }}</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Volume (24h)</span><span class="qx-tval">{{ asset.volume_24h|default:"N/A" }}</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Shares Outstanding</span><span class="qx-tval">{{ asset.shares_outstanding|default:"N/A" }}</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Float</span><span class="qx-tval">{{ asset.shares_outstanding|default:"N/A" }}</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Beta (1Y)</span><span class="qx-tval">{{ asset.beta|default:"N/A" }}</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Short Interest</span><span class="qx-tval">—</span></div>
+        </div>
+        <div class="qx-card">
+          <div class="qx-card-head"><div class="qx-card-title">Fundamentals</div></div>
+          <div class="qx-trow"><span class="qx-tkey">P/E Ratio (TTM)</span><span class="qx-tval">{{ asset.pe_ratio|default:"N/A" }}</span></div>
+          <div class="qx-trow"><span class="qx-tkey">EPS (TTM)</span><span class="qx-tval">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Dividend Yield</span><span class="qx-tval gold">{{ asset.dividend_yield|default:"N/A" }}{% if asset.dividend_yield %}%{% endif %}</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Revenue (TTM)</span><span class="qx-tval">{{ asset.revenue_ttm|default:"N/A" }}</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Net Income (TTM)</span><span class="qx-tval">{{ asset.net_income_ttm|default:"N/A" }}</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Profit Margin</span><span class="qx-tval up">—</span></div>
+        </div>
+        <div class="qx-card">
+          <div class="qx-card-head"><div class="qx-card-title">Valuation</div></div>
+          <div class="qx-trow"><span class="qx-tkey">P/S Ratio</span><span class="qx-tval">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">P/B Ratio</span><span class="qx-tval">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">EV / EBITDA</span><span class="qx-tval">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">PEG Ratio</span><span class="qx-tval">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Return on Equity</span><span class="qx-tval up">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Debt / Equity</span><span class="qx-tval">—</span></div>
+        </div>
+        <div class="qx-card">
+          <div class="qx-card-head"><div class="qx-card-title">Dividends & Returns</div></div>
+          <div class="qx-trow"><span class="qx-tkey">Annual Dividend</span><span class="qx-tval gold">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Ex-Dividend Date</span><span class="qx-tval">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">Payout Ratio</span><span class="qx-tval">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">5Y Avg Div Yield</span><span class="qx-tval">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">1Y Total Return</span><span class="qx-tval up">—</span></div>
+          <div class="qx-trow"><span class="qx-tkey">5Y Total Return</span><span class="qx-tval up">—</span></div>
+        </div>
+      </div>
+
+      <!-- ABOUT -->
+      <div class="qx-card">
+        <div class="qx-card-head"><div class="qx-card-title">About {{ asset.name }}</div></div>
+        <div class="qx-desc">
+          <p class="qx-desc-text">{{ asset.description|default:"No description available for this asset." }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="qx-right">
+
+      <!-- POSITION -->
+      <div class="qx-card">
+        <div class="qx-card-head"><div class="qx-card-title">My Position</div></div>
+        <div class="qx-portfolio">
+          <div class="qx-portfolio-main">
+            <div class="qx-pm-label">Portfolio Value</div>
+            <div class="qx-pm-val">${{ portfolio_value|floatformat:2 }}</div>
+            <div class="qx-pm-sub" style="color:var(--green)">▲ Total invested assets</div>
+          </div>
+          <div class="qx-port-stats">
+            <div class="qx-ps-item">
+              <div class="qx-ps-label">Cash</div>
+              <div class="qx-ps-val">${{ cash_balance|floatformat:2 }}</div>
+              <div class="qx-ps-sub">Available</div>
+            </div>
+            <div class="qx-ps-item">
+              <div class="qx-ps-label">Holdings</div>
+              <div class="qx-ps-val">{{ holding.quantity|default:"0" }}</div>
+              <div class="qx-ps-sub">Shares</div>
+            </div>
+            <div class="qx-ps-item">
+              <div class="qx-ps-label">Position Value</div>
+              <div class="qx-ps-val">${{ holding.current_value|default:"0"|floatformat:2 }}</div>
+              <div class="qx-ps-sub">{{ asset.symbol }}</div>
+            </div>
+            <div class="qx-ps-item">
+              <div class="qx-ps-label">Avg Cost</div>
+              <div class="qx-ps-val">—</div>
+              <div class="qx-ps-sub">Per share</div>
+            </div>
+          </div>
+          <div class="qx-actions">
+            <button class="qx-btn qx-btn-buy" id="buyBtn">Buy {{ asset.symbol }}</button>
+            <button class="qx-btn qx-btn-sell" id="sellBtn" {% if not holding or holding.quantity <= 0 %}disabled{% endif %}>Sell {{ asset.symbol }}</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYST -->
+      <div class="qx-card">
+        <div class="qx-card-head"><div class="qx-card-title">Analyst Ratings</div></div>
+        <div class="qx-analyst">
+          <div class="qx-consensus">
+            <div>
+              <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Consensus</div>
+              <div style="font-size:20px;font-weight:800;color:var(--text);">Buy</div>
+            </div>
+            <div class="qx-cons-badge">OUTPERFORM</div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="qx-rbar-row">
+              <span class="qx-rbar-label" style="color:var(--green)">Strong Buy</span>
+              <div class="qx-rbar-track"><div class="qx-rbar-fill" style="width:56%;background:var(--green)"></div></div>
+              <span class="qx-rbar-num">34</span>
+            </div>
+            <div class="qx-rbar-row">
+              <span class="qx-rbar-label" style="color:#4ade80">Buy</span>
+              <div class="qx-rbar-track"><div class="qx-rbar-fill" style="width:30%;background:#4ade80"></div></div>
+              <span class="qx-rbar-num">18</span>
+            </div>
+            <div class="qx-rbar-row">
+              <span class="qx-rbar-label" style="color:var(--gold)">Hold</span>
+              <div class="qx-rbar-track"><div class="qx-rbar-fill" style="width:10%;background:var(--gold)"></div></div>
+              <span class="qx-rbar-num">6</span>
+            </div>
+            <div class="qx-rbar-row">
+              <span class="qx-rbar-label" style="color:var(--red)">Sell</span>
+              <div class="qx-rbar-track"><div class="qx-rbar-fill" style="width:3%;background:var(--red)"></div></div>
+              <span class="qx-rbar-num">2</span>
+            </div>
+          </div>
+          <div class="qx-target-box">
+            <div>
+              <div class="qx-target-label">12-Month Price Target</div>
+              <div class="qx-target-val" id="priceTarget">—</div>
+            </div>
+            <div class="qx-target-upside" id="targetUpside">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CALCULATOR -->
+      <div class="qx-card">
+        <div class="qx-card-head"><div class="qx-card-title">Investment Calculator</div></div>
+        <div class="qx-calc">
+          <div class="qx-calc-inputs">
+            <div>
+              <div class="qx-field-label">Amount (USD)</div>
+              <input type="number" id="calcAmount" class="qx-field" value="1000" step="100">
+            </div>
+            <div>
+              <div class="qx-field-label">Period</div>
+              <select id="calcPeriod" class="qx-field">
+                <option value="1W">1 Week Ago</option>
+                <option value="1M">1 Month Ago</option>
+                <option value="3M">3 Months Ago</option>
+                <option value="1Y">1 Year Ago</option>
+                <option value="5Y">5 Years Ago</option>
+              </select>
+            </div>
+          </div>
+          <div class="qx-calc-results">
+            <div class="qx-cr-row"><span class="qx-cr-label">Shares Purchased</span><span class="qx-cr-val" id="calcShares">—</span></div>
+            <div class="qx-cr-row"><span class="qx-cr-label">Price at Purchase</span><span class="qx-cr-val" id="calcPastPrice">—</span></div>
+            <div class="qx-cr-row"><span class="qx-cr-label">Current Value</span><span class="qx-cr-val" id="calcCurrentValue">—</span></div>
+            <div class="qx-cr-row"><span class="qx-cr-label">Profit / Loss</span><span class="qx-cr-val" id="calcProfitLoss">—</span></div>
+            <div class="qx-cr-row"><span class="qx-cr-label">Total Return</span><span class="qx-cr-val" id="calcReturnPercent">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEWS -->
+      <div class="qx-card">
+        <div class="qx-card-head"><div class="qx-card-title">Recent News</div></div>
+        <div class="qx-news-item">
+          <div class="qx-news-source">
+            <div class="qx-news-dot"></div>
+            <span class="qx-news-src">Reuters</span>
+            <span class="qx-news-time">2h ago</span>
+          </div>
+          <div class="qx-news-title">{{ asset.symbol }} reports strong quarterly earnings, beats estimates on revenue growth</div>
+        </div>
+        <div class="qx-news-item">
+          <div class="qx-news-source">
+            <div class="qx-news-dot" style="background:var(--gold)"></div>
+            <span class="qx-news-src" style="color:var(--gold)">Bloomberg</span>
+            <span class="qx-news-time">5h ago</span>
+          </div>
+          <div class="qx-news-title">Analysts raise price targets following better-than-expected forward guidance</div>
+        </div>
+        <div class="qx-news-item">
+          <div class="qx-news-source">
+            <div class="qx-news-dot" style="background:var(--purple)"></div>
+            <span class="qx-news-src" style="color:var(--purple)">WSJ</span>
+            <span class="qx-news-time">1d ago</span>
+          </div>
+          <div class="qx-news-title">Sector rotation: what recent market moves mean for growth investors</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Buy Modal Step 1 -->
+  <div class="modal-bg" id="buyModal1">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title" id="buy1Title">Buy</div>
+        <button class="modal-close" onclick="closeModal('buyModal1')">✕</button>
+      </div>
+      <div class="modal-input-label">Number of Shares</div>
+      <input class="modal-input" type="number" id="buyQtyInput" min="1" value="1" oninput="updateBuyPreview()">
+      <div style="background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;color:var(--text2);">Estimated Cost</span>
+        <span style="font-size:16px;font-weight:800;color:var(--text);font-family:var(--font-mono)" id="buyPreviewCost">--</span>
+      </div>
+      <button class="modal-btn" style="background:var(--green);color:#04111a;" onclick="proceedBuyConfirm()">Review Order →</button>
+    </div>
+  </div>
+
+  <!-- Buy Modal Step 2 Confirm -->
+  <div class="modal-bg" id="buyModal2">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title">Confirm Purchase</div>
+        <button class="modal-close" onclick="closeModal('buyModal2')">✕</button>
+      </div>
+      <div class="receipt">
+        <div class="receipt-header">
+          <div class="receipt-sym" id="rBuySym">--</div>
+          <div class="receipt-name" id="rBuyName">--</div>
+        </div>
+        <div class="receipt-row"><span class="receipt-key">Shares</span><span class="receipt-val" id="rBuyQty">--</span></div>
+        <div class="receipt-row"><span class="receipt-key">Price/share</span><span class="receipt-val" id="rBuyPrice">--</span></div>
+        <hr class="receipt-divider">
+        <div class="receipt-row"><span class="receipt-key">Total Cost</span><span class="receipt-total" id="rBuyTotal">--</span></div>
+        <hr class="receipt-divider">
+        <div class="receipt-row"><span class="receipt-key">Available Cash</span><span class="receipt-val" id="rBuyCash">--</span></div>
+        <div class="receipt-row"><span class="receipt-key">After Purchase</span><span class="receipt-val" id="rBuyAfter">--</span></div>
+      </div>
+      <div class="modal-btn-row">
+        <button class="modal-btn" onclick="closeModal('buyModal2')">Back</button>
+        <button class="modal-btn" style="background:var(--green);color:#04111a;flex:1;" id="buyConfirmBtn" onclick="submitBuy()">Confirm Purchase</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sell Modal Step 1 -->
+  <div class="modal-bg" id="sellModal1">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title" id="sell1Title">Sell</div>
+        <button class="modal-close" onclick="closeModal('sellModal1')">✕</button>
+      </div>
+      <div class="modal-input-label">Number of Shares</div>
+      <input class="modal-input" type="number" id="sellQtyInput" min="1" value="1" oninput="updateSellPreview()">
+      <div style="background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;color:var(--text2);">Estimated Proceeds</span>
+        <span style="font-size:16px;font-weight:800;color:var(--text);font-family:var(--font-mono)" id="sellPreviewAmt">--</span>
+      </div>
+      <button class="modal-btn" style="background:var(--red);color:white;" onclick="proceedSellConfirm()">Review Order →</button>
+    </div>
+  </div>
+
+  <!-- Sell Modal Step 2 Confirm -->
+  <div class="modal-bg" id="sellModal2">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div class="modal-title">Confirm Sale</div>
+        <button class="modal-close" onclick="closeModal('sellModal2')">✕</button>
+      </div>
+      <div class="receipt">
+        <div class="receipt-header">
+          <div class="receipt-sym" id="rSellSym">--</div>
+          <div class="receipt-name" id="rSellName">--</div>
+        </div>
+        <div class="receipt-row"><span class="receipt-key">Shares</span><span class="receipt-val" id="rSellQty">--</span></div>
+        <div class="receipt-row"><span class="receipt-key">Price/share</span><span class="receipt-val" id="rSellPrice">--</span></div>
+        <hr class="receipt-divider">
+        <div class="receipt-row"><span class="receipt-key">Total Proceeds</span><span class="receipt-sell-total" id="rSellTotal">--</span></div>
+        <hr class="receipt-divider">
+        <div class="receipt-row"><span class="receipt-key">Current Holdings</span><span class="receipt-val" id="rSellHeld">--</span></div>
+        <div class="receipt-row"><span class="receipt-key">Remaining After</span><span class="receipt-val" id="rSellAfter">--</span></div>
+      </div>
+      <div class="modal-btn-row">
+        <button class="modal-btn" onclick="closeModal('sellModal2')">Back</button>
+        <button class="modal-btn" style="background:var(--red);color:white;flex:1;" id="sellConfirmBtn" onclick="submitSell()">Confirm Sale</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const assetId = {{ asset.id }};
+const currentPrice = {{ asset.current_price }};
+const assetSymbol = "{{ asset.symbol }}";
+const holdingQuantity = {{ holding.quantity|default:"0" }};
+const cashBalance = {{ cash_balance }};
+const historicalData = {
+  '1D': {{ historical_1d|default:"[]" }},
+  '1W': {{ historical_1w|default:"[]" }},
+  '1M': {{ historical_1m|default:"[]" }},
+  '3M': {{ historical_3m|default:"[]" }},
+  '1Y': {{ historical_1y|default:"[]" }},
+  '5Y': {{ historical_5y|default:"[]" }}
+};
+
+let mainChart = null;
+let currentPeriod = '1W';
+let lineVis = { price: true, ma20: true, ma50: true, bb: false, vol: false };
+
+function movingAverage(data, w) {
+  return data.map((_, i) => {
+    if (i < w - 1) return null;
+    return data.slice(i - w + 1, i + 1).reduce((a, b) => a + b, 0) / w;
+  });
+}
+
+function bollingerBands(data, w=20, m=2) {
+  const ma = movingAverage(data, w);
+  return data.map((_, i) => {
+    if (i < w - 1) return { upper: null, lower: null };
+    const slice = data.slice(i - w + 1, i + 1);
+    const std = Math.sqrt(slice.reduce((s, v) => s + Math.pow(v - ma[i], 2), 0) / w);
+    return { upper: ma[i] + m * std, lower: ma[i] - m * std };
+  });
+}
+
+function makeLabels(count, period) {
+  const now = new Date();
+  return Array.from({ length: count }, (_, i) => {
+    const d = new Date(now);
+    if (period === '1D') { d.setHours(now.getHours() - (count - i)); return d.getHours() + ':00'; }
+    d.setDate(now.getDate() - (count - i) * ({ '1W': 1, '1M': 1, '3M': 3, '1Y': 7, '5Y': 14 }[period] || 1));
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
+}
+
+function generateFallback(period) {
+  const n = { '1D': 24, '1W': 28, '1M': 31, '3M': 90, '1Y': 52, '5Y': 260 }[period] || 28;
+  const prices = [];
+  let p = currentPrice * ({ '5Y': 0.48, '1Y': 0.74, '3M': 0.88, '1M': 0.94, '1W': 0.97, '1D': 0.99 }[period] || 0.95);
+  for (let i = 0; i < n; i++) { p += (Math.random() - 0.47) * p * 0.022; prices.push(Math.max(p, currentPrice * 0.25)); }
+  prices.push(currentPrice);
+  return prices;
+}
+
+function buildChart(period) {
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  const raw = historicalData[period]?.length ? historicalData[period] : generateFallback(period);
+  const labels = makeLabels(raw.length, period);
+  const ma20 = movingAverage(raw, Math.min(20, raw.length));
+  const ma50 = movingAverage(raw, Math.min(50, raw.length));
+  const bb = bollingerBands(raw, Math.min(20, raw.length));
+  const volData = raw.map(() => Math.random() * 0.9 + 0.1);
+
+  // Update stats
+  const sessionHigh = Math.max(...raw.slice(-Math.min(24, raw.length)));
+  const sessionLow  = Math.min(...raw.slice(-Math.min(24, raw.length)));
+  const ath = (Math.max(...raw) * 1.08).toFixed(2);
+  const atl = (Math.min(...raw) * 0.72).toFixed(2);
+  document.getElementById('qs-high').textContent = '$' + sessionHigh.toFixed(2);
+  document.getElementById('qs-low').textContent  = '$' + sessionLow.toFixed(2);
+  document.getElementById('cf-ath').textContent = '$' + ath;
+  document.getElementById('cf-atl').textContent = '$' + atl;
+  const pTarget = (currentPrice * 1.22).toFixed(2);
+  document.getElementById('priceTarget').textContent = '$' + pTarget;
+  document.getElementById('targetUpside').textContent = '+' + (((pTarget - currentPrice) / currentPrice) * 100).toFixed(1) + '% upside';
+
+  const isUp = raw[raw.length - 1] >= raw[0];
+  const lineColor = isUp ? '#10b981' : '#f43f5e';
+
+  if (mainChart) mainChart.destroy();
+
+  mainChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'Price', data: raw, borderColor: lineColor, borderWidth: 2,
+        fill: true, backgroundColor: ctx2 => {
+          const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, 280);
+          g.addColorStop(0, isUp ? 'rgba(16,185,129,0.16)' : 'rgba(244,63,94,0.16)');
+          g.addColorStop(1, 'rgba(0,0,0,0)'); return g;
+        }, tension: 0.4, pointRadius: 0, pointHoverRadius: 5, yAxisID: 'y' },
+      { label: 'MA 20', data: ma20, borderColor: 'rgba(59,130,246,0.85)', borderWidth: 1.5, fill: false, tension: 0.4, pointRadius: 0, yAxisID: 'y' },
+      { label: 'MA 50', data: ma50, borderColor: 'rgba(245,158,11,0.85)', borderWidth: 1.5, borderDash: [4, 2], fill: false, tension: 0.4, pointRadius: 0, yAxisID: 'y' },
+      { label: 'BB Upper', data: bb.map(b => b.upper), borderColor: 'rgba(139,92,246,0.4)', borderWidth: 1, borderDash: [3, 4], fill: false, tension: 0.4, pointRadius: 0, yAxisID: 'y' },
+      { label: 'BB Lower', data: bb.map(b => b.lower), borderColor: 'rgba(139,92,246,0.4)', borderWidth: 1, borderDash: [3, 4], fill: '-1', backgroundColor: 'rgba(139,92,246,0.04)', tension: 0.4, pointRadius: 0, yAxisID: 'y' },
+      { label: 'Volume', type: 'bar', data: volData, backgroundColor: raw.map((v, i) => i === 0 ? 'rgba(6,182,212,.25)' : v > raw[i-1] ? 'rgba(16,185,129,.3)' : 'rgba(244,63,94,.3)'), yAxisID: 'yVol' }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#161b28', borderColor: 'rgba(255,255,255,.1)', borderWidth: 1,
+          titleColor: '#9ba3b8', bodyColor: '#eef0f6',
+          bodyFont: { family: 'JetBrains Mono', size: 11 },
+          callbacks: {
+            label(c) { if (c.dataset.label === 'Volume' || c.raw === null) return null; return c.dataset.label + ': $' + Number(c.raw).toFixed(2); }
+          },
+          external(c) {
+            const pts = c.tooltip.dataPoints;
+            if (pts?.length && pts[0].raw !== null)
+              document.getElementById('hoverPrice').textContent = '$' + Number(pts[0].raw).toFixed(2) + ' · ' + pts[0].label;
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,.03)' }, ticks: { color: '#4a5268', font: { size: 9.5, family: 'JetBrains Mono' }, maxTicksLimit: 8, maxRotation: 0 }, border: { color: 'rgba(255,255,255,.05)' } },
+        y: { position: 'right', grid: { color: 'rgba(255,255,255,.04)' }, ticks: { color: '#4a5268', font: { size: 9.5, family: 'JetBrains Mono' }, callback: v => '$' + Number(v).toFixed(0), maxTicksLimit: 7 }, border: { color: 'transparent' } },
+        yVol: { display: false, position: 'left', max: 5 }
+      }
+    }
+  });
+
+  // Apply visibility
+  const map = { price: 0, ma20: 1, ma50: 2, bb: [3, 4], vol: 5 };
+  Object.keys(lineVis).forEach(k => {
+    const hidden = !lineVis[k];
+    const idx = map[k];
+    if (Array.isArray(idx)) idx.forEach(i => mainChart.data.datasets[i].hidden = hidden);
+    else mainChart.data.datasets[idx].hidden = hidden;
+  });
+  mainChart.update();
+}
+
+function toggleLine(name, checkbox) {
+  lineVis[name] = checkbox.checked;
+  checkbox.closest('.qx-ind').classList.toggle('active', checkbox.checked);
+  buildChart(currentPeriod);
+}
+
+function updateCalculator() {
+  const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
+  const period = document.getElementById('calcPeriod').value;
+  const hist = historicalData[period] || [];
+  const mult = { '1W': 0.982, '1M': 0.955, '3M': 0.91, '1Y': 0.78, '5Y': 0.54 };
+  const pastPrice = hist.length ? hist[0] : currentPrice * (mult[period] || 0.95);
+  const shares = amount / pastPrice;
+  const curVal = shares * currentPrice;
+  const pl = curVal - amount;
+  const ret = (pl / amount) * 100;
+  document.getElementById('calcShares').textContent = shares.toFixed(4);
+  document.getElementById('calcPastPrice').textContent = '$' + pastPrice.toFixed(2);
+  document.getElementById('calcCurrentValue').textContent = '$' + curVal.toFixed(2);
+  const plEl = document.getElementById('calcProfitLoss');
+  plEl.textContent = (pl >= 0 ? '+' : '') + '$' + pl.toFixed(2);
+  plEl.className = 'qx-cr-val ' + (pl >= 0 ? 'pos' : 'neg');
+  const retEl = document.getElementById('calcReturnPercent');
+  retEl.textContent = (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%';
+  retEl.className = 'qx-cr-val ' + (ret >= 0 ? 'pos' : 'neg');
+}
+
+function getCookie(n) {
+  let v = null;
+  document.cookie.split(';').forEach(c => { const [k, val] = c.trim().split('='); if (k === n) v = decodeURIComponent(val); });
+  return v;
+}
+
+// Toast notification
+function showToast(type, title, msg) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<div class="toast-head">
+    <div class="toast-icon ${type}">${type === 'success' ? '✓' : '✕'}</div>
+    <div class="toast-title">${title}</div>
+  </div>
+  <div class="toast-msg">${msg}</div>`;
+  document.body.appendChild(t);
+  setTimeout(() => { t.classList.add('hiding'); setTimeout(() => t.remove(), 350); }, 4000);
+}
+
+// Modal functions
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Close modals when clicking outside
+document.querySelectorAll('.modal-bg').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+function openBuyModal() {
+  if (!assetSymbol) return;
+  document.getElementById('buy1Title').textContent = `Buy ${assetSymbol}`;
+  document.getElementById('buyQtyInput').value = 1;
+  updateBuyPreview();
+  openModal('buyModal1');
+}
+
+function updateBuyPreview() {
+  const qty = parseInt(document.getElementById('buyQtyInput').value) || 0;
+  const total = qty * currentPrice;
+  document.getElementById('buyPreviewCost').textContent = `$${total.toFixed(2)}`;
+}
+
+function proceedBuyConfirm() {
+  const qty = parseInt(document.getElementById('buyQtyInput').value) || 0;
+  if (!qty || qty <= 0) { alert('Enter a valid quantity'); return; }
+  const total = qty * currentPrice;
+  if (total > cashBalance) { alert(`Insufficient funds. Need $${total.toFixed(2)}, have $${cashBalance.toFixed(2)}`); return; }
+  window.pendingBuyQty = qty;
+  document.getElementById('rBuySym').textContent = assetSymbol;
+  document.getElementById('rBuyName').textContent = "{{ asset.name }}";
+  document.getElementById('rBuyQty').textContent = qty + ' shares';
+  document.getElementById('rBuyPrice').textContent = `$${currentPrice.toFixed(2)}`;
+  document.getElementById('rBuyTotal').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('rBuyCash').textContent = `$${cashBalance.toFixed(2)}`;
+  document.getElementById('rBuyAfter').textContent = `$${(cashBalance - total).toFixed(2)}`;
+  closeModal('buyModal1');
+  openModal('buyModal2');
+}
+
+function submitBuy() {
+  const btn = document.getElementById('buyConfirmBtn');
+  btn.textContent = 'Processing…';
+  btn.disabled = true;
+  fetch(`/buy/${assetId}/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ quantity: window.pendingBuyQty })
+  }).then(r => r.json()).then(d => {
+    btn.textContent = 'Confirm Purchase';
+    btn.disabled = false;
+    if (d.success) {
+      closeModal('buyModal2');
+      showToast('success', `Bought ${window.pendingBuyQty} shares of ${assetSymbol}!`, 'Order confirmed successfully');
+      setTimeout(() => window.location.reload(), 2000);
+    } else {
+      showToast('error', 'Transaction failed', d.error || 'Please try again');
+    }
+  }).catch(() => {
+    btn.textContent = 'Confirm Purchase';
+    btn.disabled = false;
+    showToast('error', 'Network error', 'Please check your connection');
+  });
+}
+
+function openSellModal() {
+  if (holdingQuantity <= 0) { alert("You don't own any shares of this asset"); return; }
+  document.getElementById('sell1Title').textContent = `Sell ${assetSymbol}`;
+  document.getElementById('sellQtyInput').value = 1;
+  document.getElementById('sellQtyInput').max = holdingQuantity;
+  updateSellPreview();
+  openModal('sellModal1');
+}
+
+function updateSellPreview() {
+  const qty = parseInt(document.getElementById('sellQtyInput').value) || 0;
+  const total = qty * currentPrice;
+  document.getElementById('sellPreviewAmt').textContent = `$${total.toFixed(2)}`;
+}
+
+function proceedSellConfirm() {
+  const qty = parseInt(document.getElementById('sellQtyInput').value) || 0;
+  if (!qty || qty <= 0) { alert('Enter a valid quantity'); return; }
+  if (qty > holdingQuantity) { alert('Insufficient holdings'); return; }
+  const total = qty * currentPrice;
+  window.pendingSellQty = qty;
+  document.getElementById('rSellSym').textContent = assetSymbol;
+  document.getElementById('rSellName').textContent = "{{ asset.name }}";
+  document.getElementById('rSellQty').textContent = qty + ' shares';
+  document.getElementById('rSellPrice').textContent = `$${currentPrice.toFixed(2)}`;
+  document.getElementById('rSellTotal').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('rSellHeld').textContent = holdingQuantity + ' shares';
+  document.getElementById('rSellAfter').textContent = (holdingQuantity - qty) + ' shares';
+  closeModal('sellModal1');
+  openModal('sellModal2');
+}
+
+function submitSell() {
+  const btn = document.getElementById('sellConfirmBtn');
+  btn.textContent = 'Processing…';
+  btn.disabled = true;
+  fetch(`/sell/${assetId}/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ quantity: window.pendingSellQty })
+  }).then(r => r.json()).then(d => {
+    btn.textContent = 'Confirm Sale';
+    btn.disabled = false;
+    if (d.success) {
+      closeModal('sellModal2');
+      showToast('success', `Sold ${window.pendingSellQty} shares of ${assetSymbol}!`, 'Sale confirmed successfully');
+      setTimeout(() => window.location.reload(), 2000);
+    } else {
+      showToast('error', 'Transaction failed', d.error || 'Please try again');
+    }
+  }).catch(() => {
+    btn.textContent = 'Confirm Sale';
+    btn.disabled = false;
+    showToast('error', 'Network error', 'Please check your connection');
+  });
+}
+
+document.querySelectorAll('.qx-tbtn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.qx-tbtn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentPeriod = this.dataset.period;
+    buildChart(currentPeriod);
+  });
+});
+
+document.getElementById('calcAmount').addEventListener('input', updateCalculator);
+document.getElementById('calcPeriod').addEventListener('change', updateCalculator);
+
+setInterval(() => {
+  const now = new Date();
+  document.getElementById('headerTime').textContent = 'Updated ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}, 1000);
+
+buildChart('1W');
+
+// Buy/Sell button listeners
+document.getElementById('buyBtn').addEventListener('click', openBuyModal);
+document.getElementById('sellBtn').addEventListener('click', openSellModal);
+
+updateCalculator();
+</script>
+{% endblock %}

@@ -1,0 +1,402 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Withdraw Funds | Qubix{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --bg: #0e0f13;
+    --surface: #16181f;
+    --surface2: #1e2029;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0f1f5;
+    --muted: #6b7080;
+    --accent: #4f8ef7;
+    --green: #22c55e;
+    --red: #ef4444;
+    --gold: #f59e0b;
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 30px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    min-height: calc(100vh - 58px);
+  }
+
+  .withdraw-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 520px;
+    padding: 28px 32px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .page-subtitle {
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .balance-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .balance-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .balance-amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--green);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .amount-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  .amount-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .amount-input {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+    width: 100%;
+    padding: 4px;
+  }
+
+  .amount-input:focus {
+    outline: none;
+  }
+
+  .crypto-selector {
+    margin-bottom: 20px;
+  }
+
+  .selector-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .crypto-dropdown {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .crypto-dropdown:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .address-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .address-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .info-box {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .info-box.show {
+    display: block;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 12px;
+  }
+
+  .info-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .info-label {
+    color: var(--muted);
+  }
+
+  .info-value {
+    color: var(--text);
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+    text-align: right;
+  }
+
+  .fee-notice {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 16px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--gold);
+    text-align: center;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 142, 247, 0.3);
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 16px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+    text-align: center;
+    width: 100%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="withdraw-card">
+    <h1 class="page-title">Withdraw Funds</h1>
+    <p class="page-subtitle">Withdraw to your crypto wallet</p>
+
+    <div class="balance-box">
+      <div class="balance-label">AVAILABLE BALANCE</div>
+      <div class="balance-amount" id="availableBalance">${{ cash_balance|floatformat:2 }}</div>
+    </div>
+
+    <form method="post" id="withdrawForm">
+      {% csrf_token %}
+      <input type="hidden" name="crypto_id" id="crypto_id">
+
+      <div class="amount-box">
+        <div class="amount-label">AMOUNT (USD)</div>
+        <input type="number" id="withdrawAmount" name="amount" class="amount-input" 
+               placeholder="0.00" step="0.01" min="10" max="{{ cash_balance }}" 
+               oninput="enforceMaxLimit(this)">
+      </div>
+
+      <div class="crypto-selector">
+        <label class="selector-label">SELECT CRYPTOCURRENCY</label>
+        <select id="cryptoDropdown" class="crypto-dropdown">
+          <option value="">-- Choose a cryptocurrency --</option>
+          {% for crypto in cryptos %}
+          <option value="{{ crypto.id }}" 
+                  data-symbol="{{ crypto.symbol }}" 
+                  data-name="{{ crypto.name }}" 
+                  data-rate="{{ crypto.rate_usd }}" 
+                  data-network="{{ crypto.network }}">
+            {{ crypto.symbol }} - {{ crypto.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <input type="text" id="walletAddress" name="wallet_address" class="address-input" 
+             placeholder="Enter your wallet address" required>
+
+      <div id="infoBox" class="info-box">
+        <div class="info-row">
+          <span class="info-label">You'll receive</span>
+          <span class="info-value" id="cryptoAmount">0.00000000</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Network</span>
+          <span class="info-value" id="networkValue">---</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Exchange rate</span>
+          <span class="info-value" id="exchangeRate">---</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Fee (5%)</span>
+          <span class="info-value" id="feeAmount">$0.00</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">You'll receive after fee</span>
+          <span class="info-value" id="netCryptoAmount">0.00000000</span>
+        </div>
+      </div>
+
+      <div class="fee-notice">
+        ⚠️ A 5% processing fee will be charged. You will need to pay this fee separately before withdrawal is processed.
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn" disabled>Continue</button>
+    </form>
+
+    <a href="{% url 'dashboard' %}" class="back-link">← Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let selectedCryptoData = null;
+  const availableBalance = {{ cash_balance|default:0 }};
+
+  const cryptos = {
+    {% for crypto in cryptos %}
+    {{ crypto.id }}: {
+      id: {{ crypto.id }},
+      symbol: "{{ crypto.symbol }}",
+      name: "{{ crypto.name }}",
+      rate: {{ crypto.rate_usd }},
+      network: "{{ crypto.network }}"
+    },
+    {% endfor %}
+  };
+
+  const cryptoDropdown = document.getElementById('cryptoDropdown');
+  const amountInput = document.getElementById('withdrawAmount');
+  const submitBtn = document.getElementById('submitBtn');
+  const infoBox = document.getElementById('infoBox');
+  const walletAddress = document.getElementById('walletAddress');
+
+  // Enforce max limit
+  function enforceMaxLimit(input) {
+    let value = parseFloat(input.value);
+    if (!isNaN(value) && value > availableBalance) {
+      input.value = availableBalance;
+    }
+    updateCryptoAmount();
+    validateForm();
+  }
+
+  // Dropdown change
+  cryptoDropdown.addEventListener('change', function() {
+    const cryptoId = this.value;
+
+    if (cryptoId && cryptos[cryptoId]) {
+      selectedCryptoData = cryptos[cryptoId];
+
+      infoBox.classList.add('show');
+      document.getElementById('networkValue').textContent = selectedCryptoData.network || selectedCryptoData.symbol;
+      document.getElementById('exchangeRate').textContent = `1 ${selectedCryptoData.symbol} = $${selectedCryptoData.rate.toFixed(2)}`;
+      document.getElementById('crypto_id').value = cryptoId;
+
+      updateCryptoAmount();
+      validateForm();
+    } else {
+      infoBox.classList.remove('show');
+      validateForm();
+    }
+  });
+
+  // Amount input
+  amountInput.addEventListener('input', function() {
+    enforceMaxLimit(this);
+  });
+
+  // Wallet address input
+  walletAddress.addEventListener('input', validateForm);
+
+  function updateCryptoAmount() {
+    if (selectedCryptoData && amountInput.value) {
+      const amount = parseFloat(amountInput.value);
+      if (amount > 0) {
+        const cryptoAmount = amount / selectedCryptoData.rate;
+        const feeAmount = amount * 0.05;
+        const netAmount = amount - feeAmount;
+        const netCryptoAmount = netAmount / selectedCryptoData.rate;
+
+        document.getElementById('cryptoAmount').textContent = `${cryptoAmount.toFixed(8)} ${selectedCryptoData.symbol}`;
+        document.getElementById('feeAmount').textContent = `$${feeAmount.toFixed(2)}`;
+        document.getElementById('netCryptoAmount').textContent = `${netCryptoAmount.toFixed(8)} ${selectedCryptoData.symbol}`;
+      } else {
+        document.getElementById('cryptoAmount').textContent = '0.00000000';
+        document.getElementById('feeAmount').textContent = '$0.00';
+        document.getElementById('netCryptoAmount').textContent = '0.00000000';
+      }
+    }
+  }
+
+  function validateForm() {
+    const amount = parseFloat(amountInput.value);
+    const hasAddress = walletAddress.value.trim().length > 0;
+    const isValidAmount = amount && amount > 0 && amount <= availableBalance;
+
+    submitBtn.disabled = !(selectedCryptoData && isValidAmount && hasAddress);
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Pending Orders - Payment Under Review</h1>
+
+{% if pending %}
+<table style="width:100%; border-collapse: collapse; margin-top: 20px;">
+    <thead>
+        <tr style="background: #f5f5f5;">
+            <th style="padding: 12px; text-align: left;">ID</th>
+            <th style="padding: 12px; text-align: left;">User</th>
+            <th style="padding: 12px; text-align: left;">Product</th>
+            <th style="padding: 12px; text-align: left;">Qty</th>
+            <th style="padding: 12px; text-align: left;">Amount</th>
+            <th style="padding: 12px; text-align: left;">Delivery</th>
+            <th style="padding: 12px; text-align: left;">Date</th>
+            <th style="padding: 12px; text-align: left;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tx in pending %}
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td style="padding: 12px;">#{{ tx.id }}</td>
+            <td style="padding: 12px;">{{ tx.user.email }}</td>
+            <td style="padding: 12px;">{{ tx.product.name }}</td>
+            <td style="padding: 12px;">{{ tx.quantity }}</td>
+            <td style="padding: 12px;">${{ tx.total_amount|floatformat:2 }}</td>
+            <td style="padding: 12px;">{{ tx.get_delivery_method_display }}</td>
+            <td style="padding: 12px;">{{ tx.created_at|date:"M d, Y H:i" }}</td>
+            <td style="padding: 12px;">
+                <a href="{% url 'physical_team_verify' tx.id %}" style="background: #3d7eff; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">Verify</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No pending orders.</p>
+{% endif %}
+{% endblock %}

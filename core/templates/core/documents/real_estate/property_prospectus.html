@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Prospectus — Qubix Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --gold:#f0b90b; --gold-dark:#c9960a; --gold-pale:#fdf6dc;
+    --navy:#0d1f3c; --slate:#2c3e5d; --slate-light:#3d5278;
+    --text:#1a1a2e; --muted:#5a6a84; --border:#c8d4e8;
+    --bg:#fff; --subtle:#f5f7fa; --green:#1a7a4a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Source Sans 3',sans-serif; background:#d8dde8; display:flex; justify-content:center; padding:40px 20px; color:var(--text); font-size:13px; }
+  .document { background:var(--bg); max-width:800px; width:100%; box-shadow:0 8px 60px rgba(13,31,60,0.2); }
+
+  /* Hero cover */
+  .cover { background:linear-gradient(160deg, var(--navy) 0%, var(--slate) 60%, #1a3566 100%); padding:52px 52px 40px; color:white; position:relative; overflow:hidden; }
+  .cover::before { content:''; position:absolute; top:0; right:0; width:300px; height:100%; background:linear-gradient(to left, rgba(240,185,11,.06), transparent); }
+  .cover-logo { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:700; letter-spacing:5px; text-transform:uppercase; margin-bottom:3px; }
+  .cover-div { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:44px; }
+  .cover-eyebrow { font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+  .cover-property { font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:600; line-height:1.15; margin-bottom:8px; }
+  .cover-location { font-size:13px; color:rgba(255,255,255,.6); letter-spacing:1px; margin-bottom:28px; }
+  .cover-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .cover-tag { font-size:9px; letter-spacing:1px; text-transform:uppercase; border:1px solid rgba(240,185,11,.5); color:var(--gold); padding:4px 12px; }
+  .cover-tag.filled { background:var(--gold); color:var(--navy); font-weight:700; border-color:var(--gold); }
+
+  /* Gold accent line */
+  .accent { height:4px; background:linear-gradient(to right, var(--gold), var(--gold-dark)); }
+
+  .body-pad { padding:40px 48px; }
+
+  /* Section headers */
+  .section { margin-bottom:32px; }
+  .sec-label { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:var(--gold-dark); font-weight:700; margin-bottom:4px; }
+  .sec-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; color:var(--navy); border-bottom:2px solid var(--gold); padding-bottom:8px; margin-bottom:16px; }
+
+  /* Property specs grid */
+  .specs-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); margin-bottom:20px; }
+  .spec-cell { background:var(--bg); padding:16px 14px; text-align:center; }
+  .spec-cell .sk { font-size:8px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+  .spec-cell .sv { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:700; color:var(--navy); }
+  .spec-cell .su { font-size:9px; color:var(--muted); }
+
+  /* Description text */
+  .desc-text { font-size:13.5px; line-height:1.85; color:#333; text-align:justify; }
+  .desc-text p { margin-bottom:12px; }
+
+  /* Financial projections */
+  .proj-hero { background:var(--navy); color:white; padding:24px 28px; margin-bottom:16px; }
+  .proj-hero-title { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:14px; }
+  .proj-hero-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; }
+  .proj-metric .pm-label { font-size:8px; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:5px; }
+  .proj-metric .pm-val { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; color:var(--gold); }
+  .proj-metric .pm-sub { font-size:9px; color:rgba(255,255,255,.4); margin-top:3px; }
+
+  .proj-table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+  .proj-table thead tr { background:var(--slate); }
+  .proj-table thead th { padding:9px 14px; text-align:left; font-size:9px; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,.6); font-weight:600; }
+  .proj-table thead th:not(:first-child) { text-align:right; }
+  .proj-table tbody tr { border-bottom:1px solid var(--border); }
+  .proj-table tbody tr:nth-child(even) { background:var(--subtle); }
+  .proj-table tbody td { padding:11px 14px; font-size:12.5px; }
+  .proj-table tbody td:not(:first-child) { text-align:right; font-weight:600; }
+  .proj-table tbody td.green { color:var(--green); }
+
+  /* Market analysis */
+  .market-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+  .market-card { border:1px solid var(--border); padding:16px 18px; }
+  .market-card .mc-lbl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .market-card .mc-val { font-size:15px; font-weight:700; color:var(--navy); }
+  .market-card .mc-sub { font-size:11px; color:var(--muted); margin-top:3px; line-height:1.5; }
+
+  /* Risk factors */
+  .risk-item { display:flex; gap:12px; padding:10px 14px; border-left:3px solid var(--border); margin-bottom:8px; background:var(--subtle); }
+  .risk-icon { font-size:12px; flex-shrink:0; margin-top:1px; }
+  .risk-text { font-size:12.5px; color:#444; line-height:1.6; }
+  .risk-text strong { color:var(--text); }
+
+  /* Management team */
+  .team-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .team-card { border:1px solid var(--border); padding:16px 16px; text-align:center; }
+  .team-avatar { width:48px; height:48px; border-radius:50%; background:var(--slate); margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; color:white; }
+  .team-name { font-size:13px; font-weight:700; color:var(--navy); margin-bottom:2px; }
+  .team-role { font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--gold-dark); }
+  .team-bio { font-size:11px; color:var(--muted); margin-top:6px; line-height:1.5; }
+
+  /* Disclaimer */
+  .disclaimer { background:var(--subtle); border:1px solid var(--border); padding:14px 18px; font-size:10px; color:var(--muted); line-height:1.7; margin-top:24px; }
+  .disclaimer strong { color:var(--text); }
+
+  .footer { border-top:4px solid var(--gold); padding:13px 48px; display:flex; justify-content:space-between; background:var(--subtle); font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  @media print { body { background:white; padding:0; } .document { box-shadow:none; } }
+</style>
+</head>
+<body>
+<div class="document">
+
+  <!-- Cover -->
+  <div class="cover">
+    <div class="cover-logo">QUBIX</div>
+    <div class="cover-div">Real Estate Division · Investment Prospectus</div>
+    <div class="cover-eyebrow">Featured Investment Opportunity</div>
+    <div class="cover-property">{{ property_name }}</div>
+    <div class="cover-location">{{ location }}</div>
+    <div class="cover-tags">
+      <div class="cover-tag filled">{{ property_type }}</div>
+      <div class="cover-tag">{{ investment_term }}</div>
+      <div class="cover-tag">{{ target_apy }} Target APY</div>
+      <div class="cover-tag">Fractional Shares</div>
+    </div>
+  </div>
+  <div class="accent"></div>
+
+  <div class="body-pad">
+
+    <!-- Property overview -->
+    <div class="section">
+      <div class="sec-label">Section 1</div>
+      <div class="sec-title">Property Overview</div>
+      <div class="specs-grid">
+        <div class="spec-cell"><div class="sk">Bedrooms</div><div class="sv">{{ bedrooms }}</div><div class="su">beds</div></div>
+        <div class="spec-cell"><div class="sk">Bathrooms</div><div class="sv">{{ bathrooms }}</div><div class="su">baths</div></div>
+        <div class="spec-cell"><div class="sk">Total Area</div><div class="sv">{{ sqft }}</div><div class="su">sq ft</div></div>
+        <div class="spec-cell"><div class="sk">Year Built</div><div class="sv">{{ year_built }}</div><div class="su">built</div></div>
+      </div>
+      <div class="desc-text">
+        <p>{{ property_description }}</p>
+        <p>Located at <strong>{{ location }}</strong>, this property represents a prime real estate investment
+        opportunity in a high-demand rental market. The asset has been independently valued and vetted by Qubix's
+        due diligence team, and is structured for fractional ownership to allow accessible, regulated participation
+        by retail and institutional investors alike.</p>
+      </div>
+    </div>
+
+    <!-- Financial projections -->
+    <div class="section">
+      <div class="sec-label">Section 2</div>
+      <div class="sec-title">Financial Projections &amp; Returns</div>
+      <div class="proj-hero">
+        <div class="proj-hero-title">Key Return Metrics (Projected)</div>
+        <div class="proj-hero-grid">
+          <div class="proj-metric"><div class="pm-label">Target APY</div><div class="pm-val">{{ target_apy }}</div><div class="pm-sub">Annualised yield</div></div>
+          <div class="proj-metric"><div class="pm-label">Rental Yield</div><div class="pm-val">{{ rental_yield }}</div><div class="pm-sub">Gross rental</div></div>
+          <div class="proj-metric"><div class="pm-label">Capital Growth</div><div class="pm-val">{{ capital_growth }}</div><div class="pm-sub">Annual appreciation</div></div>
+          <div class="proj-metric"><div class="pm-label">Total Investment</div><div class="pm-val">{{ total_investment }}</div><div class="pm-sub">Property value</div></div>
+        </div>
+      </div>
+      <table class="proj-table">
+        <thead>
+          <tr><th>Year</th><th>Rental Income</th><th>Capital Value</th><th>Total Return</th><th>Cumulative ROI</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Year 1</td><td>{{ y1_rental }}</td><td>{{ y1_value }}</td><td>{{ y1_return }}</td><td class="green">{{ y1_roi }}</td></tr>
+          <tr><td>Year 2</td><td>{{ y2_rental }}</td><td>{{ y2_value }}</td><td>{{ y2_return }}</td><td class="green">{{ y2_roi }}</td></tr>
+          <tr><td>Year 3</td><td>{{ y3_rental }}</td><td>{{ y3_value }}</td><td>{{ y3_return }}</td><td class="green">{{ y3_roi }}</td></tr>
+          <tr><td>Year 5</td><td>{{ y5_rental }}</td><td>{{ y5_value }}</td><td>{{ y5_return }}</td><td class="green">{{ y5_roi }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Market analysis -->
+    <div class="section">
+      <div class="sec-label">Section 3</div>
+      <div class="sec-title">Market Analysis</div>
+      <div class="market-grid">
+        <div class="market-card"><div class="mc-lbl">Local Market Trend</div><div class="mc-val">{{ market_trend }}</div><div class="mc-sub">{{ market_description }}</div></div>
+        <div class="market-card"><div class="mc-lbl">Average Rental Yield (Area)</div><div class="mc-val">{{ area_yield }}</div><div class="mc-sub">Comparable properties in {{ location }}</div></div>
+        <div class="market-card"><div class="mc-lbl">Vacancy Rate (Area)</div><div class="mc-val">{{ vacancy_rate }}</div><div class="mc-sub">Low vacancy signals strong demand</div></div>
+        <div class="market-card"><div class="mc-lbl">Price Appreciation (5Y)</div><div class="mc-val">{{ price_appreciation }}</div><div class="mc-sub">Historical market data</div></div>
+      </div>
+    </div>
+
+    <!-- Risk factors -->
+    <div class="section">
+      <div class="sec-label">Section 4</div>
+      <div class="sec-title">Risk Factors</div>
+      <div class="risk-item"><div class="risk-icon">⚠</div><div class="risk-text"><strong>Market Risk:</strong> Property values may decrease due to economic conditions, interest rate changes, or local market shifts. Past performance does not guarantee future results.</div></div>
+      <div class="risk-item"><div class="risk-icon">⚠</div><div class="risk-text"><strong>Liquidity Risk:</strong> Fractional real estate shares are not publicly traded. Exit options are subject to secondary market availability and the terms of the Operating Agreement.</div></div>
+      <div class="risk-item"><div class="risk-icon">⚠</div><div class="risk-text"><strong>Rental Income Risk:</strong> Occupancy rates and rental income are subject to market conditions, tenant behaviour, and property management performance.</div></div>
+      <div class="risk-item"><div class="risk-icon">⚠</div><div class="risk-text"><strong>Regulatory Risk:</strong> Changes in real estate regulations, tax laws, or zoning requirements may affect investment returns.</div></div>
+    </div>
+
+    <!-- Management team -->
+    <div class="section">
+      <div class="sec-label">Section 5</div>
+      <div class="sec-title">Management Team</div>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">{{ fund_manager_initials }}</div>
+          <div class="team-name">{{ fund_manager_name }}</div>
+          <div class="team-role">Fund Manager</div>
+          <div class="team-bio">{{ fund_manager_bio }}</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">{{ property_manager_initials }}</div>
+          <div class="team-name">{{ property_manager_name }}</div>
+          <div class="team-role">Property Manager</div>
+          <div class="team-bio">{{ property_manager_bio }}</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">{{ legal_officer_initials }}</div>
+          <div class="team-name">{{ legal_officer_name }}</div>
+          <div class="team-role">Legal &amp; Compliance</div>
+          <div class="team-bio">{{ legal_officer_bio }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <strong>Important Disclaimer:</strong> This prospectus is for informational purposes only and does not
+      constitute financial advice or an offer to sell securities. All financial projections are estimates based
+      on current market conditions and are not guaranteed. Investing in real estate involves risk, including the
+      possible loss of principal. Please read the full Operating Agreement before investing. Qubix Real Estate
+      Ltd. is a registered investment platform. Consult your financial advisor before making any investment decision.
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>Qubix Real Estate — All rights reserved</span>
+    <span>Generated: {% now "d M Y, H:i" %} UTC · Page 1 of 1</span>
+  </div>
+</div>
+</body>
+</html>

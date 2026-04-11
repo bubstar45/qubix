@@ -1,0 +1,153 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Pay Sell Fee | Qubix{% endblock %}
+
+{% block body_class %}shop-page{% endblock %}
+
+{% block extra_css %}
+<style>
+.main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+.card {
+  background: var(--surface2);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid var(--border);
+}
+.card-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--gold);
+}
+.amount-box {
+  background: var(--surface3);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  margin: 20px 0;
+}
+.amount-label {
+  font-size: 12px;
+  color: var(--muted2);
+  margin-bottom: 8px;
+}
+.amount-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+}
+.payment-methods {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+.payment-method {
+  flex: 1;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.payment-method:hover {
+  border-color: var(--gold);
+  background: rgba(240,185,11,0.05);
+}
+.payment-method.selected {
+  border-color: var(--gold);
+  background: rgba(240,185,11,0.1);
+}
+.payment-method-icon { font-size: 24px; margin-bottom: 4px; }
+.payment-method-name { font-size: 13px; font-weight: 700; }
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+.btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.btn-secondary {
+  background: var(--surface3);
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.btn-primary {
+  background: var(--gold);
+  color: #000;
+}
+.btn-primary:hover { background: #f5c800; }
+@media (max-width: 768px) {
+  .payment-methods { flex-direction: column; }
+  .action-buttons { flex-direction: column; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="card">
+    <div class="card-title">💰 Pay Sell Fee</div>
+    <div class="card-sub">Pay the 5.5% fee to complete your sale</div>
+
+    <div class="amount-box">
+      <div class="amount-label">FEE AMOUNT</div>
+      <div class="amount-value">${{ fee_amount|floatformat:2 }}</div>
+      <div class="amount-label" style="margin-top: 8px;">Net payout after fee: ${{ net_payout|floatformat:2 }}</div>
+    </div>
+
+    <form method="POST" id="paymentForm">
+      {% csrf_token %}
+      <div class="payment-methods">
+        <div class="payment-method selected" onclick="selectMethod('BTC', this)">
+          <div class="payment-method-icon">₿</div>
+          <div class="payment-method-name">Bitcoin</div>
+        </div>
+        <div class="payment-method" onclick="selectMethod('ETH', this)">
+          <div class="payment-method-icon">Ξ</div>
+          <div class="payment-method-name">Ethereum</div>
+        </div>
+        <div class="payment-method" onclick="selectMethod('USDT', this)">
+          <div class="payment-method-icon">₮</div>
+          <div class="payment-method-name">USDT</div>
+        </div>
+        <div class="payment-method" onclick="selectMethod('LTC', this)">
+          <div class="payment-method-icon">Ł</div>
+          <div class="payment-method-name">Litecoin</div>
+        </div>
+      </div>
+      <input type="hidden" name="payment_method" id="selectedMethod" value="BTC">
+
+      <div class="action-buttons">
+        <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
+        <button type="submit" class="btn btn-primary">Pay Fee & Sell</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function selectMethod(method, element) {
+  document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+  element.classList.add('selected');
+  document.getElementById('selectedMethod').value = method;
+}
+</script>
+{% endblock %}

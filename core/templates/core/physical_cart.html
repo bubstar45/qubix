@@ -1,0 +1,662 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart | Qubix{% endblock %}
+
+{% block body_class %}shop-page{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── CART PAGE SPECIFIC STYLES ── */
+.cart-container {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+}
+
+.cart-items {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.cart-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.5fr;
+  padding: 16px 20px;
+  background: var(--surface3);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted2);
+  text-transform: uppercase;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.5fr;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.cart-item.removing {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+}
+
+.product-info:hover .product-name {
+  color: var(--accent);
+}
+
+.product-image {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  background: var(--surface3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-name {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+  transition: color 0.2s;
+}
+
+.product-spec {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.product-price {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qty-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.qty-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--surface2);
+}
+
+.qty-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: center;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 0.2s;
+  padding: 8px;
+}
+
+.remove-btn:hover {
+  color: var(--red);
+}
+
+.order-summary {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  position: sticky;
+  top: 90px;
+}
+
+.summary-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+  padding-top: 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.summary-label {
+  color: var(--muted2);
+}
+
+.summary-value {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.total-label {
+  color: var(--text);
+}
+
+.total-value {
+  color: var(--green);
+}
+
+.checkout-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 20px;
+  transition: all 0.2s;
+}
+
+.checkout-btn:hover {
+  background: #2d6eef;
+  transform: translateY(-2px);
+}
+
+.continue-shopping {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  color: var(--muted2);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.continue-shopping:hover {
+  color: var(--accent);
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.empty-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.empty-sub {
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.shop-btn {
+  display: inline-block;
+  padding: 12px 32px;
+  background: var(--accent);
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.shop-btn:hover {
+  background: #2d6eef;
+  transform: translateY(-2px);
+}
+
+/* Toast Notification Styles */
+.toast-notification {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--surface2);
+  border-left: 4px solid var(--green);
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  z-index: 1000;
+  transform: translateX(400px);
+  transition: transform 0.3s ease;
+  max-width: 350px;
+}
+
+.toast-notification.show {
+  transform: translateX(0);
+}
+
+.toast-notification.error {
+  border-left-color: var(--red);
+}
+
+.toast-notification.warning {
+  border-left-color: var(--gold);
+}
+
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.toast-icon.success {
+  background: rgba(14,203,129,0.15);
+  color: var(--green);
+}
+
+.toast-icon.error {
+  background: rgba(246,70,93,0.15);
+  color: var(--red);
+}
+
+.toast-icon.warning {
+  background: rgba(240,185,11,0.15);
+  color: var(--gold);
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.toast-message {
+  font-size: 11px;
+  color: var(--muted2);
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.toast-close:hover {
+  color: var(--text);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .cart-container { grid-template-columns: 1fr; }
+  .cart-header { display: none; }
+  .cart-item { grid-template-columns: 1fr; gap: 12px; }
+  .product-info { justify-content: space-between; }
+  .toast-notification { bottom: 20px; right: 20px; left: 20px; max-width: calc(100% - 40px); }
+}
+
+@media (max-width: 600px) {
+  .main { padding: 20px 16px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Shopping <span>Cart</span></h1>
+      <p class="page-sub">// Review your items before checkout</p>
+    </div>
+  </div>
+
+  {% if items %}
+  <div class="cart-container">
+    <div class="cart-items">
+      <div class="cart-header">
+        <div>Product</div>
+        <div>Price</div>
+        <div>Quantity</div>
+        <div></div>
+      </div>
+      
+      {% for item in items %}
+      <div class="cart-item" id="cart-item-{{ item.id }}" data-product-name="{{ item.product.name }}">
+        <div class="product-info" onclick="window.location.href='/physical/product/{{ item.product.id }}/'">
+          <div class="product-image">
+            {% if item.product.main_image %}
+              <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}">
+            {% else %}
+              💎
+            {% endif %}
+          </div>
+          <div>
+            <div class="product-name">{{ item.product.name }}</div>
+            <div class="product-spec">{{ item.product.purity|default:"Fine" }} • {{ item.product.weight|default:"1 oz" }}</div>
+          </div>
+        </div>
+        <div class="product-price">${{ item.product.current_price|floatformat:2 }}</div>
+        <div class="quantity-control">
+          <button class="qty-btn decrease" data-id="{{ item.id }}" data-current="{{ item.quantity }}">-</button>
+          <span class="qty-value" id="qty-{{ item.id }}">{{ item.quantity }}</span>
+          <button class="qty-btn increase" data-id="{{ item.id }}" data-current="{{ item.quantity }}">+</button>
+        </div>
+        <div>
+          <button class="remove-btn" data-id="{{ item.id }}" data-name="{{ item.product.name }}"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    
+    <div class="order-summary">
+      <div class="summary-title">Order Summary</div>
+      <div class="summary-row">
+        <span class="summary-label">Subtotal</span>
+        <span class="summary-value" id="cart-subtotal">${{ total|floatformat:2 }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Items</span>
+        <span class="summary-value" id="cart-count">{{ item_count }}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label total-label">Total</span>
+        <span class="summary-value total-value" id="cart-total">${{ total|floatformat:2 }}</span>
+      </div>
+      <a href="{% url 'physical_checkout' %}" class="checkout-btn">Proceed to Checkout</a>
+      <a href="{% url 'physical_investments' %}" class="continue-shopping">← Continue Shopping</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="empty-cart">
+    <div class="empty-icon">🛒</div>
+    <div class="empty-title">Your cart is empty</div>
+    <div class="empty-sub">Looks like you haven't added any items to your cart yet.</div>
+    <a href="{% url 'physical_investments' %}" class="shop-btn">Browse Products</a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Toast Notification Container -->
+<div id="toastContainer"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Make sure this runs AFTER the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Cart page loaded - initializing');
+    
+    // Get CSRF token
+    function getCsrfToken() {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, 10) === 'csrftoken=') {
+                    cookieValue = decodeURIComponent(cookie.substring(10));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    const csrftoken = getCsrfToken();
+    console.log('CSRF token found:', csrftoken ? 'YES' : 'NO');
+    
+    // ============= TOAST NOTIFICATION SYSTEM =============
+    function showToast(title, message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        
+        const toastId = 'toast-' + Date.now();
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.id = toastId;
+        
+        let iconClass = 'fas fa-check-circle';
+        if (type === 'error') iconClass = 'fas fa-exclamation-circle';
+        if (type === 'warning') iconClass = 'fas fa-clock';
+        
+        toast.innerHTML = `
+            <div class="toast-icon ${type}">
+                <i class="${iconClass}"></i>
+            </div>
+            <div class="toast-content">
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+            <button class="toast-close" onclick="this.closest('.toast-notification').remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        container.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            if (toast && toast.parentNode) {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 4000);
+    }
+    
+    // Update quantity function
+    async function updateQuantity(itemId, newQty) {
+        try {
+            const response = await fetch(`/physical/cart/update/${itemId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrftoken
+                },
+                body: `quantity=${newQty}`
+            });
+            return await response.json();
+        } catch (err) {
+            console.error('Update error:', err);
+            return null;
+        }
+    }
+    
+    // Remove item function with animation
+    async function removeCartItem(itemId, productName) {
+        try {
+            const response = await fetch(`/physical/cart/remove/${itemId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            });
+            return await response.json();
+        } catch (err) {
+            console.error('Remove error:', err);
+            return null;
+        }
+    }
+    
+    // Update UI function
+    function updateCartUI(data) {
+        if (data && data.success) {
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const totalEl = document.getElementById('cart-total');
+            const countEl = document.getElementById('cart-count');
+            
+            if (subtotalEl) subtotalEl.textContent = `$${data.cart_total.toFixed(2)}`;
+            if (totalEl) totalEl.textContent = `$${data.cart_total.toFixed(2)}`;
+            if (countEl) countEl.textContent = data.cart_count;
+            
+            // Update navbar cart count
+            const navCartCount = document.getElementById('cartCount');
+            if (navCartCount) navCartCount.textContent = data.cart_count;
+        }
+    }
+    
+    // Setup event handlers
+    function setupEventHandlers() {
+        // Increase buttons
+        document.querySelectorAll('.increase').forEach(btn => {
+            btn.onclick = async function(e) {
+                e.stopPropagation();
+                const itemId = this.dataset.id;
+                const qtySpan = document.getElementById(`qty-${itemId}`);
+                if (!qtySpan) return;
+                
+                let currentQty = parseInt(qtySpan.textContent);
+                let newQty = currentQty + 1;
+                
+                const data = await updateQuantity(itemId, newQty);
+                if (data && data.success) {
+                    qtySpan.textContent = newQty;
+                    updateCartUI(data);
+                    showToast('Quantity Updated', `Quantity increased to ${newQty}`, 'success');
+                } else if (data && data.error) {
+                    showToast('Error', data.error, 'error');
+                }
+            };
+        });
+        
+        // Decrease buttons
+        document.querySelectorAll('.decrease').forEach(btn => {
+            btn.onclick = async function(e) {
+                e.stopPropagation();
+                const itemId = this.dataset.id;
+                const qtySpan = document.getElementById(`qty-${itemId}`);
+                if (!qtySpan) return;
+                
+                let currentQty = parseInt(qtySpan.textContent);
+                let newQty = currentQty - 1;
+                
+                if (newQty < 1) return;
+                
+                const data = await updateQuantity(itemId, newQty);
+                if (data && data.success) {
+                    qtySpan.textContent = newQty;
+                    updateCartUI(data);
+                    showToast('Quantity Updated', `Quantity decreased to ${newQty}`, 'success');
+                } else if (data && data.error) {
+                    showToast('Error', data.error, 'error');
+                }
+            };
+        });
+        
+        // Remove buttons with animation and toast notification
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.onclick = async function(e) {
+                e.stopPropagation();
+                const itemId = this.dataset.id;
+                const productName = this.dataset.name || 'Item';
+                const cartItem = document.getElementById(`cart-item-${itemId}`);
+                
+                // Add removing animation class
+                if (cartItem) {
+                    cartItem.classList.add('removing');
+                }
+                
+                // Wait for animation
+                await new Promise(resolve => setTimeout(resolve, 200));
+                
+                const data = await removeCartItem(itemId, productName);
+                
+                if (data && data.success) {
+                    // Show success toast notification
+                    showToast('Item Removed', `${productName} has been removed from your cart`, 'success');
+                    
+                    // Remove the item element
+                    if (cartItem) cartItem.remove();
+                    updateCartUI(data);
+                    
+                    // If cart is empty, reload page to show empty state
+                    if (data.cart_count === 0) {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    }
+                } else {
+                    // Show error toast notification
+                    showToast('Error', `Failed to remove ${productName}. Please try again.`, 'error');
+                    
+                    // Remove animation class if failed
+                    if (cartItem) {
+                        cartItem.classList.remove('removing');
+                    }
+                }
+            };
+        });
+        
+        console.log('Event handlers setup complete. Found:', {
+            increase: document.querySelectorAll('.increase').length,
+            decrease: document.querySelectorAll('.decrease').length,
+            remove: document.querySelectorAll('.remove-btn').length
+        });
+    }
+    
+    // Initialize
+    setupEventHandlers();
+});
+</script>
+{% endblock %}

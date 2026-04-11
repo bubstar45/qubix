@@ -1,0 +1,314 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Market News | Qubix{% endblock %}
+
+{% block body_class %}news-page{% endblock %}
+
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+
+/* ── News wrapper ── */
+.qx-news-wrap {
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Header ── */
+.qx-feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.qx-feed-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.qx-live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green, #0ecb81);
+  animation: qx-pulse 1.5s ease-in-out infinite;
+}
+@keyframes qx-pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.qx-feed-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+.qx-feed-count {
+  font-size: 11px;
+  color: var(--muted2);
+  background: var(--surface2);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* ── Filter pills ── */
+.qx-filter-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.qx-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  background: transparent;
+  transition: all 0.15s;
+}
+.qx-pill:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+.qx-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.qx-pill[data-filter="stock"].active    { background: #2e7d32; border-color: #2e7d32; }
+.qx-pill[data-filter="mineral"].active  { background: #b8860b; border-color: #b8860b; }
+.qx-pill[data-filter="realestate"].active { background: #8b6914; border-color: #8b6914; }
+
+/* ── News grid (all cards equal size) ── */
+.qx-news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* ── News card (compact & clean) ── */
+.qx-news-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.qx-news-card:hover {
+  border-color: rgba(61,126,255,0.4);
+  transform: translateY(-2px);
+  background: var(--surface);
+}
+
+/* Featured card (slightly larger) */
+.qx-news-card.featured {
+  grid-column: span 1;
+  background: linear-gradient(135deg, var(--surface2), var(--surface));
+  border-left: 3px solid var(--gold);
+}
+.qx-news-card.featured .qx-card-title {
+  font-size: 18px;
+}
+
+/* Card elements */
+.qx-card-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  width: fit-content;
+}
+.qx-card-badge.stock      { background: rgba(46,125,50,0.12); color: #2e7d32; }
+.qx-card-badge.mineral    { background: rgba(184,134,11,0.12); color: #b8860b; }
+.qx-card-badge.realestate { background: rgba(139,105,20,0.12); color: #8b6914; }
+.qx-card-badge.other      { background: rgba(168,85,247,0.12); color: #c084fc; }
+
+.qx-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+  margin: 4px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.qx-card-summary {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.qx-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.qx-card-date {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.qx-card-link {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.qx-card-link i {
+  font-size: 9px;
+  transition: transform 0.15s;
+}
+.qx-news-card:hover .qx-card-link i {
+  transform: translateX(2px);
+}
+
+/* Featured story highlight */
+.qx-featured-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.qx-featured-tag span {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+
+/* ── Empty state ── */
+.qx-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+.qx-empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+.qx-empty-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.qx-empty-sub { font-size: 12px; color: var(--muted2); }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .qx-news-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .qx-news-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Market <span>News</span></h1>
+      <p class="page-sub">// Latest market intelligence &amp; analysis</p>
+    </div>
+    <div class="live-badge">
+      <span class="live-dot"></span> LIVE
+    </div>
+  </div>
+
+  {% if news %}
+  <div class="qx-news-wrap">
+
+    <!-- Filter pills -->
+    <div class="qx-filter-pills">
+      <button class="qx-pill active" data-filter="all">All</button>
+      <button class="qx-pill" data-filter="stock">Stocks</button>
+      <button class="qx-pill" data-filter="mineral">Minerals</button>
+      <button class="qx-pill" data-filter="realestate">Real Estate</button>
+      <button class="qx-pill" data-filter="other">Markets</button>
+    </div>
+
+    <!-- News grid - all cards equal size -->
+    <div class="qx-news-grid" id="newsGrid">
+      {% for item in news %}
+      <div class="qx-news-card {% if forloop.first %}featured{% endif %}" 
+           onclick="location.href='{% url 'news_detail' item.id %}'" 
+           data-cat="{{ item.category }}">
+        
+        {% if forloop.first %}
+        <div class="qx-featured-tag">
+          <span>★</span>
+          <span>FEATURED</span>
+        </div>
+        {% endif %}
+        
+        <span class="qx-card-badge {{ item.category }}">
+          {{ item.get_category_display|default:item.category|upper }}
+        </span>
+        
+        <div class="qx-card-title">{{ item.title }}</div>
+        
+        {% if not forloop.first %}
+        <div class="qx-card-summary">{{ item.summary|truncatewords:12 }}</div>
+        {% endif %}
+        
+        <div class="qx-card-footer">
+          <span class="qx-card-date">{{ item.published_at|date:"M d, Y" }}</span>
+          <span class="qx-card-link">
+            Read <i class="fas fa-arrow-right"></i>
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  {% else %}
+  <div class="qx-empty">
+    <div class="qx-empty-icon">📰</div>
+    <div class="qx-empty-title">No Stories Yet</div>
+    <div class="qx-empty-sub">Check back soon for the latest market intelligence.</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  const pills = document.querySelectorAll('.qx-pill');
+  const cards = document.querySelectorAll('.qx-news-card');
+  
+  pills.forEach(pill => {
+    pill.addEventListener('click', function(e) {
+      e.stopPropagation();
+      pills.forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+      const filter = this.dataset.filter;
+      
+      cards.forEach(card => {
+        if (filter === 'all' || card.dataset.cat === filter) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+})();
+</script>
+{% endblock %}

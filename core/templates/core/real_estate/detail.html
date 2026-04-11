@@ -1,0 +1,1524 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ property.name }} | Qubix Real Estate{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Real Estate Detail Page Specific Styles */
+  
+  /* Gallery Styles - Fixed for scrolling */
+  .property-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .gallery-main {
+    width: 100%;
+    height: 380px;
+    background: var(--surface3);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: var(--surface2);
+  }
+
+  .gallery-thumbnails {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .gallery-thumbnails::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .gallery-thumbnails::-webkit-scrollbar-track {
+    background: var(--surface3);
+    border-radius: 4px;
+  }
+
+  .gallery-thumbnails::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 4px;
+  }
+
+  .thumbnail {
+    flex-shrink: 0;
+    width: 100px;
+    height: 80px;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    background: var(--surface3);
+  }
+
+  .thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .thumbnail.active {
+    border-color: var(--gold);
+  }
+
+  .thumbnail:hover {
+    border-color: rgba(240,185,11,0.5);
+    transform: translateY(-2px);
+  }
+
+  .back-bar {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  .back-link {
+    color: var(--muted2);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color .2s;
+  }
+
+  .back-link:hover { color: var(--gold); }
+
+  /* Cash Summary Cards */
+  .cash-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .cash-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 20px;
+    transition: all .2s;
+  }
+
+  .cash-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .cash-card-label {
+    font-size: 11px;
+    color: var(--muted2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .cash-card-value {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .cash-card-value.gold { color: var(--gold); }
+  .cash-card-value.green { color: var(--green); }
+  .cash-card-sub {
+    font-size: 11px;
+    color: var(--muted2);
+    margin-top: 4px;
+  }
+
+  .property-content {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .property-right-sidebar {
+    position: sticky;
+    top: 90px;
+  }
+
+  .invest-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .withdraw-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .invest-card-amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .btn-invest {
+    width: 100%;
+    padding: 14px;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: all .2s;
+  }
+
+  .btn-invest:hover {
+    background: #e0a800;
+    transform: translateY(-1px);
+  }
+
+  .btn-invest:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-withdraw {
+    width: 100%;
+    padding: 14px;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .btn-withdraw:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+  }
+
+  .btn-withdraw:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    background: var(--muted);
+  }
+
+  .funded-bar {
+    margin-top: 20px;
+  }
+
+  .funded-track {
+    height: 6px;
+    background: var(--surface3);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .funded-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--gold);
+    border-radius: 4px;
+    transition: width .5s;
+  }
+
+  .funded-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted2);
+  }
+
+  .property-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .property-type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--surface3);
+    color: var(--gold);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .property-specs {
+    display: flex;
+    gap: 20px;
+    margin: 16px 0;
+    color: var(--muted2);
+    font-size: 13px;
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+    gap: 4px;
+  }
+
+  .tab {
+    padding: 12px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted2);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all .2s;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .detail-section { margin-bottom: 28px; }
+  .section-title { 
+    font-size: 16px; 
+    font-weight: 700; 
+    color: var(--text); 
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title i { color: var(--gold); }
+
+  .detail-grid-2 { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 16px; 
+    margin-bottom: 24px; 
+  }
+
+  .detail-item {
+    background: var(--surface2);
+    padding: 12px 16px;
+    border-radius: 12px;
+  }
+
+  .detail-item label { 
+    font-size: 11px; 
+    color: var(--muted2); 
+    display: block; 
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .detail-item .value { 
+    font-size: 18px; 
+    font-weight: 700; 
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .property-address { 
+    font-size: 13px; 
+    color: var(--accent2); 
+    margin: 16px 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .about-text { 
+    font-size: 14px; 
+    line-height: 1.7; 
+    color: var(--muted2); 
+  }
+
+  .info-note { 
+    display: flex; 
+    gap: 10px; 
+    background: rgba(240,185,11,0.08); 
+    border-radius: 12px; 
+    padding: 14px; 
+    margin-bottom: 16px; 
+    border-left: 3px solid var(--gold);
+  }
+
+  .info-note p { 
+    font-size: 13px; 
+    color: var(--text); 
+    line-height: 1.5; 
+  }
+
+  /* Map Container Styles */
+  .map-container {
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .map-container iframe {
+    display: block;
+    width: 100%;
+    height: 300px;
+  }
+
+  .map-placeholder { 
+    height: 200px; 
+    background: linear-gradient(135deg, var(--surface2), var(--surface3)); 
+    border-radius: 12px; 
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    color: var(--gold); 
+    font-weight: 600; 
+    font-size: 14px; 
+    margin-top: 12px; 
+    border: 1px solid var(--border);
+    gap: 8px;
+  }
+
+  .market-section { 
+    background: var(--surface2); 
+    border-radius: 12px; 
+    padding: 16px; 
+    margin-top: 12px; 
+  }
+
+  .doc-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+  }
+
+  .doc-item { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 12px 16px; 
+    border: 1px solid var(--border); 
+    border-radius: 10px; 
+    font-size: 13px; 
+    font-weight: 500; 
+    color: var(--text); 
+    cursor: pointer; 
+    transition: all .2s; 
+  }
+
+  .doc-item:hover { 
+    background: var(--surface3); 
+    border-color: var(--gold); 
+  }
+
+  .faq-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px; 
+  }
+
+  .faq-item { 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    overflow: hidden; 
+  }
+
+  .faq-q { 
+    padding: 14px 16px; 
+    font-size: 14px; 
+    font-weight: 600; 
+    color: var(--text); 
+    cursor: pointer; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    transition: background .2s; 
+  }
+
+  .faq-q:hover { background: var(--surface3); }
+
+  .faq-a { 
+    padding: 0 16px; 
+    max-height: 0; 
+    overflow: hidden; 
+    transition: max-height .3s, padding .3s; 
+    font-size: 13px; 
+    color: var(--muted2); 
+    line-height: 1.6; 
+  }
+
+  .faq-a.open { 
+    max-height: 300px; 
+    padding: 12px 16px; 
+  }
+
+  .suggest-fund { 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    padding: 14px; 
+    display: flex; 
+    gap: 12px; 
+    align-items: center; 
+    cursor: pointer; 
+    transition: all .2s; 
+    margin-bottom: 10px; 
+  }
+
+  .suggest-fund:hover { 
+    background: var(--surface3); 
+    border-color: var(--gold); 
+  }
+
+  .fin-highlight-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 16px; 
+    margin-bottom: 20px; 
+  }
+
+  .fin-highlight-card { 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    padding: 16px; 
+    background: var(--surface2); 
+  }
+
+  .fin-highlight-card label { 
+    font-size: 11px; 
+    color: var(--muted2); 
+    display: block; 
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .fin-highlight-card .big-val { 
+    font-size: 22px; 
+    font-weight: 700; 
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .calc-box { 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    padding: 20px; 
+    margin-top: 12px; 
+    background: var(--surface2); 
+  }
+
+  .calc-row { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 10px 0; 
+    border-bottom: 1px solid var(--border); 
+    font-size: 13px; 
+  }
+
+  .calc-row:last-of-type { border-bottom: none; }
+  .calc-row label { color: var(--muted2); }
+  .calc-row .val { font-weight: 600; color: var(--text); }
+
+  .calc-result { 
+    background: var(--surface3); 
+    border-radius: 12px; 
+    padding: 16px 20px; 
+    margin-top: 16px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+  }
+
+  .return-rate { 
+    font-size: 28px; 
+    font-weight: 700; 
+    color: var(--green); 
+  }
+
+  .offering-table { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    border: 1px solid var(--border); 
+    border-radius: 12px; 
+    overflow: hidden; 
+  }
+
+  .offering-row { 
+    padding: 14px 16px; 
+    border-bottom: 1px solid var(--border); 
+    background: var(--surface2); 
+  }
+
+  .offering-row:nth-child(even) { border-left: 1px solid var(--border); }
+  .offering-row label { 
+    font-size: 11px; 
+    color: var(--muted2); 
+    text-transform: uppercase; 
+    letter-spacing: .05em; 
+    display: block;
+    margin-bottom: 4px;
+  }
+  .offering-row .val { 
+    font-size: 15px; 
+    font-weight: 600; 
+    color: var(--text); 
+  }
+
+  .timeline-item { 
+    display: flex; 
+    gap: 14px; 
+    padding: 14px 0; 
+    border-bottom: 1px solid var(--border); 
+    align-items: flex-start; 
+  }
+
+  .timeline-icon { 
+    width: 36px; 
+    height: 36px; 
+    border-radius: 50%; 
+    background: rgba(240,185,11,0.1); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    flex-shrink: 0; 
+    font-size: 16px;
+  }
+
+  .timeline-title { 
+    font-size: 14px; 
+    font-weight: 600; 
+    color: var(--text); 
+    margin-bottom: 4px; 
+  }
+
+  .timeline-date { 
+    font-size: 12px; 
+    color: var(--muted2); 
+  }
+
+  .view-timeline-btn { 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 6px; 
+    padding: 10px 20px; 
+    border: 1px solid var(--border); 
+    border-radius: 10px; 
+    font-size: 13px; 
+    font-weight: 600; 
+    color: var(--text); 
+    background: var(--surface2); 
+    cursor: pointer; 
+    margin-top: 12px; 
+    transition: all .2s; 
+  }
+
+  .view-timeline-btn:hover { 
+    background: var(--surface3); 
+    border-color: var(--gold); 
+  }
+
+  .dividends-section { 
+    background: var(--surface2); 
+    border-radius: 12px; 
+    padding: 20px; 
+    margin-top: 20px; 
+  }
+
+  .dividends-section h3 { 
+    font-size: 15px; 
+    font-weight: 700; 
+    margin-bottom: 12px; 
+    color: var(--text); 
+  }
+
+  .dividends-section p { 
+    font-size: 13px; 
+    color: var(--muted2); 
+    line-height: 1.6; 
+    margin-bottom: 12px; 
+  }
+
+  .dividends-section a { 
+    color: var(--gold); 
+    text-decoration: none; 
+  }
+
+  .risk-bar {
+    background: var(--surface3);
+    padding: 16px 24px;
+    font-size: 11px;
+    color: var(--muted2);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+    border-radius: 0 0 20px 20px;
+  }
+
+  .risk-bar a { color: var(--gold); text-decoration: none; }
+  .risk-bar a:hover { text-decoration: underline; }
+
+  .form-input {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    width: 100%;
+  }
+
+  .form-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .form-select {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    width: 100%;
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-container {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-header h3 { font-size: 18px; font-weight: 700; }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--muted2);
+    cursor: pointer;
+  }
+  .modal-body { padding: 24px; }
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+  .btn-cancel {
+    padding: 10px 20px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .btn-confirm {
+    padding: 10px 24px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .confirm-detail {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .confirm-detail:last-child { border-bottom: none; }
+  .confirm-label {
+    font-size: 11px;
+    color: var(--muted2);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  .confirm-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .confirm-highlight { color: var(--gold); font-size: 20px; }
+
+  .returns-preview {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--surface3);
+    border-radius: 10px;
+    border-left: 3px solid var(--gold);
+  }
+  .returns-preview.hidden { display: none; }
+
+  @media (max-width: 900px) {
+    .property-content { grid-template-columns: 1fr; }
+    .property-right-sidebar { position: static; }
+    .gallery-main { height: 250px; }
+    .cash-summary { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <!-- Back Bar -->
+  <div class="back-bar">
+    <a href="{% url 'real_estate_list' %}" class="back-link">
+      <i class="fas fa-arrow-left"></i> Back to Real Estate
+    </a>
+  </div>
+
+  <!-- Cash Summary Cards -->
+  <div class="cash-summary">
+    <div class="cash-card">
+      <div class="cash-card-label">
+        <i class="fas fa-wallet"></i> Cash Available
+      </div>
+      <div class="cash-card-value gold">
+        ${{ request.user.portfolio.cash_balance|floatformat:2 }}
+      </div>
+      <div class="cash-card-sub">Available for investment</div>
+    </div>
+    
+    <div class="cash-card">
+      <div class="cash-card-label">
+        <i class="fas fa-building"></i> Your Investment
+      </div>
+      <div class="cash-card-value">
+        ${{ user_investment.amount_invested|default:0|floatformat:2 }}
+      </div>
+      <div class="cash-card-sub">
+        {% if user_investment %}
+          {{ user_investment.shares }} shares @ ${{ property.price_per_share|floatformat:2 }}/share
+        {% else %}
+          No investment yet
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="cash-card">
+      <div class="cash-card-label">
+        <i class="fas fa-chart-line"></i> Est. Monthly Dividend
+      </div>
+      <div class="cash-card-value green">
+        ${{ property.monthly_rent|floatformat:2 }}
+      </div>
+      <div class="cash-card-sub">From property rental income</div>
+    </div>
+  </div>
+
+  <!-- Gallery - Fixed with horizontal scrolling -->
+  <div class="property-gallery">
+    <!-- Main Image -->
+    <div class="gallery-main">
+      {% if property.main_image %}
+        <img id="mainGalleryImage" src="{{ property.main_image.url }}" alt="{{ property.name }}">
+      {% else %}
+        <div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:80px;">🏠</div>
+      {% endif %}
+    </div>
+    
+    <!-- Thumbnails - Horizontal Scroll -->
+    <div class="gallery-thumbnails">
+      {% if property.main_image %}
+      <div class="thumbnail active" onclick="changeGalleryImage('{{ property.main_image.url }}', this)">
+        <img src="{{ property.main_image.url }}" alt="Main">
+      </div>
+      {% endif %}
+      
+      {% for img in property.gallery_images %}
+      <div class="thumbnail" onclick="changeGalleryImage('{{ img }}', this)">
+        <img src="{{ img }}" alt="Gallery image {{ forloop.counter }}">
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="property-content">
+    <!-- Left Column -->
+    <div class="property-left">
+      <div style="margin-bottom:12px;">
+        <span class="property-type-badge">
+          <i class="fas fa-home"></i> Single Family Residential
+        </span>
+      </div>
+
+      <h1 class="property-title">{{ property.name }}</h1>
+
+      <div class="property-specs">
+        {% if property.beds %}<span><i class="fas fa-bed"></i> {{ property.beds }} bd</span>{% endif %}
+        {% if property.baths %}<span><i class="fas fa-bath"></i> {{ property.baths }} ba</span>{% endif %}
+        {% if property.sqft %}<span><i class="fas fa-arrows-alt"></i> {{ property.sqft }} sqft</span>{% endif %}
+        {% if property.year_built %}<span><i class="fas fa-calendar"></i> Built {{ property.year_built }}</span>{% endif %}
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(0)">Details</div>
+        <div class="tab" onclick="switchTab(1)">Financials</div>
+        <div class="tab" onclick="switchTab(2)">Performance</div>
+      </div>
+
+      <!-- Tab 0 - Details -->
+      <div id="tab-0" class="tab-content active">
+        <div class="detail-grid-2">
+          <div class="detail-item">
+            <label>Purchase Price</label>
+            <div class="value">${{ property.purchase_price|floatformat:0 }}</div>
+          </div>
+          <div class="detail-item">
+            <label>Monthly Rent</label>
+            <div class="value">${{ property.monthly_rent|floatformat:0 }}</div>
+          </div>
+        </div>
+
+        {% if property.address %}
+        <div class="property-address">
+          <i class="fas fa-map-marker-alt"></i> {{ property.address }}
+        </div>
+        {% endif %}
+
+        <hr style="border-color:var(--border); margin:20px 0;">
+
+        <div class="detail-section">
+          <div class="section-title">
+            <i class="fas fa-info-circle"></i> About
+          </div>
+          <div class="info-note">
+            <i class="fas fa-gem" style="color:var(--gold);"></i>
+            <p><strong>Exclusive Builder Incentive:</strong> Investors receive a price reduction plus no monthly property management fees for the first three years.</p>
+          </div>
+          <p class="about-text">{{ property.property_description|default:"This beautifully designed home features an open floor plan, modern finishes, and a spacious backyard. Located in a sought-after neighborhood with excellent schools and amenities nearby." }}</p>
+        </div>
+
+        <!-- Map Section -->
+        <div class="detail-section">
+          <div class="section-title">
+            <i class="fas fa-map-marked-alt"></i> Location Map
+          </div>
+          
+          {% if property.latitude and property.longitude %}
+          <div class="map-container">
+            <iframe
+              width="100%"
+              height="300"
+              style="border:0; border-radius: 12px; border: 1px solid var(--border);"
+              loading="lazy"
+              allowfullscreen
+              src="https://www.openstreetmap.org/export/embed.html?bbox={{ property.longitude|add:'-0.0005' }},{{ property.latitude|add:'-0.0005' }},{{ property.longitude|add:'0.0005' }},{{ property.latitude|add:'0.0005' }}&layer=mapnik&marker={{ property.latitude }},{{ property.longitude }}">
+            </iframe>
+            <div style="text-align: center; margin-top: 10px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+              <a href="https://www.openstreetmap.org/?mlat={{ property.latitude }}&mlon={{ property.longitude }}#map=19/{{ property.latitude }}/{{ property.longitude }}" 
+                 target="_blank" 
+                 style="color: var(--gold); font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fas fa-search-plus"></i> Zoom In
+              </a>
+              <a href="https://www.google.com/maps?q={{ property.latitude }},{{ property.longitude }}" 
+                 target="_blank" 
+                 style="color: var(--accent2); font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fab fa-google"></i> Open in Google Maps
+              </a>
+              <a href="https://www.openstreetmap.org/?mlat={{ property.latitude }}&mlon={{ property.longitude }}#map=15/{{ property.latitude }}/{{ property.longitude }}" 
+                 target="_blank" 
+                 style="color: var(--muted2); font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fas fa-external-link-alt"></i> Full Screen
+              </a>
+            </div>
+          </div>
+          {% else %}
+          <div class="map-placeholder">
+            <i class="fas fa-map-marker-alt" style="font-size: 32px;"></i>
+            <span>Location map coming soon</span>
+            <div style="font-size: 11px;">Admin will add coordinates for this property</div>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="detail-section">
+          <div class="section-title">
+            <i class="fas fa-file-alt"></i> Documents
+          </div>
+          <div class="doc-list">
+            {% if property.series_overview %}
+            <div class="doc-item" onclick="window.open('{{ property.series_overview.url }}', '_blank')">
+              Series Overview <i class="fas fa-download"></i>
+            </div>
+            {% else %}
+            <div class="doc-item">Series Overview <i class="fas fa-file-pdf"></i></div>
+            {% endif %}
+            {% if property.use_of_proceeds %}
+            <div class="doc-item" onclick="window.open('{{ property.use_of_proceeds.url }}', '_blank')">
+              Use of Proceeds <i class="fas fa-download"></i>
+            </div>
+            {% else %}
+            <div class="doc-item">Use of Proceeds <i class="fas fa-file-pdf"></i></div>
+            {% endif %}
+            <div class="doc-item">Risk Factors <i class="fas fa-file-pdf"></i></div>
+            <div class="doc-item">Offering Circular <i class="fas fa-file-pdf"></i></div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="section-title">
+            <i class="fas fa-question-circle"></i> Common Questions
+          </div>
+          <div class="faq-list">
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">
+                How Qubix works <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="faq-a">Invest from as little as $100. We manage everything and pay monthly rental income.</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">
+                What returns can I expect <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="faq-a">Returns come from rental income + appreciation (typically 3–7% annually + upside).</div>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q" onclick="toggleFaq(this)">
+                Vacancy impact <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="faq-a">If no tenant is present, dividends pause until a lease is signed.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 1 - Financials -->
+      <div id="tab-1" class="tab-content">
+        <div class="fin-highlight-grid">
+          <div class="fin-highlight-card">
+            <label>Annual Rent</label>
+            <div class="big-val">${{ property.annual_cash_flow|floatformat:0 }}</div>
+          </div>
+          <div class="fin-highlight-card">
+            <label>Annual Cash Flow</label>
+            <div class="big-val">${{ property.annual_cash_flow|floatformat:0 }}</div>
+          </div>
+        </div>
+
+        <div class="fin-section">
+          <div class="section-title">
+            <i class="fas fa-calculator"></i> Investment Calculator
+          </div>
+          <div class="calc-box">
+            <div class="calc-row">
+              <label>Annual Rent</label>
+              <div class="val">${{ property.annual_cash_flow|floatformat:0 }}</div>
+            </div>
+            <div class="calc-row">
+              <label>Total Property Value</label>
+              <div class="val">${{ property.purchase_price|floatformat:0 }}</div>
+            </div>
+            <div class="calc-row">
+              <label>Investment Amount ($)</label>
+              <div class="val">
+                <input type="number" id="investmentInput" class="form-input" placeholder="Enter amount" value="1000">
+              </div>
+            </div>
+            <div class="calc-row">
+              <label>Hold Period (Years)</label>
+              <div class="val">
+                <select id="durationSelect" class="form-select">
+                  <option value="1">1 Year</option>
+                  <option value="2">2 Years</option>
+                  <option value="3">3 Years</option>
+                  <option value="4">4 Years</option>
+                  <option value="5">5 Years</option>
+                  <option value="6">6 Years</option>
+                  <option value="7" selected>7 Years</option>
+                </select>
+                <button onclick="calculateReturns()" style="margin-left:10px;padding:8px 16px;background:var(--gold);color:#000;border:none;border-radius:8px;cursor:pointer;font-weight:600;">
+                  Calculate
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-result">
+            <div>
+              <div style="font-size:12px;color:var(--muted2);">Return %</div>
+              <div class="return-rate" id="returnRate">0%</div>
+            </div>
+            <div class="return-val">
+              <div class="amount" id="totalValue" style="font-size:20px;font-weight:700;">$0</div>
+              <div class="label" style="font-size:11px;color:var(--muted2);">Total Value</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fin-section">
+          <div class="section-title">
+            <i class="fas fa-chart-pie"></i> Offering Details
+          </div>
+          <div class="offering-table">
+            <div class="offering-row">
+              <label>Purchase Price</label>
+              <div class="val">${{ property.purchase_price|floatformat:0 }}</div>
+            </div>
+            <div class="offering-row">
+              <label>Price Per Share</label>
+              <div class="val">${{ property.price_per_share|floatformat:2 }}</div>
+            </div>
+            <div class="offering-row">
+              <label>Total Shares</label>
+              <div class="val">{{ property.total_shares|floatformat:0 }}</div>
+            </div>
+            <div class="offering-row">
+              <label>Hold Period</label>
+              <div class="val">5-7 years</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2 - Performance -->
+      <div id="tab-2" class="tab-content">
+        <div class="timeline-item">
+          <div class="timeline-icon">📅</div>
+          <div>
+            <div class="timeline-title">Initial Public Offering</div>
+            <div class="timeline-date">{{ property.created_at|date:"M d, Y" }}</div>
+          </div>
+        </div>
+        <button class="view-timeline-btn" onclick="alert('Full timeline coming soon!')">
+          <i class="fas fa-timeline"></i> View Full Property Timeline
+        </button>
+
+        <div class="dividends-section">
+          <h3><i class="fas fa-chart-line"></i> How Are Monthly Dividends Determined?</h3>
+          <p>Properties start paying dividends once they start generating income. The monthly dividend is determined by analyzing several factors, including rental status, cash in reserves, projected expenses, and lease renewal timing.</p>
+          <p>For more information, please see <a href="#">our detailed FAQ</a>.</p>
+        </div>
+
+        <div style="margin-top:20px; padding:30px; border:1px solid var(--border); border-radius:12px; text-align:center; color:var(--muted2);">
+          <i class="fas fa-chart-simple" style="font-size:32px; opacity:0.5;"></i>
+          <div style="font-size:14px; font-weight:500; margin-top:8px;">No performance data yet</div>
+          <div style="font-size:12px; margin-top:4px;">Dividends and performance data will appear here once the property starts generating income.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar - Invest Card -->
+    <div class="property-right-sidebar">
+      <div class="invest-card">
+        <div style="font-size:13px;color:var(--muted2);margin-bottom:4px;">
+          <i class="fas fa-coins"></i> Remaining to Invest
+        </div>
+        <div class="invest-card-amount">${{ property.total_available|default:0|floatformat:0 }}</div>
+
+        <form id="investmentForm" method="post" action="{% url 'real_estate_invest' property.id %}">
+          {% csrf_token %}
+          
+          <!-- Investment Amount -->
+          <div style="margin: 16px 0;">
+            <input type="number" name="amount" id="investmentAmount" class="form-input" style="width:100%;" 
+                   placeholder="Enter amount" min="100" max="{{ display_remaining|default:0 }}" step="100" required
+                   {% if request.user.portfolio.cash_balance < 100 %}disabled{% endif %}>
+            <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">
+              Min: $100 | Max: ${{ display_remaining|default:0|floatformat:0 }}
+            </div>
+          </div>
+          
+          <!-- Investment Period Selection -->
+          <div style="margin: 16px 0;">
+            <label style="font-size: 12px; color: var(--muted2); display: block; margin-bottom: 6px;">
+              <i class="fas fa-calendar-alt"></i> Investment Period (Lock-in)
+            </label>
+            <select name="investment_period" id="investmentPeriod" class="form-select" style="width:100%;" required>
+              <option value="">Select period</option>
+              <option value="6">6 months (Minimum lock-in)</option>
+              <option value="12">1 year (Recommended)</option>
+              <option value="24">2 years (Higher returns)</option>
+              <option value="60">5 years (Maximum returns)</option>
+            </select>
+            <div style="font-size: 10px; color: var(--gold); margin-top: 4px;">
+              <i class="fas fa-lock"></i> Early withdrawal penalty applies
+            </div>
+          </div>
+          
+          <!-- Returns Preview -->
+          <div id="returnsPreview" class="returns-preview hidden">
+            <div style="font-size: 11px; color: var(--muted2); margin-bottom: 8px;">📈 Projected Returns</div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+              <span>Period:</span>
+              <span id="displayPeriod" style="font-weight: 600;">--</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+              <span>Est. Value at Maturity:</span>
+              <span id="projectedValue" style="color: var(--gold); font-weight: 700;">$0</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+              <span>Est. Profit:</span>
+              <span id="estimatedProfit" style="color: var(--green); font-weight: 700;">$0</span>
+            </div>
+          </div>
+          
+          <!-- Preview Button -->
+          <button type="button" class="btn-invest" id="previewBtn"
+                  {% if request.user.portfolio.cash_balance < 100 %}disabled{% endif %}>
+            <i class="fas fa-chart-line"></i> Preview Investment
+          </button>
+        </form>
+
+        {% if request.user.portfolio.cash_balance < 100 %}
+        <div style="margin-top: 12px; padding: 8px; background: rgba(239,68,68,0.1); border-radius: 8px; text-align: center;">
+          <span style="font-size: 11px; color: var(--red);">
+            <i class="fas fa-exclamation-circle"></i> Insufficient funds. Please deposit more cash.
+          </span>
+        </div>
+        {% endif %}
+
+        <div class="funded-bar">
+          <div class="funded-track">
+            <div class="funded-fill" style="width:{{ property.funded_percent|default:0 }}%"></div>
+          </div>
+          <div class="funded-stats">
+            <span>{{ property.funded_percent|default:0 }}% Funded</span>
+            <span><i class="fas fa-users"></i> {{ property.investor_count|default:0 }} Investors</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Withdraw Card - Shows only if user has investment -->
+      {% if user_investment %}
+      <div class="withdraw-card">
+        <div style="font-size:13px;color:var(--muted2);margin-bottom:8px;">
+          <i class="fas fa-unlock-alt"></i> Withdraw Investment
+        </div>
+        
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+            <span>Lock-in Period:</span>
+            <span id="lockinPeriodDisplay">{{ user_investment.investment_period_months|default:12 }} months</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+            <span>Maturity Date:</span>
+            <span id="maturityDateDisplay">{{ user_investment.maturity_date|date:"M d, Y"|default:"Not set" }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 12px;">
+            <span>Current Value:</span>
+            <span style="color: var(--gold); font-weight: 700;">${{ user_investment.amount_invested|floatformat:2 }}</span>
+          </div>
+        </div>
+        
+        <form method="post" action="{% url 'real_estate_withdraw' property.id %}" id="withdrawForm" onsubmit="return confirmWithdraw()">
+          {% csrf_token %}
+          <input type="hidden" name="investment_id" value="{{ user_investment.id }}">
+          <button type="submit" class="btn-withdraw" id="withdrawBtn" disabled>
+            <i class="fas fa-hand-holding-usd"></i> Withdraw (Locked until maturity)
+          </button>
+        </form>
+        <div style="font-size: 10px; color: var(--muted); margin-top: 8px; text-align: center;">
+          <i class="fas fa-info-circle"></i> Early withdrawal incurs a 15% penalty on profits
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="risk-bar">
+    <strong><i class="fas fa-exclamation-triangle"></i> Risk Disclosures</strong><br>
+    Alternative investments are speculative, illiquid, and investors may lose some or all the principal invested.
+    Past performance is not indicative of future results. For additional risk factors and disclaimer information,
+    you can review our <a href="#">Full Risk Disclosures</a>.
+  </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3>Confirm Your Investment</h3>
+      <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="confirmModalBody">
+      <!-- Dynamic content -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+      <button class="btn-confirm" onclick="submitInvestment()">Confirm Investment</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Gallery image changer
+function changeGalleryImage(src, element) {
+  document.getElementById('mainGalleryImage').src = src;
+  document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+  element.classList.add('active');
+}
+
+// Property data
+const propertyReturnRate = {{ property.expected_annual_return|default:"8.5" }};
+const propertyPricePerShare = {{ property.price_per_share|default:10 }};
+const propertyName = "{{ property.name }}";
+
+// Check if user has investment and if maturity date has passed
+{% if user_investment %}
+const maturityDate = new Date("{{ user_investment.maturity_date|date:'Y-m-d' }}");
+const today = new Date();
+const isMature = maturityDate <= today;
+
+// Enable withdraw button if mature
+if (isMature) {
+  const withdrawBtn = document.getElementById('withdrawBtn');
+  if (withdrawBtn) {
+    withdrawBtn.disabled = false;
+    withdrawBtn.innerHTML = '<i class="fas fa-hand-holding-usd"></i> Withdraw Now';
+    withdrawBtn.style.background = 'var(--green)';
+  }
+}
+{% endif %}
+
+// Calculate returns preview
+function calculateReturnsPreview() {
+  const amount = parseFloat(document.getElementById('investmentAmount').value);
+  const periodMonths = parseInt(document.getElementById('investmentPeriod').value);
+  const returnsPreview = document.getElementById('returnsPreview');
+  
+  if (amount > 0 && periodMonths > 0) {
+    const periodYears = periodMonths / 12;
+    const projectedValue = amount * Math.pow(1 + (propertyReturnRate / 100), periodYears);
+    const profit = projectedValue - amount;
+    const shares = Math.floor(amount / propertyPricePerShare);
+    
+    document.getElementById('displayPeriod').textContent = periodMonths + ' months (' + periodYears + ' year' + (periodYears > 1 ? 's' : '') + ')';
+    document.getElementById('projectedValue').textContent = '$' + projectedValue.toFixed(2);
+    document.getElementById('estimatedProfit').textContent = '+$' + profit.toFixed(2);
+    returnsPreview.classList.remove('hidden');
+  } else {
+    returnsPreview.classList.add('hidden');
+  }
+}
+
+// Listen for changes
+const amountInput = document.getElementById('investmentAmount');
+const periodSelect = document.getElementById('investmentPeriod');
+if (amountInput) amountInput.addEventListener('input', calculateReturnsPreview);
+if (periodSelect) periodSelect.addEventListener('change', calculateReturnsPreview);
+
+// Preview button
+const previewBtn = document.getElementById('previewBtn');
+if (previewBtn) {
+  previewBtn.addEventListener('click', function() {
+    const amount = parseFloat(document.getElementById('investmentAmount').value);
+    const periodMonths = parseInt(document.getElementById('investmentPeriod').value);
+    const amountInput = document.getElementById('investmentAmount');
+    const maxAmount = parseFloat(amountInput.getAttribute('max') || 0);
+    
+    // Validation
+    if (!amount || amount < 100) {
+      alert('Please enter a valid investment amount (minimum $100)');
+      return;
+    }
+    
+    if (amount > maxAmount && maxAmount > 0) {
+      alert(`Maximum investment amount is $${maxAmount.toFixed(0)}`);
+      return;
+    }
+    
+    if (!periodMonths) {
+      alert('Please select an investment period');
+      return;
+    }
+    
+    if (periodMonths < 6) {
+      alert('Minimum investment period is 6 months');
+      return;
+    }
+    
+    // Calculate values
+    const periodYears = periodMonths / 12;
+    const shares = Math.floor(amount / propertyPricePerShare);
+    const projectedValue = amount * Math.pow(1 + (propertyReturnRate / 100), periodYears);
+    const profit = projectedValue - amount;
+    const maturityDate = new Date();
+    maturityDate.setMonth(maturityDate.getMonth() + periodMonths);
+    const maturityDateStr = maturityDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    
+    // Build modal content
+    const modalBody = document.getElementById('confirmModalBody');
+    modalBody.innerHTML = `
+      <div class="confirm-detail">
+        <div class="confirm-label">Property</div>
+        <div class="confirm-value">${propertyName}</div>
+      </div>
+      <div class="confirm-detail">
+        <div class="confirm-label">Investment Amount</div>
+        <div class="confirm-value confirm-highlight">$${amount.toFixed(2)}</div>
+      </div>
+      <div class="confirm-detail">
+        <div class="confirm-label">Shares to Purchase</div>
+        <div class="confirm-value">${shares} shares @ $${propertyPricePerShare}/share</div>
+      </div>
+      <div class="confirm-detail">
+        <div class="confirm-label">Lock-in Period</div>
+        <div class="confirm-value">${periodMonths} months (${periodYears} year${periodYears > 1 ? 's' : ''})</div>
+      </div>
+      <div class="confirm-detail">
+        <div class="confirm-label">Maturity Date</div>
+        <div class="confirm-value">${maturityDateStr}</div>
+      </div>
+      <div class="confirm-detail">
+        <div class="confirm-label">Expected Annual Return</div>
+        <div class="confirm-value">${propertyReturnRate}%</div>
+      </div>
+      <div class="confirm-detail">
+        <div class="confirm-label">Projected Value at Maturity</div>
+        <div class="confirm-value">$${projectedValue.toFixed(2)}</div>
+      </div>
+      <div class="confirm-detail">
+        <div class="confirm-label">Estimated Profit</div>
+        <div class="confirm-value" style="color: var(--green)">+$${profit.toFixed(2)}</div>
+      </div>
+      <div class="confirm-detail">
+        <div class="confirm-label">Early Withdrawal Penalty</div>
+        <div class="confirm-value">15% of profit if withdrawn before maturity</div>
+      </div>
+    `;
+    
+    window.pendingInvestment = { amount: amount, period: periodMonths };
+    document.getElementById('confirmModal').classList.add('open');
+  });
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirmModal').classList.remove('open');
+}
+
+function submitInvestment() {
+  if (window.pendingInvestment) {
+    const form = document.getElementById('investmentForm');
+    
+    // Remove existing hidden fields
+    const existingAmount = document.getElementById('hiddenAmount');
+    const existingPeriod = document.getElementById('hiddenPeriod');
+    if (existingAmount) existingAmount.remove();
+    if (existingPeriod) existingPeriod.remove();
+    
+    // Create hidden inputs
+    const amountInput = document.createElement('input');
+    amountInput.type = 'hidden';
+    amountInput.name = 'amount';
+    amountInput.value = window.pendingInvestment.amount;
+    amountInput.id = 'hiddenAmount';
+    
+    const periodInput = document.createElement('input');
+    periodInput.type = 'hidden';
+    periodInput.name = 'investment_period';
+    periodInput.value = window.pendingInvestment.period;
+    periodInput.id = 'hiddenPeriod';
+    
+    form.appendChild(amountInput);
+    form.appendChild(periodInput);
+    
+    closeConfirmModal();
+    form.submit();
+  }
+}
+
+function confirmWithdraw() {
+  return confirm('⚠️ WARNING: Withdrawing your investment will:\n\n' +
+    '• Remove your shares from this property\n' +
+    '• End your dividend payments\n' +
+    '• Incur a 15% penalty on profits (if withdrawn early)\n\n' +
+    'Are you sure you want to proceed?');
+}
+
+function switchTab(n) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', i === n);
+  });
+  document.querySelectorAll('.tab-content').forEach((c, i) => {
+    c.classList.toggle('active', i === n);
+  });
+}
+
+function toggleFaq(el) {
+  const answer = el.nextElementSibling;
+  const open = answer.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+  if (!open) answer.classList.add('open');
+}
+
+function calculateReturns() {
+  const investment = parseFloat(document.getElementById("investmentInput").value);
+  const years = parseInt(document.getElementById("durationSelect").value);
+  
+  if (!investment || investment <= 0) {
+    alert("Please enter a valid investment amount");
+    return;
+  }
+  
+  const annualRent = {{ property.annual_cash_flow|default:0 }};
+  const totalAmount = {{ property.purchase_price|default:1 }};
+  const appreciationRate = 0.048;
+  
+  const share = investment / totalAmount;
+  const cashFlow = annualRent * years * share;
+  const futureValue = investment * Math.pow(1 + appreciationRate, years);
+  const totalValue = futureValue + cashFlow;
+  const returnPercent = ((totalValue - investment) / investment) * 100;
+  
+  document.getElementById("returnRate").innerHTML = "+" + returnPercent.toFixed(2) + "%";
+  document.getElementById("totalValue").innerHTML = "$" + totalValue.toFixed(0);
+}
+</script>
+{% endblock %}

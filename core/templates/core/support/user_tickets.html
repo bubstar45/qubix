@@ -1,0 +1,95 @@
+{% extends 'core/base.html' %}
+
+{% block title %}My Support Tickets | Qubix{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">My <span>Support Tickets</span></h1>
+      <p class="page-sub">// Track your support requests</p>
+    </div>
+    <button class="live-badge" onclick="window.location.href='{% url 'dashboard' %}'">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    {% for ticket in tickets %}
+    <div class="ticket-card" onclick="window.location.href='{% url 'support_ticket_detail' ticket.id %}'">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <span class="ticket-id">#{{ ticket.id }}</span>
+            <span class="status-badge status-{{ ticket.status }}">{{ ticket.get_status_display }}</span>
+            <span class="type-badge">{{ ticket.get_ticket_type_display }}</span>
+          </div>
+          <div class="ticket-title">{{ ticket.title }}</div>
+          <div class="ticket-date">{{ ticket.effective_date|default:ticket.created_at|date:"M d, Y H:i" }}</div>
+        </div>
+        <div class="message-count">
+          {{ ticket.messages.count }} message{{ ticket.messages.count|pluralize }}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-icon">🎫</div>
+      <div class="empty-title">No Tickets Yet</div>
+      <div class="empty-text">Your support tickets will appear here.</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+.ticket-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ticket-card:hover {
+  transform: translateX(4px);
+  border-color: var(--accent);
+}
+.ticket-id {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.status-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.status-open { background: rgba(240,185,11,0.15); color: var(--gold); }
+.status-in_progress { background: rgba(61,126,255,0.15); color: var(--accent); }
+.status-resolved { background: rgba(14,203,129,0.15); color: var(--green); }
+.status-closed { background: rgba(100,100,100,0.15); color: var(--muted); }
+.type-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--surface3);
+  color: var(--muted2);
+}
+.ticket-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.ticket-date {
+  font-size: 11px;
+  color: var(--muted);
+}
+.message-count {
+  font-size: 11px;
+  color: var(--accent);
+}
+</style>
+{% endblock %}

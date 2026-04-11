@@ -1,0 +1,58 @@
+{% extends 'core/emails/base_email.html' %}
+
+{% block header_title %}
+<h1 style="color: #D4AF37; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Price Alert Triggered</h1>
+<p style="color: #94a3b8; margin: 8px 0 0;">{{ asset_symbol }} has reached your target</p>
+{% endblock %}
+
+{% block content %}
+<p class="greeting">Dear {{ user_name }},</p>
+<p class="greeting-light">The price alert you set for <strong>{{ asset_name }}</strong> has been triggered.</p>
+
+<div class="verification-code" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7);">
+    <div style="font-size: 48px; margin-bottom: 8px;">
+        {% if alert_type == 'above' %}📈{% else %}📉{% endif %}
+    </div>
+    <div style="font-size: 14px; color: #475569;">Current Price</div>
+    <div style="font-size: 36px; font-weight: 800; color: #0f172a;">${{ current_price|floatformat:2 }}</div>
+    <div style="margin-top: 8px;">
+        <span style="background: #e2e8f0; padding: 4px 12px; border-radius: 20px; font-size: 12px;">
+            Alert: {{ alert_type|upper }} ${{ target_price|floatformat:2 }}
+        </span>
+    </div>
+</div>
+
+<div class="info-box {% if alert_type == 'above' %}alert{% else %}warning{% endif %}">
+    <strong>{% if alert_type == 'above' %}📊 Price has increased{% else %}📉 Price has decreased{% endif %}</strong><br>
+    {{ asset_name }} is now trading at <strong>${{ current_price|floatformat:2 }}</strong>, 
+    {% if alert_type == 'above' %}up{% else %}down{% endif %} 
+    <strong>{{ change_percent|floatformat:2 }}%</strong> from your alert target.
+</div>
+
+<div style="text-align: center;">
+    <a href="{{ asset_url }}" class="btn">View {{ asset_symbol }} →</a>
+    <div style="margin-top: 12px;">
+        <a href="{{ alerts_url }}" class="btn btn-secondary btn-small">Manage Alerts</a>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<div style="background: #f8fafc; border-radius: 12px; padding: 16px;">
+    <div style="display: flex; gap: 16px; align-items: center;">
+        <div style="font-size: 24px;">💡</div>
+        <div style="font-size: 13px; color: #475569;">
+            <strong>Investment Insight</strong><br>
+            Consider reviewing your portfolio allocation. Our analysis suggests this movement may present a {{ 'selling' if alert_type == 'above' else 'buying' }} opportunity.
+        </div>
+    </div>
+</div>
+
+<p style="margin-top: 24px;">
+    <a href="{{ asset_url }}" style="color: #3b82f6;">Trade {{ asset_symbol }} now →</a>
+</p>
+
+<p style="margin-top: 24px;">
+    This alert was generated based on your preferences. You can adjust your alert settings anytime.
+</p>
+{% endblock %}

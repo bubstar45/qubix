@@ -1,0 +1,145 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Verify Transaction | Qubix Team{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card bg-dark text-white">
+        <div class="card-header">
+            <h3 class="mb-0">Transaction Details #{{ transaction.id }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Order Information</h5>
+                    <table class="table table-sm table-borderless text-white">
+                        <tr><td><strong>User:</strong></td><td>{{ transaction.user.email }}</td></tr>
+                        <tr><td><strong>Product:</strong></td><td>{{ transaction.product.name }}</td></tr>
+                        <tr><td><strong>Quantity:</strong></td><td>{{ transaction.quantity|floatformat:3 }}</td></tr>
+                        <tr><td><strong>Total Amount:</strong></td><td>${{ transaction.total_amount|floatformat:2 }}</td></tr>
+                        <tr><td><strong>Payment Method:</strong></td><td>{{ transaction.payment_method|upper }}</td></tr>
+                        <tr><td><strong>Crypto Used:</strong></td><td>{{ transaction.crypto_currency_used|default:"N/A" }}</td></tr>
+                        <tr><td><strong>Status:</strong></td><td>{{ transaction.get_status_display }}</td></tr>
+                        <tr><td><strong>Created:</strong></td><td>{{ transaction.created_at|date:"Y-m-d H:i" }}</td></tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    {% if transaction.payment_method == 'sell_fee' %}
+                    <div class="alert alert-warning">
+                        <h4><i class="fas fa-dollar-sign"></i> SELL REQUEST DETAILS</h4>
+                        <hr>
+                        <p><strong>💰 Payout Wallet:</strong></p>
+                        <p><strong>Crypto Currency:</strong> 
+                            <span class="badge bg-info">
+                                {% if transaction.shipping_address %}
+                                    {{ transaction.shipping_address.crypto_currency|default:transaction.crypto_currency_used|default:"BTC" }}
+                                {% else %}
+                                    {{ transaction.crypto_currency_used|default:"BTC" }}
+                                {% endif %}
+                            </span>
+                        </p>
+                        <p><strong>Wallet Address:</strong></p>
+                        <code style="word-break: break-all; display: block; background: #1a1e2a; padding: 10px; border-radius: 8px;">
+                            {% if transaction.shipping_address %}
+                                {{ transaction.shipping_address.wallet_address|default:"Not provided" }}
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </code>
+                        <p class="mt-3"><strong>💵 Amount to Send to User:</strong> 
+                            <strong class="text-success">${{ transaction.total_amount|floatformat:2 }}</strong>
+                        </p>
+                        <p><strong>📅 Requested:</strong> {{ transaction.created_at|date:"Y-m-d H:i" }}</p>
+                    </div>
+                    {% elif transaction.payment_method == 'delivery_fee' %}
+                    <div class="alert alert-info">
+                        <h4><i class="fas fa-truck"></i> DELIVERY REQUEST DETAILS</h4>
+                        <hr>
+                        <p><strong>Shipping Address:</strong></p>
+                        <address style="background: #1a1e2a; padding: 10px; border-radius: 8px;">
+                            {% if transaction.shipping_address %}
+                                <strong>{{ transaction.shipping_address.full_name }}</strong><br>
+                                {{ transaction.shipping_address.address_line1 }}<br>
+                                {% if transaction.shipping_address.address_line2 %}{{ transaction.shipping_address.address_line2 }}<br>{% endif %}
+                                {{ transaction.shipping_address.city }}, {{ transaction.shipping_address.state }} {{ transaction.shipping_address.postal_code }}<br>
+                                {{ transaction.shipping_address.country }}<br>
+                                <strong>Phone:</strong> {{ transaction.shipping_address.phone }}
+                            {% else %}
+                                No address provided
+                            {% endif %}
+                        </address>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <form method="POST" class="mt-4">
+                {% csrf_token %}
+
+                {% if transaction.payment_method == 'sell_fee' %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-info-circle"></i> Approving this sell request will:
+                        <ul class="mt-2 mb-0">
+                            <li>Remove the holding from user's vault</li>
+                            <li>Mark transaction as completed</li>
+                            <li>User will receive the full amount to their wallet</li>
+                        </ul>
+                    </div>
+                    <button type="submit" name="action" value="confirm" class="btn btn-success btn-lg">
+                        <i class="fas fa-check-circle"></i> Approve & Process Payout
+                    </button>
+
+                {% elif transaction.payment_method == 'delivery_fee' %}
+                    <div class="form-group mb-3">
+                        <label><strong>Tracking Number (optional):</strong></label>
+                        <input type="text" name="tracking_number" class="form-control" placeholder="Enter tracking number" value="{{ transaction.tracking_number|default:'' }}">
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" name="action" value="confirm" class="btn btn-success">
+                            <i class="fas fa-check"></i> Confirm & Prepare Shipment
+                        </button>
+                        <button type="submit" name="action" value="mark_shipped" class="btn btn-primary">
+                            <i class="fas fa-truck"></i> Mark as Shipped
+                        </button>
+                    </div>
+
+                {% else %}
+                    <div class="btn-group">
+                        <button type="submit" name="action" value="confirm" class="btn btn-success">
+                            <i class="fas fa-check"></i> Confirm Order
+                        </button>
+                        <button type="submit" name="action" value="mark_shipped" class="btn btn-primary">
+                            <i class="fas fa-truck"></i> Mark as Shipped
+                        </button>
+                    </div>
+                {% endif %}
+
+                <button type="submit" name="action" value="reject" class="btn btn-danger ms-2" onclick="return confirm('Are you sure you want to reject this?')">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-borderless td, .table-borderless th {
+        padding: 6px;
+        border: none;
+    }
+    .btn-group {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    code {
+        background: #1a1e2a;
+        padding: 4px 8px;
+        border-radius: 6px;
+        color: #f0b90b;
+    }
+    address {
+        font-style: normal;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Invoice — Qubix Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --gold:#f0b90b; --gold-dark:#c9960a; --gold-pale:#fdf6dc;
+    --navy:#0d1f3c; --slate:#2c3e5d;
+    --text:#1a1a2e; --muted:#5a6a84; --border:#dde3ef;
+    --bg:#fff; --subtle:#f5f7fa;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Source Sans 3',sans-serif; background:#d8dde8; display:flex; justify-content:center; padding:40px 20px; color:var(--text); }
+  .document { background:var(--bg); max-width:800px; width:100%; box-shadow:0 8px 60px rgba(13,31,60,0.2); }
+
+  /* Header */
+  .inv-hdr { padding:36px 44px 28px; display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border); }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:700; letter-spacing:4px; color:var(--navy); }
+  .logo-div { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--gold-dark); margin-top:3px; }
+  .inv-title-block { text-align:right; }
+  .inv-word { font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:700; color:var(--gold-dark); letter-spacing:2px; text-transform:uppercase; }
+  .inv-num { font-size:12px; color:var(--muted); margin-top:3px; font-family:'Courier New',monospace; }
+
+  /* Status */
+  .status-bar { background:var(--navy); padding:10px 44px; display:flex; justify-content:space-between; align-items:center; }
+  .status-badge { background:var(--gold); color:var(--navy); font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:3px 12px; }
+  .status-meta { font-size:10px; color:rgba(255,255,255,.45); letter-spacing:1px; }
+
+  .body-pad { padding:36px 44px; }
+
+  /* Info grid */
+  .info-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:28px; }
+  .info-blk .lbl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); border-bottom:2px solid var(--gold); padding-bottom:5px; margin-bottom:8px; display:block; }
+  .info-blk .val { font-size:13.5px; font-weight:600; line-height:1.65; }
+  .info-blk .sub { font-size:11px; color:var(--muted); margin-top:2px; }
+
+  /* Property info card */
+  .property-card { background:var(--navy); color:white; padding:20px 24px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+  .pc-left .pc-lbl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:5px; }
+  .pc-left .pc-name { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold); }
+  .pc-left .pc-loc { font-size:11px; color:rgba(255,255,255,.55); margin-top:3px; }
+  .pc-right .pc-shares { font-size:28px; font-weight:700; color:white; text-align:right; }
+  .pc-right .pc-slbl { font-size:9px; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,.4); text-align:right; }
+
+  /* Line items */
+  .items-tbl { width:100%; border-collapse:collapse; margin-bottom:8px; }
+  .items-tbl thead tr { background:var(--navy); }
+  .items-tbl thead th { padding:11px 16px; text-align:left; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.6); font-weight:600; }
+  .items-tbl thead th:last-child { text-align:right; }
+  .items-tbl tbody tr { border-bottom:1px solid var(--border); }
+  .items-tbl tbody tr:nth-child(even) { background:var(--subtle); }
+  .items-tbl tbody td { padding:13px 16px; font-size:13px; }
+  .items-tbl tbody td:last-child { text-align:right; font-weight:600; }
+  .item-name { font-weight:600; }
+  .item-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+
+  /* Totals */
+  .totals-wrap { display:flex; justify-content:flex-end; margin-bottom:28px; }
+  .totals { width:290px; border:1px solid var(--border); }
+  .tot-row { display:flex; justify-content:space-between; padding:10px 16px; font-size:13px; border-bottom:1px solid var(--border); }
+  .tot-row:last-child { border-bottom:none; }
+  .tot-row .tl { color:var(--muted); }
+  .tot-row .tv { font-weight:600; }
+  .tot-row.grand { background:var(--navy); color:white; padding:14px 16px; }
+  .tot-row.grand .tl { color:rgba(255,255,255,.6); font-size:14px; }
+  .tot-row.grand .tv { color:var(--gold); font-weight:700; font-size:18px; }
+
+  /* Payment */
+  .pay-sec { border:1px solid var(--border); padding:18px 20px; margin-bottom:20px; }
+  .pay-hdr { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+  .pay-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .pay-item .pk { font-size:10px; color:var(--muted); margin-bottom:3px; }
+  .pay-item .pv { font-size:13px; font-weight:600; }
+  .tx { background:var(--subtle); border-left:3px solid var(--gold); padding:10px 14px; font-size:10px; color:var(--muted); font-family:'Courier New',monospace; margin-top:12px; word-break:break-all; }
+  .tx-lbl { font-family:'Source Sans 3',sans-serif; font-size:8px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+
+  .note { font-size:10.5px; color:var(--muted); line-height:1.65; border-top:1px dashed var(--border); padding-top:14px; }
+  .footer { border-top:4px solid var(--gold); padding:13px 44px; display:flex; justify-content:space-between; background:var(--subtle); font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  @media print { body { background:white; padding:0; } .document { box-shadow:none; } }
+</style>
+</head>
+<body>
+<div class="document">
+  <div class="inv-hdr">
+    <div>
+      <div class="logo">QUBIX</div>
+      <div class="logo-div">Real Estate Division</div>
+    </div>
+    <div class="inv-title-block">
+      <div class="inv-word">Invoice</div>
+      <div class="inv-num"># {{ invoice_number }}</div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-badge">Paid — Real Estate Shares</div>
+    <div class="status-meta">Order: {{ order_id }} · {{ invoice_date }}</div>
+  </div>
+
+  <div class="body-pad">
+    <div class="info-3">
+      <div class="info-blk">
+        <span class="lbl">Bill To</span>
+        <div class="val">{{ user_name }}</div>
+        <div class="sub">{{ user_email }}</div>
+      </div>
+      <div class="info-blk">
+        <span class="lbl">Invoice Date</span>
+        <div class="val">{{ invoice_date }}</div>
+        <div class="sub">Due on receipt</div>
+      </div>
+      <div class="info-blk">
+        <span class="lbl">Invoice Number</span>
+        <div class="val" style="font-family:'Courier New',monospace;font-size:12px;">{{ invoice_number }}</div>
+        <div class="sub">Order: {{ order_id }}</div>
+      </div>
+    </div>
+
+    <!-- Property card -->
+    <div class="property-card">
+      <div class="pc-left">
+        <div class="pc-lbl">Property</div>
+        <div class="pc-name">{{ property_name }}</div>
+        <div class="pc-loc">{{ property_location }}</div>
+      </div>
+      <div class="pc-right">
+        <div class="pc-slbl">Shares Purchased</div>
+        <div class="pc-shares">{{ shares_bought }}</div>
+      </div>
+    </div>
+
+    <!-- Line items -->
+    <table class="items-tbl">
+      <thead>
+        <tr>
+          <th style="width:42%">Description</th>
+          <th>Shares</th>
+          <th>Price/Share</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="item-name">{{ property_name }}</div>
+            <div class="item-desc">Fractional real estate shares — registered equity</div>
+          </td>
+          <td>{{ shares_bought }}</td>
+          <td>{{ price_per_share }}</td>
+          <td>{{ total_amount }}</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="item-name">Platform Transaction Fee</div>
+            <div class="item-desc">Share issuance &amp; registration</div>
+          </td>
+          <td>—</td>
+          <td>—</td>
+          <td>{{ platform_fee|default:"Included" }}</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="item-name">Legal &amp; Compliance</div>
+            <div class="item-desc">Title registration, KYC verification</div>
+          </td>
+          <td>—</td>
+          <td>—</td>
+          <td>Included</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="totals-wrap">
+      <div class="totals">
+        <div class="tot-row"><span class="tl">Subtotal</span><span class="tv">{{ total_amount }}</span></div>
+        <div class="tot-row"><span class="tl">Platform Fee</span><span class="tv">{{ platform_fee|default:"Included" }}</span></div>
+        <div class="tot-row"><span class="tl">Legal &amp; Registration</span><span class="tv">Included</span></div>
+        <div class="tot-row"><span class="tl">Tax</span><span class="tv">$0.00</span></div>
+        <div class="tot-row grand"><span class="tl">Total Paid</span><span class="tv">{{ total_amount }}</span></div>
+      </div>
+    </div>
+
+    <!-- Payment -->
+    <div class="pay-sec">
+      <div class="pay-hdr">Payment Information</div>
+      <div class="pay-grid">
+        <div class="pay-item"><div class="pk">Payment Method</div><div class="pv">{{ payment_method }}</div></div>
+        <div class="pay-item"><div class="pk">Status</div><div class="pv" style="color:#1a7a4a;">Confirmed ✓</div></div>
+      </div>
+      {% if transaction_hash %}
+      <div class="tx"><div class="tx-lbl">Transaction Reference / Hash</div>{{ transaction_hash }}</div>
+      {% endif %}
+    </div>
+
+    <div class="note">
+      <strong>Note:</strong> This invoice confirms your fractional ownership purchase in {{ property_name }}.
+      Your Investment Certificate will be issued separately. Shares are subject to the terms of the Operating
+      Agreement. Retain this document for tax and investment records. Qubix Real Estate Ltd. is a registered
+      investment platform. Questions? Contact support@qubix.io.
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Qubix Real Estate — All rights reserved</span>
+    <span>Generated: {% now "d M Y, H:i" %} UTC · Page 1 of 1</span>
+  </div>
+</div>
+</body>
+</html>

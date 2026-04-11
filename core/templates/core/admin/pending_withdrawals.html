@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="dashboard-bg min-h-screen">
+    <div class="max-w-screen-2xl mx-auto px-8 py-8">
+        <h1 class="text-3xl font-semibold mb-6">Pending Withdrawals</h1>
+        
+        <div class="bg-[#111] rounded-3xl overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-white/5">
+                    <tr class="text-left text-sm text-white/60">
+                        <th class="px-6 py-4">User</th>
+                        <th class="px-6 py-4">Amount</th>
+                        <th class="px-6 py-4">Wallet Address</th>
+                        <th class="px-6 py-4">Date</th>
+                        <th class="px-6 py-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10">
+                    {% for withdrawal in withdrawals %}
+                    <tr class="hover:bg-white/5">
+                        <td class="px-6 py-4">{{ withdrawal.user.email }}</td>
+                        <td class="px-6 py-4">${{ withdrawal.amount|floatformat:2 }}</td>
+                        <td class="px-6 py-4 text-sm">{{ withdrawal.wallet_address|truncatechars:30 }}</td>
+                        <td class="px-6 py-4">{{ withdrawal.created_at|date:"M d, Y H:i" }}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2">
+                                <a href="{% url 'admin_approve_withdrawal' withdrawal.id %}" 
+                                   class="px-3 py-1 bg-green-500 text-white text-xs rounded-3xl hover:bg-green-600">
+                                    Approve
+                                </a>
+                                <a href="{% url 'admin_reject_withdrawal' withdrawal.id %}" 
+                                   class="px-3 py-1 bg-red-500 text-white text-xs rounded-3xl hover:bg-red-600">
+                                    Reject
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-white/60">No pending withdrawals</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

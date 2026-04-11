@@ -1,0 +1,1020 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+    <title>Qubix - Secure Global Assets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #ffffff;
+        }
+
+        /* Navigation */
+        nav {
+            background: #0f172a;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* Logo Styles */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: -0.3px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-text {
+            line-height: 1.2;
+        }
+
+        .logo-main {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-sub {
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-top: -2px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: white;
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .btn-login {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            padding: 0.65rem 1.75rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page.active-page {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #1e293b 60%, #f1f5f9 100%);
+            color: white;
+            padding: 6rem 5% 4rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            min-height: 600px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.25rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 1.15rem;
+            color: #94a3b8;
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+            max-width: 500px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            padding: 0.85rem 2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .hero-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .floating-dashboard {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            filter: drop-shadow(0 25px 30px -12px rgba(0, 0, 0, 0.35));
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .floating-dashboard:hover {
+            transform: translateY(-8px);
+            filter: drop-shadow(0 35px 40px -15px rgba(0, 0, 0, 0.4));
+        }
+
+        .floating-dashboard img {
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            display: block;
+        }
+
+        /* Investment Section */
+        .invest-section {
+            padding: 6rem 5%;
+            background: white;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            font-size: 1.15rem;
+            max-width: 800px;
+            margin: 0 auto 4rem;
+            line-height: 1.7;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: left;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-image {
+            background: #f8fafc;
+            height: 160px;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            border: 2px dashed #cbd5e1;
+            font-size: 0.95rem;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .card h3 {
+            font-size: 1.35rem;
+            margin-bottom: 0.75rem;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            color: #64748b;
+            font-size: 0.95rem;
+            padding: 1.25rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .security-badge svg {
+            width: 22px;
+            height: 22px;
+            color: #3b82f6;
+            flex-shrink: 0;
+        }
+
+        /* Security Section */
+        .security-section {
+            padding: 6rem 5%;
+            background: #f8fafc;
+        }
+
+        .security-section .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            background: #0f172a;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 1.25rem;
+            font-size: 1.25rem;
+        }
+
+        .step h3 {
+            font-size: 1.35rem;
+            margin-bottom: 1rem;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .step p {
+            color: #64748b;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* Market Overview */
+        .market-section {
+            padding: 6rem 5%;
+            background: white;
+        }
+
+        .market-section .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .market-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto 2.5rem;
+        }
+
+        .market-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .market-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .market-card h3 {
+            font-size: 1.25rem;
+            color: #1e293b;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .market-price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .market-change {
+            color: #10b981;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .market-chart {
+            background: #f8fafc;
+            height: 120px;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            border: 2px dashed #cbd5e1;
+            overflow: hidden;
+        }
+
+        .market-chart img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .view-all-btn {
+            display: block;
+            width: fit-content;
+            margin: 0 auto;
+            background: #0f172a;
+            color: white;
+            padding: 0.85rem 2.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .view-all-btn:hover {
+            background: #1e293b;
+        }
+
+        /* Inner page styles */
+        .inner-page {
+            padding: 5rem 5%;
+            background: white;
+            min-height: 70vh;
+        }
+        .inner-page .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .inner-page h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #0f172a;
+        }
+        .inner-page .lead {
+            font-size: 1.2rem;
+            color: #475569;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        .info-card {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .info-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #0f172a;
+        }
+        .info-card p, .info-card ul {
+            color: #475569;
+            line-height: 1.7;
+        }
+        .info-card ul {
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        .info-card li {
+            margin-bottom: 0.5rem;
+        }
+        .stat-banner {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            padding: 3rem;
+            border-radius: 24px;
+            margin: 3rem 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            text-align: center;
+            gap: 2rem;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #3b82f6;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+        .full-width-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .full-width-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .badge {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: white;
+            padding: 5rem 5% 3rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .footer-logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .footer-logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+            line-height: 1;
+        }
+
+        .footer-company {
+            display: block;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            margin-top: -2px;
+        }
+
+        .footer-title {
+            font-size: 2.25rem;
+            margin-bottom: 1.25rem;
+            font-weight: 700;
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            max-width: 650px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .partners {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .partner-logo {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: #94a3b8;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .partner-logo svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .hero { grid-template-columns: 1fr; text-align: center; }
+            .hero-content h1 { font-size: 2.75rem; }
+            .hero-content p { margin: 0 auto 2.5rem; }
+            .hero-buttons { justify-content: center; }
+            .cards-grid { grid-template-columns: repeat(2, 1fr); }
+            .steps-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+            .market-cards { grid-template-columns: 1fr; }
+            .info-grid { grid-template-columns: 1fr; }
+            .stat-banner { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .hero-content h1 { font-size: 2.25rem; }
+            .section-title { font-size: 2rem; }
+            .stat-banner { grid-template-columns: 1fr; }
+            .partners { gap: 1rem; }
+            .partner-logo { padding: 0.75rem 1rem; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+   <nav>
+    <div class="logo">
+        <div class="logo-icon">
+            <img src="{% static 'images/logo-icon.png' %}" alt="Qubix Logo">
+        </div>
+        <div class="logo-text">
+            <div class="logo-main">Qubix</div>
+            <div class="logo-sub">INVESTMENT LTD</div>
+        </div>
+    </div>
+
+    <ul class="nav-links">
+        <li><a data-page="home" class="active">Home</a></li>
+        <li><a data-page="investments">Investments</a></li>
+        <li><a data-page="markets">Markets</a></li>
+        <li><a data-page="vault">Vault</a></li>
+        <li><a data-page="about">About</a></li>
+    </ul>
+
+    <div class="nav-buttons">
+        <a href="{% url 'login' %}" class="btn-login">Log In</a>
+        <a href="{% url 'register' %}" class="btn-primary">Get Started</a>
+    </div>
+</nav>
+
+    <!-- HOME PAGE -->
+    <div id="home-page" class="page active-page">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Secure access to global assets powered by blockchain infrastructure.</h1>
+                <p>Invest seamlessly in stocks, minerals, real estate, and precious metals with the safety of fully regulated, and crypto-compatible infrastructure.</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'register' %}" class="btn-primary">Get Started</a>
+                    <a class="btn-secondary">Explore Assets</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="floating-dashboard">
+                    <img src="{% static 'images/dashboard-preview.png' %}" alt="Live Dashboard Preview">
+                </div>
+            </div>
+        </section>
+
+        <section class="invest-section">
+            <h2 class="section-title">Invest in the World's Most Valuable Assets</h2>
+            <p class="section-subtitle">Invest seamlessly in stocks, minerals, real estate, and precious metals with the safety of fully regulated and crypto-compatible infrastructure.</p>
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{% static 'images/stocks-card.jpg' %}" alt="Stocks">
+                    </div>
+                    <h3>Stocks</h3>
+                    <p>Trade leading stocks in global markets.</p>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{% static 'images/minerals-card.jpg' %}" alt="Minerals">
+                    </div>
+                    <h3>Minerals</h3>
+                    <p>Invest in gold, silver, platinum, and more.</p>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{% static 'images/realestate-card.jpg' %}" alt="Real Estate">
+                    </div>
+                    <h3>Real Estate</h3>
+                    <p>Own shares in high-quality real estate.</p>
+                </div>
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{% static 'images/metals-card.jpg' %}" alt="Precious Metals">
+                    </div>
+                    <h3>Precious Metals</h3>
+                    <p>Diversify with valuable natural resources.</p>
+                </div>
+            </div>
+            <div class="security-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span><strong>Insured and regulated:</strong> Your assets are custodied securely and insured by top-tier firms, with audits and regulatory compliance.</span>
+            </div>
+        </section>
+
+        <section class="security-section">
+            <h2 class="section-title">Security & Trust</h2>
+            <div class="steps-grid">
+                <div class="step"><div class="step-number">1</div><h3>Create Account</h3><p>Sign up quickly with full privacy.</p></div>
+                <div class="step"><div class="step-number">2</div><h3>Fund with Crypto</h3><p>Deposit with Bitcoin, Ethereum and more. Physical precious metals stored in fully insured, ultra-secure vaults.</p></div>
+                <div class="step"><div class="step-number">3</div><h3>Invest And Manage Assets</h3><p>Own and manage assets worldwide with ease. Trade and invest in real time.</p></div>
+            </div>
+        </section>
+
+        <section class="market-section">
+            <h2 class="section-title">Live Market Overview</h2>
+            <div class="market-cards">
+                <div class="market-card">
+                    <div class="market-card-header"><h3>🥇 Gold</h3><span class="market-change">+1.13%</span></div>
+                    <div class="market-price">2,364.70</div>
+                    <div class="market-chart">
+                        <img src="{% static 'images/gold-chart.png' %}" alt="Gold Chart">
+                    </div>
+                </div>
+                <div class="market-card">
+                    <div class="market-card-header"><h3>₿ Bitcoin</h3><span class="market-change">+2.4%</span></div>
+                    <div class="market-price">$66,135</div>
+                    <div class="market-chart">
+                        <img src="{% static 'images/btc-chart.png' %}" alt="Bitcoin Chart">
+                    </div>
+                </div>
+                <div class="market-card">
+                    <div class="market-card-header"><h3>🏠 Real Estate</h3><span class="market-change" style="color:#3b82f6;">+12.3%</span></div>
+                    <div class="market-price">$342.80</div>
+                    <div class="market-chart">
+                        <img src="{% static 'images/re-chart.png' %}" alt="Real Estate Chart">
+                    </div>
+                </div>
+            </div>
+            <a class="view-all-btn">View All Markets</a>
+        </section>
+    </div>
+
+    <!-- INVESTMENTS PAGE -->
+    <div id="investments-page" class="page">
+        <div class="inner-page">
+            <div class="container">
+                <h1>📈 Investments</h1>
+                <p class="lead">Complete guide to investing on Qubix — how we invest, withdraw, and grow your wealth with transparency and security.</p>
+
+                <div class="stat-banner">
+                    <div><div class="stat-number">68+</div><div class="stat-label">Assets Available</div></div>
+                    <div><div class="stat-number">$2.1B</div><div class="stat-label">Total Volume</div></div>
+                    <div><div class="stat-number">12,400+</div><div class="stat-label">Active Investors</div></div>
+                    <div><div class="stat-number">0.5%</div><div class="stat-label">Avg Management Fee</div></div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card"><h3>💰 How to Invest</h3><p><strong>Step 1:</strong> Create your free account (2 minutes).<br><strong>Step 2:</strong> Deposit using crypto (BTC, ETH, USDT) or bank transfer.<br><strong>Step 3:</strong> Browse our asset library — stocks, minerals, real estate, metals.<br><strong>Step 4:</strong> Choose your investment amount and confirm.<br><strong>Step 5:</strong> Track your portfolio in real-time from your dashboard.</p><p style="margin-top:1rem">✅ Instant execution · ✅ No hidden fees · ✅ Full ownership rights</p></div>
+                    <div class="info-card"><h3>💸 Withdrawals & Payouts</h3><p><strong>Processing time:</strong> 24-48 hours after verification.<br><strong>Minimum withdrawal:</strong> $10 USD equivalent.<br><strong>Withdrawal fee:</strong> 5% (covers network & processing).<br><strong>Payment methods:</strong> BTC, ETH, USDT, bank wire.</p><p>Real estate dividends paid monthly (every 15th). Stock dividends paid quarterly.</p></div>
+                    <div class="info-card"><h3>📊 Asset Classes Available</h3><ul><li><strong>Stocks:</strong> Apple, Microsoft, Nvidia, Google, Amazon, Tesla + 40 more</li><li><strong>Minerals:</strong> Gold, Silver, Platinum, Palladium, Copper</li><li><strong>Real Estate:</strong> Residential, Commercial, Industrial properties (fractional ownership)</li><li><strong>Physical Metals:</strong> Gold bars (1oz, 10oz, 1kg), Silver bars, Platinum bars</li></ul></div>
+                    <div class="info-card"><h3>📅 Performance & Reporting</h3><p>Real-time P&L updates every 3 seconds. Monthly statements available for download. Annual tax reports generated automatically. All transactions recorded on immutable ledger with full audit trail.</p><p><strong>Historical returns (2024):</strong> Stocks +18.2% · Minerals +12.5% · Real Estate +9.8%</p></div>
+                </div>
+
+                <div class="full-width-card">
+                    <span class="badge">Investment Tiers</span>
+                    <h3>Choose your investment level</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 1.5rem;">
+                        <div><strong>🟢 Starter</strong><br>$100 - $1,000<br>Basic access · 0.5% fee</div>
+                        <div><strong>🔵 Growth</strong><br>$1,000 - $10,000<br>Priority support · 0.4% fee</div>
+                        <div><strong>🟣 Premium</strong><br>$10,000+<br>Dedicated advisor · 0.3% fee</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MARKETS PAGE -->
+    <div id="markets-page" class="page">
+        <div class="inner-page">
+            <div class="container">
+                <h1>🌍 Markets & Regulation</h1>
+                <p class="lead">Fully regulated, live market data, institutional-grade security — we're committed to transparency and compliance.</p>
+
+                <div class="stat-banner">
+                    <div><div class="stat-number">150+</div><div class="stat-label">Countries Served</div></div>
+                    <div><div class="stat-number">3s</div><div class="stat-label">Price Update Frequency</div></div>
+                    <div><div class="stat-number">24/7</div><div class="stat-label">Market Access</div></div>
+                    <div><div class="stat-number">100%</div><div class="stat-label">Audit Compliance</div></div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card"><h3>⚖️ Regulatory Framework</h3><p>Qubix operates under MSB registration (FINTRAC #M123456). We're fully compliant with anti-money laundering (AML) and know-your-customer (KYC) regulations. Our custodial partners are regulated in Switzerland, Singapore, and the United States.</p><p><strong>Audits:</strong> PwC (annual) · Deloitte (quarterly) · Internal (monthly)</p></div>
+                    <div class="info-card"><h3>📡 Live Market Data Feeds</h3><p>We source real-time prices from:</p><ul><li>NYSE/NASDAQ (stocks) — 1s delay</li><li>LBMA (gold/silver spot) — 3s delay</li><li>CME Group (futures/commodities)</li><li>CoinGecko/CoinMarketCap (crypto)</li><li>Case-Shiller Index (real estate)</li></ul><p><strong>No hidden spreads</strong> — you see exactly what we pay.</p></div>
+                    <div class="info-card"><h3>🔒 Security & Compliance Certifications</h3><ul><li>✅ SOC 2 Type II certified</li><li>✅ ISO 27001 information security</li><li>✅ Multi-signature cold wallets (98% assets offline)</li><li>✅ Regular penetration testing</li><li>✅ GDPR & data privacy compliant</li><li>✅ Lloyd's of London insurance ($500M coverage)</li></ul></div>
+                    <div class="info-card"><h3>📊 Market Coverage Details</h3><p><strong>Stocks:</strong> NYSE, NASDAQ, LSE, TSX (4,500+ symbols via API)<br><strong>Commodities:</strong> LBMA Gold/Silver, LME Copper<br><strong>Crypto:</strong> 20+ major cryptocurrencies<br><strong>Real Estate:</strong> 15+ properties across US, UK, Europe, Asia<br><strong>Forex:</strong> 40+ currency pairs for reference</p></div>
+                </div>
+
+                <div class="full-width-card">
+                    <span class="badge">Market Hours</span>
+                    <h3>When can you trade?</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: 1rem;">
+                        <div><strong>📈 Stocks</strong><br>9:30 AM - 4:00 PM ET<br>(Mon-Fri)</div>
+                        <div><strong>🥇 Commodities</strong><br>6:00 PM - 5:00 PM ET<br>(Sun-Fri)</div>
+                        <div><strong>₿ Crypto</strong><br>24/7/365</div>
+                        <div><strong>🏠 Real Estate</strong><br>24/7 (order book)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VAULT PAGE -->
+    <div id="vault-page" class="page">
+        <div class="inner-page">
+            <div class="container">
+                <h1>🔒 Qubix Vault</h1>
+                <p class="lead">Bank-grade physical asset storage — keep your metals in our insured vaults or have them shipped to your door.</p>
+
+                <div class="stat-banner">
+                    <div><div class="stat-number">$500M+</div><div class="stat-label">Insured Assets</div></div>
+                    <div><div class="stat-number">24/7</div><div class="stat-label">Vault Monitoring</div></div>
+                    <div><div class="stat-number">100%</div><div class="stat-label">Allocated Storage</div></div>
+                    <div><div class="stat-number">3</div><div class="stat-label">Global Vault Locations</div></div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card"><h3>🏛️ Zurich Vault (Primary)</h3><p><strong>Location:</strong> Zurich, Switzerland<br><strong>Operator:</strong> Malca-Amit / Brinks<br><strong>Security:</strong> Armed guards, biometric access, seismic protection<br><strong>Insurance:</strong> Lloyd's of London — full replacement value<br><strong>Storage fee:</strong> First year FREE, then 0.5% annually</p><p>Every bar is allocated (your name on the specific bar). Quarterly independent audits by PwC.</p></div>
+                    <div class="info-card"><h3>🚚 Ship to You (Delivery)</h3><p><strong>Process:</strong> Request delivery from your dashboard<br><strong>Shipping time:</strong> 5-10 business days (insured courier)<br><strong>Tracking:</strong> Real-time tracking number provided<br><strong>Signature required:</strong> Adult signature upon delivery<br><strong>Insurance:</strong> Full coverage during transit</p><p><strong>Shipping fee:</strong> Calculated based on weight & destination (typically $25-$50)</p></div>
+                    <div class="info-card"><h3>📦 Vault Operations & Security</h3><ul><li>24/7 armed security + CCTV surveillance</li><li>Biometric access control (authorized personnel only)</li><li>Allocated storage — your assets never mixed with others</li><li>Quarterly independent audits with public reports</li><li>Instant liquidation — sell your vaulted assets anytime</li><li>Climate-controlled storage (temp/humidity monitored)</li></ul></div>
+                    <div class="info-card"><h3>📄 Vault Documentation</h3><p>Every vault holding includes the following documents (downloadable from dashboard):</p><ul><li>📜 Vault Storage Certificate</li><li>🔏 Proof of Ownership (notarized)</li><li>🛡️ Insurance Certificate</li><li>📑 Allocated Storage Agreement</li><li>🔍 Quarterly Audit Confirmation</li></ul><p>All documents are blockchain-timestamped for authenticity.</p></div>
+                </div>
+
+                <div class="full-width-card">
+                    <span class="badge">Vault Locations</span>
+                    <h3>Global vault network</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 1rem;">
+                        <div><strong>🇨🇭 Zurich, Switzerland</strong><br>Primary vault · 24/7 access<br>Most secure facility in Europe</div>
+                        <div><strong>🇸🇬 Singapore</strong><br>Asia-Pacific hub<br>Freeport facility</div>
+                        <div><strong>🇺🇸 Delaware, USA</strong><br>East Coast storage<br>Coming Q3 2025</div>
+                    </div>
+                    <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #64748b;">✨ Request physical inspection of your assets with 48-hour notice (Zurich only).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT PAGE -->
+    <div id="about-page" class="page">
+        <div class="inner-page">
+            <div class="container">
+                <h1>⭐ Our Story</h1>
+                <p class="lead">10+ years of bridging traditional wealth and digital finance — built by veterans, trusted by thousands.</p>
+
+                <div class="stat-banner">
+                    <div><div class="stat-number">10+</div><div class="stat-label">Years of Excellence</div></div>
+                    <div><div class="stat-number">150k+</div><div class="stat-label">Global Users</div></div>
+                    <div><div class="stat-number">$2B+</div><div class="stat-label">Transactions Processed</div></div>
+                    <div><div class="stat-number">24/7</div><div class="stat-label">Customer Support</div></div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card"><h3>📅 Our History</h3><p><strong>2015:</strong> Qubix founded in Zug, Switzerland with $2M seed funding.<br><strong>2016:</strong> First gold tokenization product launched.<br><strong>2018:</strong> Real estate investment platform added.<br><strong>2020:</strong> MSB registration completed, expanded to 50+ countries.<br><strong>2022:</strong> Zurich vault partnership announced.<br><strong>2023:</strong> $500M insured assets milestone.<br><strong>2024:</strong> Singapore vault opened.<br><strong>2025:</strong> 10-year anniversary — celebrating 150,000 users.</p></div>
+                    <div class="info-card"><h3>🎯 Our Mission & Vision</h3><p><strong>Mission:</strong> Democratize access to real assets — stocks, real estate, and physical metals — for everyone, anywhere in the world.</p><p><strong>Vision:</strong> Become the world's most trusted platform for owning real assets, combining traditional security with blockchain transparency.</p><p><strong>Values:</strong> Transparency · Security · Accessibility · Innovation</p></div>
+                    <div class="info-card"><h3>🏆 Leadership Team</h3><ul><li><strong>Michael Chen</strong> — Founder & CEO (ex-Goldman Sachs)</li><li><strong>Sarah Williams</strong> — CFO (ex-Morgan Stanley)</li><li><strong>David Kim</strong> — CTO (ex-Coinbase)</li><li><strong>Elena Rossi</strong> — Head of Vault Operations (ex-Brinks)</li><li><strong>James Okonkwo</strong> — Head of Compliance (ex-FINTRAC)</li></ul><p>Average 15+ years of financial services experience.</p></div>
+                    <div class="info-card"><h3>🌍 Global Presence & Partners</h3><p><strong>Headquarters:</strong> Zug, Switzerland<br><strong>Regional offices:</strong> London, Singapore, New York<br><strong>Vault partners:</strong> Malca-Amit, Brinks, Loomis<br><strong>Insurance partners:</strong> Lloyd's of London, Zurich Insurance<br><strong>Audit partners:</strong> PwC, Deloitte<br><strong>Banking partners:</strong> Silvergate, Signature Bank</p></div>
+                </div>
+
+                <div class="full-width-card">
+                    <span class="badge">Our Commitment</span>
+                    <h3>Why investors trust Qubix</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 1rem;">
+                        <div>🔒 <strong>Institutional custody</strong><br>Assets held in regulated vaults</div>
+                        <div>📋 <strong>Full transparency</strong><br>Real-time reporting & audits</div>
+                        <div>💎 <strong>True ownership</strong><br>You own the underlying asset</div>
+                    </div>
+                    <p style="margin-top: 1.5rem; text-align: center; color: #3b82f6;">Join 150,000+ investors who trust Qubix with over $2 billion in assets.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">
+            <div class="footer-logo-icon">
+                <img src="{% static 'images/logo-icon.png' %}" alt="Qubix Logo">
+            </div>
+            <div class="footer-logo-text">
+                Qubix
+                <span class="footer-company">Investment Ltd</span>
+            </div>
+        </div>
+        <h2 class="footer-title">Trusted. Regulated. Insured.</h2>
+        <p class="footer-text">Custodied assets fully insured. Compliant with international financial standards. Secure vault infrastructure & security.</p>
+        <div class="partners">
+            <div class="partner-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                FINTRAC
+            </div>
+            <div class="partner-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                LLOYD'S OF LONDON
+            </div>
+            <div class="partner-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                SOC 2
+            </div>
+            <div class="partner-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                PwC AUDITED
+            </div>
+        </div>
+        <div style="margin-top: 40px; font-size: 11px; color: #5b6e8c;">© 2025 Qubix — All rights reserved. <a href="/login" style="color:#94a3b8;">Login</a> | <a href="/register">Sign Up</a></div>
+    </footer>
+
+    <script>
+        // Page switching logic
+        const pages = {
+            home: document.getElementById('home-page'),
+            investments: document.getElementById('investments-page'),
+            markets: document.getElementById('markets-page'),
+            vault: document.getElementById('vault-page'),
+            about: document.getElementById('about-page')
+        };
+
+        function showPage(pageId) {
+            Object.values(pages).forEach(page => {
+                if (page) page.classList.remove('active-page');
+            });
+            if (pages[pageId]) pages[pageId].classList.add('active-page');
+            
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('active');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.getAttribute('data-page');
+                if (pageId) showPage(pageId);
+            });
+        });
+        showPage('home');
+    </script>
+</body>
+</html>

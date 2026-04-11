@@ -1,0 +1,306 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate Verification — Qubix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap');
+
+  :root {
+    --gold: #f0b90b;
+    --gold-dark: #c9960a;
+    --gold-deep: #9a7208;
+    --text: #1a1a2e;
+    --muted: #5a5a72;
+    --bg: #0d0f1a;
+    --card: #13162a;
+    --border: #2a2d3e;
+    --green: #0ecb81;
+    --red: #f6465d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--bg);
+    color: #e8e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .logo {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 8px;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .logo span { color: var(--gold); }
+  .logo-sub {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── Main card ── */
+  .verify-card {
+    width: 100%;
+    max-width: 600px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  }
+
+  /* ── Result banner ── */
+  .result-banner {
+    padding: 32px 40px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .result-banner.valid {
+    background: linear-gradient(135deg, rgba(14,203,129,0.08) 0%, rgba(14,203,129,0.03) 100%);
+    border-bottom: 1px solid rgba(14,203,129,0.2);
+  }
+  .result-banner.invalid {
+    background: linear-gradient(135deg, rgba(246,70,93,0.08) 0%, rgba(246,70,93,0.03) 100%);
+    border-bottom: 1px solid rgba(246,70,93,0.2);
+  }
+
+  .status-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 4px;
+  }
+  .status-icon.valid {
+    background: rgba(14,203,129,0.12);
+    border: 2px solid rgba(14,203,129,0.3);
+    color: var(--green);
+  }
+  .status-icon.invalid {
+    background: rgba(246,70,93,0.12);
+    border: 2px solid rgba(246,70,93,0.3);
+    color: var(--red);
+  }
+
+  .result-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+  .result-title.valid { color: var(--green); }
+  .result-title.invalid { color: var(--red); }
+
+  .result-desc {
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 380px;
+    line-height: 1.7;
+  }
+
+  /* ── Details section ── */
+  .details-section {
+    padding: 32px 40px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+
+  .detail-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .detail-value {
+    font-weight: 600;
+    color: #e8e8f0;
+    text-align: right;
+    font-size: 14px;
+  }
+  .detail-value.mono {
+    font-family: 'Courier Prime', monospace;
+    color: var(--gold);
+    font-size: 13px;
+  }
+  .detail-value.highlight {
+    color: var(--green);
+  }
+
+  /* ── Timestamp ── */
+  .verify-timestamp {
+    padding: 16px 40px;
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .verify-timestamp .ts-value {
+    font-family: 'Courier Prime', monospace;
+    color: var(--gold);
+  }
+
+  /* ── Footer ── */
+  .page-footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .page-footer a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .page-footer a:hover { text-decoration: underline; }
+
+  /* ── Invalid state ── */
+  .invalid-help {
+    padding: 24px 40px;
+    background: rgba(246,70,93,0.04);
+    border-top: 1px solid rgba(246,70,93,0.1);
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+    text-align: center;
+  }
+  .invalid-help strong { color: #e8e8f0; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="logo">Q<span>U</span>BIX</div>
+  <div class="logo-sub">Certificate Verification Portal</div>
+</div>
+
+<div class="verify-card">
+
+  {% if is_valid %}
+
+    <div class="result-banner valid">
+      <div class="status-icon valid">✓</div>
+      <div class="result-title valid">Authentic &amp; Verified</div>
+      <div class="result-desc">
+        This Certificate of Authenticity is genuine and recorded in the Qubix Investments secure registry.
+      </div>
+    </div>
+
+    <div class="details-section">
+      <div class="section-label">Asset Details</div>
+
+      <div class="detail-row">
+        <span class="detail-label">Certificate No.</span>
+        <span class="detail-value mono">{{ certificate_number }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Product</span>
+        <span class="detail-value">{{ product_name }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Purity</span>
+        <span class="detail-value mono">{{ purity }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Weight</span>
+        <span class="detail-value mono">{{ weight }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Mint / Manufacturer</span>
+        <span class="detail-value">{{ mint }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Storage Location</span>
+        <span class="detail-value highlight">{{ vault_location }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Owner</span>
+        <span class="detail-value">{{ owner_initials }}•••••• (Privacy Protected)</span>
+      </div>
+    </div>
+
+    <div class="verify-timestamp">
+      <span>Verified at</span>
+      <span class="ts-value">{{ verification_time|date:"d M Y · H:i" }} UTC</span>
+    </div>
+
+  {% else %}
+
+    <div class="result-banner invalid">
+      <div class="status-icon invalid">✕</div>
+      <div class="result-title invalid">Certificate Not Found</div>
+      <div class="result-desc">
+        This certificate code does not match any record in the Qubix Investments registry. It may be invalid, expired, or tampered with.
+      </div>
+    </div>
+
+    <div class="invalid-help">
+      If you believe this is an error, please contact us at
+      <strong>support@qubixinvestments.com</strong> and quote the certificate number from the document.
+      <br><br>
+      <strong>Warning:</strong> Do not accept any precious metals document that cannot be verified here.
+    </div>
+
+  {% endif %}
+
+</div>
+
+<div class="page-footer">
+  <a href="/">← Return to Qubix</a><br>
+  Qubix Investments Ltd. · Registered in England &amp; Wales No. 12345678 · FCA Ref. 987654
+</div>
+
+</body>
+</html>

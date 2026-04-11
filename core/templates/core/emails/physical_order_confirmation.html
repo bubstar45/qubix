@@ -1,0 +1,77 @@
+{% extends 'core/emails/base_email.html' %}
+
+{% block header_title %}
+<h1 style="color: #D4AF37; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Order Confirmed</h1>
+<p style="color: #94a3b8; margin: 8px 0 0;">Your order has been confirmed</p>
+{% endblock %}
+
+{% block content %}
+<p class="greeting">Dear {{ user_name }},</p>
+<p class="greeting-light">Great news! Your order has been confirmed and is being processed.</p>
+
+<div class="info-box success">
+    <strong>✓ Order Confirmed</strong><br>
+    Order #: {{ order_id }} • Date: {{ order_date }}
+</div>
+
+<table class="transaction-table">
+    <tr>
+        <td>Product</th>
+        <td>{{ product_name }}</th>
+    </tr>
+    <tr>
+        <td>Specification</th>
+        <td>{{ product_spec }}</th>
+    </tr>
+    <tr>
+        <td>Quantity</th>
+        <td>{{ quantity }}</th>
+    </tr>
+    <tr>
+        <td>Total Amount</th>
+        <td><strong>{{ total_amount }}</strong></th>
+    </tr>
+    <tr>
+        <td>Delivery Method</th>
+        <td>{{ delivery_method }}</th>
+    </tr>
+    {% if vault_location %}
+    <tr>
+        <td>Vault Location</th>
+        <td>{{ vault_location }}</th>
+    </tr>
+    {% endif %}
+    <tr>
+        <td style="border-bottom: 2px solid #e2e8f0;"><strong>Status</strong></th>
+        <td style="border-bottom: 2px solid #e2e8f0;">
+            <span style="color: #10b981;">Confirmed</span>
+        </th>
+    </tr>
+</table>
+
+<div class="divider"></div>
+
+<div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
+    <div style="font-weight: 700; margin-bottom: 8px;">What happens next?</div>
+    <p style="font-size: 13px; color: #475569; margin: 0;">
+        {% if delivery_method == 'Qubix Vault Storage' %}
+            Your asset has been securely stored in our vault. You can request delivery at any time.
+        {% else %}
+            Your order will be prepared for shipment. You'll receive another email when it ships.
+        {% endif %}
+    </p>
+</div>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="/physical/" class="btn">View My Orders →</a>
+</div>
+
+<p style="margin-top: 24px;">
+    Questions about this order?<br>
+    <a href="{{ support_url }}" style="color: #3b82f6;">Contact Support</a>
+</p>
+
+<p style="margin-top: 24px;">
+    Thank you for investing with Qubix.
+</p>
+{% endblock %}

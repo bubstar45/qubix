@@ -1,0 +1,561 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Your Holdings | Qubix{% endblock %}
+
+{% block extra_css %}
+<style>
+  .main-content {
+    flex: 1;
+    padding: 30px 32px;
+    overflow-y: auto;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .page-subtitle {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .total-value-card {
+    background: linear-gradient(135deg, var(--surface2), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px 28px;
+    text-align: right;
+  }
+
+  .total-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .total-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    font-family: var(--mono);
+  }
+
+  .total-pl {
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .total-pl.positive { color: var(--green); }
+  .total-pl.negative { color: var(--red); }
+
+  /* Section Tabs */
+  .section-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+
+  .section-tab {
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--muted2);
+  }
+
+  .section-tab:hover {
+    color: var(--text);
+    background: var(--surface2);
+  }
+
+  .section-tab.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* Holdings Grid */
+  .holdings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+
+  .holding-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .holding-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .asset-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .asset-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    background: linear-gradient(135deg, var(--surface3), var(--surface2));
+  }
+
+  .asset-symbol {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: var(--mono);
+  }
+
+  .asset-name {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .category-badge {
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 20px;
+  }
+
+  .category-badge.stock { background: rgba(46,125,50,0.15); color: #2e7d32; }
+  .category-badge.mineral { background: rgba(184,134,11,0.15); color: #b8860b; }
+  .category-badge.realestate { background: rgba(139,105,20,0.15); color: #8b6914; }
+  .category-badge.crypto { background: rgba(240,185,11,0.15); color: var(--gold); }
+  .category-badge.other { background: rgba(168,85,247,0.15); color: #a855f7; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stat-item {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 12px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: var(--mono);
+  }
+
+  .stat-sub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .profit-loss {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+  }
+
+  .profit-loss.positive {
+    background: rgba(15,214,136,0.1);
+    color: var(--green);
+  }
+
+  .profit-loss.negative {
+    background: rgba(240,67,106,0.1);
+    color: var(--red);
+  }
+
+  .lock-period {
+    margin-top: 12px;
+    padding: 8px 10px;
+    background: var(--surface);
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .lock-badge {
+    background: rgba(240,185,11,0.15);
+    color: var(--gold);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .lock-badge.unlocked {
+    background: rgba(14,203,129,0.15);
+    color: var(--green);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+  }
+
+  .empty-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .empty-text {
+    font-size: 14px;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 24px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .section-hidden {
+    display: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Your Holdings</h1>
+      <p class="page-subtitle">Manage your investment portfolio</p>
+    </div>
+    <div class="total-value-card">
+      <div class="total-label">Total Value</div>
+      <div class="total-value">${{ total_value|floatformat:2 }}</div>
+      <div class="total-pl {% if total_unrealized_pl >= 0 %}positive{% else %}negative{% endif %}">
+        {% if total_unrealized_pl >= 0 %}▲{% else %}▼{% endif %} ${{ total_unrealized_pl|floatformat:2 }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Tabs -->
+  <div class="section-tabs">
+    <div class="section-tab active" data-section="all">All Holdings</div>
+    <div class="section-tab" data-section="stocks">Stocks & Minerals</div>
+    <div class="section-tab" data-section="realestate">Real Estate</div>
+  </div>
+
+  <!-- All Holdings Section (combined) - SHOW THIS FIRST (no hidden class) -->
+  <div id="all-section" class="holdings-grid">
+    <!-- Stocks & Minerals -->
+    {% for item in holdings %}
+    <div class="holding-card" onclick="window.location.href='{% url 'asset_detail' item.holding.asset.id %}'">
+      <div class="card-header">
+        <div class="asset-info">
+          <div class="asset-icon">
+            {% if item.holding.asset.category == 'stock' %}📈
+            {% elif item.holding.asset.category == 'mineral' %}💎
+            {% else %}🏦{% endif %}
+          </div>
+          <div>
+            <div class="asset-symbol">{{ item.holding.asset.symbol }}</div>
+            <div class="asset-name">{{ item.holding.asset.name }}</div>
+          </div>
+        </div>
+        <div class="category-badge {{ item.holding.asset.category }}">
+          {{ item.holding.asset.get_category_display }}
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">Quantity</div>
+          <div class="stat-value">{{ item.holding.effective_quantity|default:item.holding.quantity|floatformat:4 }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Value</div>
+          <div class="stat-value">${{ item.current_value|floatformat:2 }}</div>
+        </div>
+      </div>
+
+      <div class="profit-loss {% if item.profit_loss >= 0 %}positive{% else %}negative{% endif %}">
+        {% if item.profit_loss >= 0 %}▲{% else %}▼{% endif %} 
+        ${{ item.profit_loss|floatformat:2 }} ({{ item.profit_percent|floatformat:2 }}%)
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Real Estate -->
+    {% for inv in real_estate_investments %}
+    <div class="holding-card" onclick="window.location.href='{% url 'real_estate_detail' inv.property.id %}'">
+      <div class="card-header">
+        <div class="asset-info">
+          <div class="asset-icon">🏠</div>
+          <div>
+            <div class="asset-symbol">{{ inv.property.name|truncatechars:20 }}</div>
+            <div class="asset-name">{{ inv.property.location }}</div>
+          </div>
+        </div>
+        <div class="category-badge realestate">Real Estate</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">Shares</div>
+          <div class="stat-value">{{ inv.shares }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Invested</div>
+          <div class="stat-value">${{ inv.effective_amount|default:inv.amount_invested|floatformat:2 }}</div>
+        </div>
+      </div>
+
+      <div class="profit-loss positive">
+        📈 {{ inv.expected_annual_return|default:8.5 }}% expected return
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if not holdings and not real_estate_investments %}
+    <div class="empty-state" style="grid-column: 1/-1;">
+      <div class="empty-icon">📂</div>
+      <div class="empty-title">No Holdings Yet</div>
+      <div class="empty-text">You haven't invested in any assets yet.</div>
+      <a href="{% url 'stocks' %}" class="back-link">Browse Stocks →</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Stocks & Minerals Section - HIDDEN by default -->
+  <div id="stocks-section" class="holdings-grid section-hidden">
+    {% for item in holdings %}
+    <div class="holding-card" onclick="window.location.href='{% url 'asset_detail' item.holding.asset.id %}'">
+      <div class="card-header">
+        <div class="asset-info">
+          <div class="asset-icon">
+            {% if item.holding.asset.category == 'stock' %}📈
+            {% elif item.holding.asset.category == 'mineral' %}💎
+            {% elif item.holding.asset.category == 'crypto' %}₿
+            {% else %}🏦{% endif %}
+          </div>
+          <div>
+            <div class="asset-symbol">{{ item.holding.asset.symbol }}</div>
+            <div class="asset-name">{{ item.holding.asset.name }}</div>
+          </div>
+        </div>
+        <div class="category-badge {{ item.holding.asset.category }}">
+          {{ item.holding.asset.get_category_display }}
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">Quantity</div>
+          <div class="stat-value">{{ item.holding.effective_quantity|default:item.holding.quantity|floatformat:4 }}</div>
+          <div class="stat-sub">shares</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Avg Price</div>
+          <div class="stat-value">${{ item.holding.effective_average_price|default:item.holding.average_price|floatformat:2 }}</div>
+          <div class="stat-sub">per share</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Current Price</div>
+          <div class="stat-value">${{ item.holding.asset.current_price|floatformat:2 }}</div>
+          <div class="stat-sub">live</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Position Value</div>
+          <div class="stat-value">${{ item.current_value|floatformat:2 }}</div>
+          <div class="stat-sub">{{ item.holding.effective_quantity|default:item.holding.quantity|floatformat:0 }} shares</div>
+        </div>
+      </div>
+
+      <!-- Purchase Date (Admin override supported) -->
+      <div class="lock-period" style="margin-top: 8px;">
+        <span><i class="fas fa-calendar-alt"></i> Purchase Date:</span>
+        <span>{{ item.holding.effective_purchase_date|default:item.holding.created_at|date:"M d, Y" }}</span>
+      </div>
+
+      <div class="profit-loss {% if item.profit_loss >= 0 %}positive{% else %}negative{% endif %}">
+        {% if item.profit_loss >= 0 %}▲{% else %}▼{% endif %} 
+        ${{ item.profit_loss|floatformat:2 }} ({{ item.profit_percent|floatformat:2 }}%)
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state" style="grid-column: 1/-1;">
+      <div class="empty-icon">📂</div>
+      <div class="empty-title">No Stock or Mineral Holdings</div>
+      <div class="empty-text">You haven't invested in any stocks or minerals yet.</div>
+      <a href="{% url 'stocks' %}" class="back-link">Browse Stocks →</a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Real Estate Section - HIDDEN by default -->
+  <div id="realestate-section" class="holdings-grid section-hidden">
+    {% if real_estate_investments %}
+      {% for inv in real_estate_investments %}
+      <div class="holding-card" onclick="window.location.href='{% url 'real_estate_detail' inv.property.id %}'">
+        <div class="card-header">
+          <div class="asset-info">
+            <div class="asset-icon">🏠</div>
+            <div>
+              <div class="asset-symbol">{{ inv.property.name|truncatechars:20 }}</div>
+              <div class="asset-name">{{ inv.property.location }}</div>
+            </div>
+          </div>
+          <div class="category-badge realestate">Real Estate</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">Shares Owned</div>
+            <div class="stat-value">{{ inv.shares }}</div>
+            <div class="stat-sub">@ ${{ inv.property.price_per_share }}/share</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Amount Invested</div>
+            <div class="stat-value">${{ inv.effective_amount|default:inv.amount_invested|floatformat:2 }}</div>
+            <div class="stat-sub">total investment</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Monthly Dividend</div>
+            <div class="stat-value">${{ inv.property.monthly_rent|floatformat:2 }}</div>
+            <div class="stat-sub">estimated</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Total Dividends</div>
+            <div class="stat-value">${{ inv.total_dividends|default:0|floatformat:2 }}</div>
+            <div class="stat-sub">received to date</div>
+          </div>
+        </div>
+
+        <!-- Invested Date (Admin override supported) -->
+        <div class="lock-period" style="margin-top: 8px;">
+          <span><i class="fas fa-calendar-alt"></i> Invested Date:</span>
+          <span>{{ inv.effective_invested_at|default:inv.invested_at|date:"M d, Y" }}</span>
+        </div>
+
+        <!-- Lock-in Period Info -->
+        <div class="lock-period">
+          <span>
+            <i class="fas fa-lock"></i> Lock-in Period:
+            <strong>{{ inv.investment_period_months|default:12 }} months</strong>
+          </span>
+          <span class="lock-badge {% if inv.maturity_date and inv.maturity_date <= now %}unlocked{% endif %}">
+            {% if inv.maturity_date and inv.maturity_date <= now %}
+              <i class="fas fa-unlock-alt"></i> Matured
+            {% else %}
+              <i class="fas fa-clock"></i> Locked until {{ inv.maturity_date|date:"M d, Y"|default:"--" }}
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="profit-loss positive">
+          📈 Expected Annual Return: {{ inv.expected_annual_return|default:8.5 }}%
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="empty-state" style="grid-column: 1/-1;">
+      <div class="empty-icon">🏠</div>
+      <div class="empty-title">No Real Estate Holdings</div>
+      <div class="empty-text">You haven't invested in any real estate properties yet.</div>
+      <a href="{% url 'real_estate_list' %}" class="back-link">Browse Real Estate →</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div style="text-align: center; margin-top: 24px;">
+    <a href="{% url 'dashboard' %}" class="back-link">← Back to Dashboard</a>
+  </div>
+</div>
+
+<script>
+  // Tab switching functionality
+  document.querySelectorAll('.section-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      // Remove active class from all tabs
+      document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      const section = this.dataset.section;
+      
+      // Hide all sections
+      document.getElementById('all-section').classList.add('section-hidden');
+      document.getElementById('stocks-section').classList.add('section-hidden');
+      document.getElementById('realestate-section').classList.add('section-hidden');
+      
+      // Show selected section
+      if (section === 'all') {
+        document.getElementById('all-section').classList.remove('section-hidden');
+      } else if (section === 'stocks') {
+        document.getElementById('stocks-section').classList.remove('section-hidden');
+      } else if (section === 'realestate') {
+        document.getElementById('realestate-section').classList.remove('section-hidden');
+      }
+    });
+  });
+</script>
+{% endblock %}

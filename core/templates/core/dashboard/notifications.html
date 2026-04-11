@@ -1,0 +1,875 @@
+{% extends 'core/base.html' %}
+{% block title %}Notifications | Qubix{% endblock %}
+{% block body_class %}portfolio-page{% endblock %}
+
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Geist+Mono:wght@300;400;500&display=swap');
+
+/* ─── Page layout ─── */
+.nq-wrap {
+  font-family: 'Syne', sans-serif;
+}
+
+.nq-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.nq-title-block {}
+.nq-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text, #e8e8f0);
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.nq-sub {
+  font-size: 12px;
+  color: var(--muted, #4b5263);
+  font-family: 'Geist Mono', monospace;
+  letter-spacing: 1px;
+}
+
+.nq-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.nq-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  cursor: pointer;
+  border: 1px solid var(--border, #2a2d3e);
+  background: var(--surface2, #1a1e2a);
+  color: var(--muted2, #6b7280);
+  transition: all 0.18s;
+  letter-spacing: 0.3px;
+}
+.nq-btn:hover {
+  border-color: var(--accent, #3d7eff);
+  color: var(--accent, #3d7eff);
+  background: rgba(61,126,255,0.06);
+}
+.nq-unread-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--accent, #3d7eff);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Geist Mono', monospace;
+}
+
+/* ─── Filter tabs ─── */
+.nq-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: var(--surface2, #1a1e2a);
+  border: 1px solid var(--border, #2a2d3e);
+  border-radius: 12px;
+  padding: 4px;
+  width: fit-content;
+}
+.nq-tab {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--muted2, #6b7280);
+  transition: all 0.16s;
+  border: none;
+  background: transparent;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.3px;
+}
+.nq-tab.active {
+  background: var(--surface3, #22263a);
+  color: var(--text, #e8e8f0);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ─── Notification list ─── */
+.nq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nq-card {
+  background: var(--surface2, #1a1e2a);
+  border: 1px solid var(--border, #2a2d3e);
+  border-radius: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+  animation: nq-slide 0.35s ease both;
+}
+.nq-card:nth-child(1) { animation-delay: 0.03s; }
+.nq-card:nth-child(2) { animation-delay: 0.07s; }
+.nq-card:nth-child(3) { animation-delay: 0.11s; }
+.nq-card:nth-child(4) { animation-delay: 0.15s; }
+.nq-card:nth-child(5) { animation-delay: 0.19s; }
+.nq-card:nth-child(6) { animation-delay: 0.23s; }
+@keyframes nq-slide {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.nq-card.unread {
+  border-left: 3px solid var(--accent, #3d7eff);
+  background: rgba(61,126,255,0.04);
+}
+.nq-card.unread::after {
+  content: '';
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent, #3d7eff);
+  box-shadow: 0 0 0 2px rgba(61,126,255,0.25);
+}
+.nq-card:hover {
+  border-color: rgba(61,126,255,0.4);
+  transform: translateX(4px);
+  background: var(--surface, #13162a);
+}
+
+.nq-icon-wrap {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.nq-icon-wrap.type-transaction { background: rgba(61,126,255,0.1);  color: var(--accent, #3d7eff); }
+.nq-icon-wrap.type-deposit     { background: rgba(14,203,129,0.1);  color: var(--green, #0ecb81); }
+.nq-icon-wrap.type-withdrawal  { background: rgba(246,70,93,0.1);   color: var(--red, #f6465d); }
+.nq-icon-wrap.type-alert       { background: rgba(240,185,11,0.1);  color: #f0b90b; }
+.nq-icon-wrap.type-system      { background: rgba(168,85,247,0.1);  color: #c084fc; }
+.nq-icon-wrap.type-default     { background: var(--surface3,#22263a); color: var(--muted2,#6b7280); }
+
+.nq-body { flex: 1; min-width: 0; }
+.nq-card-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text, #e8e8f0);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nq-card-msg {
+  font-size: 12px;
+  color: var(--muted2, #6b7280);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+.nq-card-time {
+  font-size: 10px;
+  color: var(--muted, #4b5263);
+  font-family: 'Geist Mono', monospace;
+}
+
+.nq-card-arrow {
+  font-size: 12px;
+  color: var(--muted, #4b5263);
+  flex-shrink: 0;
+  transition: transform 0.18s, color 0.18s;
+}
+.nq-card:hover .nq-card-arrow {
+  color: var(--accent, #3d7eff);
+  transform: translateX(3px);
+}
+
+/* ─── Empty state ─── */
+.nq-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--muted2, #6b7280);
+}
+.nq-empty-icon { font-size: 44px; opacity: 0.25; margin-bottom: 16px; }
+.nq-empty-title { font-size: 18px; font-weight: 700; color: var(--text, #e8e8f0); margin-bottom: 6px; }
+.nq-empty-sub { font-size: 13px; }
+
+/* ══════════════════════════════════════
+   RECEIPT MODAL
+══════════════════════════════════════ */
+.nq-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 9, 18, 0.82);
+  backdrop-filter: blur(6px);
+  z-index: 9998;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: nq-overlay-in 0.2s ease;
+}
+.nq-overlay.open { display: flex; }
+@keyframes nq-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.nq-modal {
+  background: var(--surface2, #1a1e2a);
+  border: 1px solid var(--border, #2a2d3e);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  overflow: hidden;
+  animation: nq-modal-in 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+}
+@keyframes nq-modal-in {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Receipt header stripe */
+.nq-receipt-top {
+  padding: 28px 28px 22px;
+  text-align: center;
+  position: relative;
+  border-bottom: 1px dashed var(--border, #2a2d3e);
+}
+.nq-receipt-top::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent,#3d7eff), #7c3aed, #0ecb81, var(--accent,#3d7eff));
+  background-size: 300% 100%;
+  animation: nq-rainbow 4s linear infinite;
+}
+@keyframes nq-rainbow {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 300% 0; }
+}
+
+.nq-receipt-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--surface3, #22263a);
+  border: 1px solid var(--border, #2a2d3e);
+  color: var(--muted2, #6b7280);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.16s;
+}
+.nq-receipt-close:hover {
+  background: rgba(246,70,93,0.1);
+  border-color: var(--red, #f6465d);
+  color: var(--red, #f6465d);
+}
+
+.nq-receipt-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin: 0 auto 14px;
+}
+.nq-receipt-event {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted2, #6b7280);
+  margin-bottom: 8px;
+  font-family: 'Geist Mono', monospace;
+}
+.nq-receipt-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text, #e8e8f0);
+  letter-spacing: -0.3px;
+}
+
+/* Receipt body - rows */
+.nq-receipt-body {
+  padding: 22px 28px;
+}
+.nq-receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  gap: 12px;
+}
+.nq-receipt-row:last-child { border-bottom: none; }
+.nq-receipt-label {
+  font-size: 11px;
+  color: var(--muted2, #6b7280);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.nq-receipt-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text, #e8e8f0);
+  font-family: 'Geist Mono', monospace;
+  text-align: right;
+}
+.nq-receipt-val.green { color: var(--green, #0ecb81); }
+.nq-receipt-val.red   { color: var(--red, #f6465d); }
+.nq-receipt-val.gold  { color: #f0b90b; }
+.nq-receipt-val.blue  { color: var(--accent, #3d7eff); }
+
+/* Timestamp strip */
+.nq-receipt-stamp {
+  background: var(--surface, #13162a);
+  border-top: 1px dashed var(--border, #2a2d3e);
+  padding: 12px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.nq-stamp-id {
+  font-size: 10px;
+  font-family: 'Geist Mono', monospace;
+  color: var(--muted, #4b5263);
+  letter-spacing: 0.5px;
+}
+.nq-stamp-time {
+  font-size: 10px;
+  font-family: 'Geist Mono', monospace;
+  color: var(--muted, #4b5263);
+}
+
+/* Download button */
+.nq-receipt-footer {
+  padding: 16px 28px 24px;
+  display: flex;
+  gap: 10px;
+}
+.nq-dl-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  cursor: pointer;
+  transition: all 0.18s;
+  border: none;
+}
+.nq-dl-btn.primary {
+  background: var(--accent, #3d7eff);
+  color: #fff;
+}
+.nq-dl-btn.primary:hover {
+  background: #2563eb;
+  box-shadow: 0 8px 24px rgba(61,126,255,0.35);
+  transform: translateY(-1px);
+}
+.nq-dl-btn.secondary {
+  background: var(--surface3, #22263a);
+  color: var(--muted2, #6b7280);
+  border: 1px solid var(--border, #2a2d3e);
+}
+.nq-dl-btn.secondary:hover {
+  color: var(--text, #e8e8f0);
+  border-color: var(--accent, #3d7eff);
+}
+
+/* Perforated edge effect */
+.nq-perf {
+  display: flex;
+  padding: 0 20px;
+  gap: 6px;
+  margin: -1px 0;
+}
+.nq-perf-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--surface, #0d0f1a);
+  border: 1px solid var(--border, #2a2d3e);
+  flex-shrink: 0;
+}
+.nq-perf-line { flex: 1; } /* spacer */
+
+/* Loading shimmer */
+.nq-shimmer {
+  background: linear-gradient(90deg, var(--surface2,#1a1e2a) 25%, var(--surface3,#22263a) 50%, var(--surface2,#1a1e2a) 75%);
+  background-size: 400% 100%;
+  animation: nq-shimmer 1.4s ease infinite;
+  border-radius: 8px;
+  height: 72px;
+}
+@keyframes nq-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (max-width: 600px) {
+  .nq-modal { border-radius: 16px 16px 0 0; align-self: flex-end; }
+  .nq-overlay { align-items: flex-end; padding: 0; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+<div class="nq-wrap">
+
+  <!-- Header -->
+  <div class="nq-header">
+    <div class="nq-title-block">
+      <div class="nq-title">Notifications <span id="nqUnreadBadge" class="nq-unread-count" style="display:none;vertical-align:middle;margin-left:8px;"></span></div>
+      <div class="nq-sub">// activity feed</div>
+    </div>
+    <div class="nq-actions">
+      <button class="nq-btn" onclick="markAllRead()">
+        <i class="fas fa-check-double"></i> Mark all read
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter tabs -->
+  <div class="nq-tabs">
+    <button class="nq-tab active" data-filter="all">All</button>
+    <button class="nq-tab" data-filter="transaction">Transactions</button>
+    <button class="nq-tab" data-filter="deposit">Deposits</button>
+    <button class="nq-tab" data-filter="unread">Unread</button>
+  </div>
+
+  <!-- List -->
+  <div class="nq-list" id="nqList">
+    <div class="nq-shimmer"></div>
+    <div class="nq-shimmer" style="animation-delay:0.1s;opacity:0.7"></div>
+    <div class="nq-shimmer" style="animation-delay:0.2s;opacity:0.5"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══ RECEIPT MODAL ══ -->
+<div class="nq-overlay" id="nqOverlay" onclick="closeReceipt(event)">
+  <div class="nq-modal" id="nqModal">
+
+    <div class="nq-receipt-top">
+      <div class="nq-receipt-close" onclick="closeReceiptDirect()">✕</div>
+      <div class="nq-receipt-icon" id="rcpIcon"></div>
+      <div class="nq-receipt-event" id="rcpEvent">NOTIFICATION</div>
+      <div class="nq-receipt-title" id="rcpTitle"></div>
+    </div>
+
+    <!-- Perforated tear edge -->
+    <div class="nq-perf" id="nqPerf"></div>
+
+    <div class="nq-receipt-body" id="rcpBody"></div>
+
+    <div class="nq-receipt-stamp">
+      <span class="nq-stamp-id" id="rcpId"></span>
+      <span class="nq-stamp-time" id="rcpTime"></span>
+    </div>
+
+    <div class="nq-receipt-footer">
+      <button class="nq-dl-btn secondary" onclick="closeReceiptDirect()">
+        <i class="fas fa-times"></i> Close
+      </button>
+      <button class="nq-dl-btn primary" id="rcpDlBtn" onclick="downloadReceipt()">
+        <i class="fas fa-download"></i> Download Receipt
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────
+let allNotifications = [];
+let activeFilter = 'all';
+let currentNotif = null;
+
+// ── Icon / colour map ──────────────────────────────────
+const typeMap = {
+  transaction: { icon: 'fas fa-exchange-alt', cls: 'type-transaction', label: 'TRANSACTION' },
+  deposit:     { icon: 'fas fa-arrow-down',   cls: 'type-deposit',     label: 'DEPOSIT' },
+  withdrawal:  { icon: 'fas fa-arrow-up',     cls: 'type-withdrawal',  label: 'WITHDRAWAL' },
+  alert:       { icon: 'fas fa-bell',          cls: 'type-alert',       label: 'PRICE ALERT' },
+  admin_alert: { icon: 'fas fa-shield-alt',   cls: 'type-system',      label: 'SYSTEM' },
+  system:      { icon: 'fas fa-cog',           cls: 'type-system',      label: 'SYSTEM' },
+};
+function getType(n) {
+  return typeMap[n.notification_type] || { icon: 'fas fa-bell', cls: 'type-default', label: 'NOTIFICATION' };
+}
+
+// ── Helpers ────────────────────────────────────────────
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const diff = (Date.now() - d) / 1000;
+  if (diff < 60)   return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+function fmtDate(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+}
+
+// ── Load notifications ─────────────────────────────────
+async function loadNotifications() {
+  try {
+    const res = await fetch('/api/notifications/');
+    const data = await res.json();
+    allNotifications = data.notifications || [];
+    renderList();
+    updateBadge();
+  } catch(e) {
+    document.getElementById('nqList').innerHTML =
+      '<div class="nq-empty"><div class="nq-empty-icon"><i class="fas fa-wifi-slash"></i></div><div class="nq-empty-title">Connection error</div><div class="nq-empty-sub">Could not load notifications.</div></div>';
+  }
+}
+
+function updateBadge() {
+  const unread = allNotifications.filter(n => !n.is_read).length;
+  const badge = document.getElementById('nqUnreadBadge');
+  if (unread > 0) { badge.textContent = unread; badge.style.display = 'inline-flex'; }
+  else { badge.style.display = 'none'; }
+}
+
+// ── Render list ────────────────────────────────────────
+function renderList() {
+  const list = document.getElementById('nqList');
+  let items = [...allNotifications];
+
+  if (activeFilter === 'transaction') items = items.filter(n => n.notification_type === 'transaction');
+  else if (activeFilter === 'deposit') items = items.filter(n => n.notification_type === 'deposit' || n.notification_type === 'withdrawal');
+  else if (activeFilter === 'unread') items = items.filter(n => !n.is_read);
+
+  if (!items.length) {
+    list.innerHTML = `<div class="nq-empty">
+      <div class="nq-empty-icon"><i class="fas fa-bell-slash"></i></div>
+      <div class="nq-empty-title">All clear</div>
+      <div class="nq-empty-sub">No notifications here.</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = items.map((n, i) => {
+    const t = getType(n);
+    return `
+    <div class="nq-card ${n.is_read ? '' : 'unread'}"
+         style="animation-delay:${i * 0.04}s"
+         onclick="openReceipt(${n.id})">
+      <div class="nq-icon-wrap ${t.cls}"><i class="${t.icon}"></i></div>
+      <div class="nq-body">
+        <div class="nq-card-title">${escHtml(n.title)}</div>
+        <div class="nq-card-msg">${escHtml(n.message)}</div>
+        <div class="nq-card-time">${n.time_ago || timeAgo(n.effective_date || n.created_at)}</div>
+      </div>
+      <div class="nq-card-arrow"><i class="fas fa-chevron-right"></i></div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Filter tabs ────────────────────────────────────────
+document.querySelectorAll('.nq-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.nq-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    activeFilter = this.dataset.filter;
+    renderList();
+  });
+});
+
+// ── Mark read ──────────────────────────────────────────
+async function markRead(id) {
+  try {
+    await fetch(`/api/notifications/${id}/read/`, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCsrf() }
+    });
+    const n = allNotifications.find(x => x.id === id);
+    if (n) n.is_read = true;
+    renderList();
+    updateBadge();
+    if (window.updateNotificationBell) updateNotificationBell();
+  } catch(e) {}
+}
+
+async function markAllRead() {
+  try {
+    await fetch('/api/notifications/mark-all-read/', {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCsrf() }
+    });
+    allNotifications.forEach(n => n.is_read = true);
+    renderList();
+    updateBadge();
+    if (window.updateNotificationBell) updateNotificationBell();
+  } catch(e) {}
+}
+
+function getCsrf() {
+  const c = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+  return c ? c.split('=')[1].trim() : '';
+}
+
+// ── Receipt modal ──────────────────────────────────────
+function openReceipt(id) {
+  const n = allNotifications.find(x => x.id === id);
+  if (!n) return;
+  currentNotif = n;
+
+  // Mark as read
+  if (!n.is_read) markRead(id);
+
+  const t = getType(n);
+
+  // Icon
+  document.getElementById('rcpIcon').innerHTML = `<i class="${t.icon}"></i>`;
+  document.getElementById('rcpIcon').className = `nq-receipt-icon ${t.cls}`;
+  document.getElementById('rcpEvent').textContent = t.label;
+  document.getElementById('rcpTitle').textContent = n.title;
+
+  // Perf dots
+  const perf = document.getElementById('nqPerf');
+  perf.innerHTML = Array(12).fill(0).map(() => `<div class="nq-perf-dot"></div>`).join('');
+
+  // Parse receipt rows from message
+  const rows = buildReceiptRows(n);
+  document.getElementById('rcpBody').innerHTML = rows.map(r => `
+    <div class="nq-receipt-row">
+      <span class="nq-receipt-label">${escHtml(r.label)}</span>
+      <span class="nq-receipt-val ${r.cls||''}">${escHtml(r.value)}</span>
+    </div>
+  `).join('');
+
+  // Stamp
+  document.getElementById('rcpId').textContent = `REF #${String(n.id).padStart(6,'0')}`;
+  document.getElementById('rcpTime').textContent = fmtDate(n.effective_date || n.created_at);
+
+  // Open
+  document.getElementById('nqOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function buildReceiptRows(n) {
+  const rows = [];
+  const msg = n.message || '';
+
+  // Try to extract key figures from the message string using regex
+  // Amount
+  const amtMatch = msg.match(/\$([0-9,]+(?:\.[0-9]{1,2})?)/);
+  if (amtMatch) rows.push({ label: 'Amount', value: `$${amtMatch[1]}`, cls: 'green' });
+
+  // Shares / quantity
+  const qtyMatch = msg.match(/(\d+(?:\.\d+)?)\s+shares?\s+of\s+(\w+)/i);
+  if (qtyMatch) {
+    rows.push({ label: 'Quantity', value: qtyMatch[1] + ' shares' });
+    rows.push({ label: 'Asset', value: qtyMatch[2] });
+  }
+
+  // Crypto
+  const cryptoMatch = msg.match(/(\d+(?:\.\d+)?)\s+(BTC|ETH|USDT|LTC|XRP|BNB)/i);
+  if (cryptoMatch) rows.push({ label: 'Crypto', value: `${cryptoMatch[1]} ${cryptoMatch[2].toUpperCase()}`, cls: 'gold' });
+
+  // Type from title / notification_type
+  const typeLabel = {
+    transaction: 'Transaction',
+    deposit: 'Deposit',
+    withdrawal: 'Withdrawal',
+    alert: 'Price Alert',
+    admin_alert: 'System',
+    system: 'System',
+  }[n.notification_type] || 'Notification';
+  rows.unshift({ label: 'Type', value: typeLabel, cls: 'blue' });
+
+  // Status — infer from title
+  let status = 'Processed';
+  if (/pending/i.test(n.title + msg)) status = 'Pending';
+  else if (/approved|confirmed|success/i.test(n.title + msg)) status = 'Confirmed ✓';
+  else if (/rejected|failed/i.test(n.title + msg)) status = 'Rejected ✗';
+  rows.push({ label: 'Status', value: status, cls: status.includes('✓') ? 'green' : status.includes('✗') ? 'red' : '' });
+
+  // Full message at the end
+  rows.push({ label: 'Details', value: msg.length > 80 ? msg.slice(0,80)+'…' : msg });
+
+  return rows;
+}
+
+function closeReceipt(e) {
+  if (e.target === document.getElementById('nqOverlay')) closeReceiptDirect();
+}
+function closeReceiptDirect() {
+  document.getElementById('nqOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  currentNotif = null;
+}
+
+// Esc key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeReceiptDirect();
+});
+
+// ── Download receipt ───────────────────────────────────
+function downloadReceipt() {
+  if (!currentNotif) return;
+  const n = currentNotif;
+  const t = getType(n);
+  const rows = buildReceiptRows(n);
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Qubix Receipt — ${escHtml(n.title)}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Geist+Mono:wght@400;500&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f5f4f0; padding:40px 20px; font-family:'Syne',sans-serif; }
+  .receipt {
+    max-width: 420px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  }
+  .r-top {
+    background: #0d1020;
+    padding: 32px 28px 24px;
+    text-align: center;
+    position: relative;
+  }
+  .r-stripe {
+    height: 3px;
+    background: linear-gradient(90deg, #3d7eff, #7c3aed, #0ecb81);
+    position: absolute;
+    top:0; left:0; right:0;
+  }
+  .r-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: rgba(61,126,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin: 0 auto 12px;
+    color: #3d7eff;
+  }
+  .r-label { font-size:10px; letter-spacing:2px; color:#6b7280; margin-bottom:6px; font-family:'Geist Mono',monospace; }
+  .r-title { font-size:20px; font-weight:800; color:#e8e8f0; letter-spacing:-0.3px; }
+  .r-perf {
+    background: #fff;
+    height: 20px;
+    border-top: 2px dashed #e5e7eb;
+    position: relative;
+  }
+  .r-body { padding: 20px 28px; }
+  .r-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid #f3f4f6;
+    align-items: center;
+    gap: 10px;
+  }
+  .r-row:last-child { border: none; }
+  .r-lbl { font-size:11px; color:#9ca3af; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+  .r-val { font-size:13px; font-weight:700; color:#111827; font-family:'Geist Mono',monospace; text-align:right; }
+  .r-val.green { color:#059669; }
+  .r-val.red   { color:#dc2626; }
+  .r-val.blue  { color:#3d7eff; }
+  .r-val.gold  { color:#d97706; }
+  .r-stamp {
+    background: #f9fafb;
+    border-top: 2px dashed #e5e7eb;
+    padding: 12px 28px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .r-stamp span { font-size:10px; color:#9ca3af; font-family:'Geist Mono',monospace; }
+  .r-footer { padding: 16px 28px 24px; text-align:center; }
+  .r-logo { font-size:18px; font-weight:800; letter-spacing:4px; color:#0d1020; margin-bottom:4px; }
+  .r-foot-sub { font-size:10px; color:#9ca3af; letter-spacing:1px; }
+</style>
+</head>
+<body>
+<div class="receipt">
+  <div class="r-top">
+    <div class="r-stripe"></div>
+    <div class="r-icon">✦</div>
+    <div class="r-label">${escHtml(t.label)}</div>
+    <div class="r-title">${escHtml(n.title)}</div>
+  </div>
+  <div class="r-perf"></div>
+  <div class="r-body">
+    ${rows.map(r => `
+    <div class="r-row">
+      <span class="r-lbl">${escHtml(r.label)}</span>
+      <span class="r-val ${r.cls||''}">${escHtml(r.value)}</span>
+    </div>`).join('')}
+  </div>
+ <div class="r-stamp">
+  <span>REF #${String(n.id).padStart(6,'0')}</span>
+  <span>${fmtDate(n.effective_date || n.created_at)}</span>
+</div>
+  <div class="r-footer">
+    <div class="r-logo">QUBIX</div>
+    <div class="r-foot-sub">INVESTMENTS PLATFORM · OFFICIAL RECEIPT</div>
+  </div>
+</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `qubix-receipt-${n.id}-${Date.now()}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Init ───────────────────────────────────────────────
+loadNotifications();
+</script>
+{% endblock %}

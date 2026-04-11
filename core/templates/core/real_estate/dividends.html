@@ -1,0 +1,321 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Dividend History | Qubix Real Estate{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Dividend History Page Specific Styles */
+  .top-bar {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .back-link {
+    color: var(--muted2);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color .2s;
+  }
+
+  .back-link:hover { color: var(--gold); }
+
+  .qx-nav-links {
+    display: flex;
+    gap: 8px;
+  }
+
+  .qx-nav-links a {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted2);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .qx-nav-links a:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .qx-nav-links a.active {
+    color: var(--gold);
+    background: rgba(240,185,11,0.1);
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .summary-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all .2s;
+  }
+
+  .summary-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .summary-card .label {
+    font-size: 12px;
+    color: var(--muted2);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .summary-card .amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .summary-card .amount.green { color: var(--green); }
+  .summary-card .amount.gold { color: var(--gold); }
+  .summary-card .amount.sm { font-size: 22px; }
+
+  .table-wrap {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted2);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  tbody td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .td-property-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  .td-property-loc {
+    font-size: 11px;
+    color: var(--muted2);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .td-amount {
+    text-align: right;
+    font-weight: 700;
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+  }
+
+  .td-action {
+    text-align: center;
+    width: 60px;
+  }
+
+  .download-btn {
+    background: rgba(240,185,11,0.1);
+    border: 1px solid rgba(240,185,11,0.2);
+    color: var(--gold);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .download-btn:hover {
+    background: rgba(240,185,11,0.2);
+    transform: translateY(-1px);
+  }
+
+  .empty-cell {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--muted2);
+  }
+
+  .info-box {
+    background: rgba(240,185,11,0.05);
+    border: 1px solid rgba(240,185,11,0.15);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 32px;
+  }
+
+  .info-box h3 {
+    color: var(--gold);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .info-box p {
+    color: var(--muted2);
+    line-height: 1.6;
+    font-size: 13px;
+  }
+
+  @media (max-width: 640px) {
+    .summary-grid {
+      grid-template-columns: 1fr;
+    }
+    thead th, tbody td {
+      padding: 12px;
+    }
+    .td-action {
+      width: auto;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <!-- Top Bar with Back + My Investments / Dividends -->
+  <div class="top-bar">
+    <a href="{% url 'real_estate_list' %}" class="back-link">
+      <i class="fas fa-arrow-left"></i> Back to Real Estate
+    </a>
+
+    <div class="qx-nav-links">
+      <a href="{% url 'real_estate_my_investments' %}">
+        <i class="fas fa-chart-line"></i> My Investments
+      </a>
+      <a href="{% url 'real_estate_dividends' %}" class="active">
+        <i class="fas fa-dollar-sign"></i> Dividends
+      </a>
+    </div>
+  </div>
+
+  <!-- Page Title -->
+  <h1 class="page-title" style="margin-bottom: 24px;">
+    <i class="fas fa-history" style="color: var(--gold);"></i> Dividend History
+  </h1>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="label"><i class="fas fa-coins"></i> Total Dividends Received</div>
+      <div class="amount green">${{ total_dividends|floatformat:2 }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label"><i class="fas fa-calendar-alt"></i> Last Month</div>
+      <div class="amount sm gold">
+        {% if dividends %}
+          ${{ dividends.0.effective_amount|default:dividends.0.amount|floatformat:2 }}
+        {% else %}
+          $0.00
+        {% endif %}
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="label"><i class="fas fa-chart-line"></i> Annual Yield</div>
+      <div class="amount green sm">9.2%</div>
+    </div>
+  </div>
+
+  <!-- Dividend Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th><i class="fas fa-calendar"></i> Date</th>
+          <th><i class="fas fa-building"></i> Property</th>
+          <th style="text-align: right;"><i class="fas fa-dollar-sign"></i> Amount</th>
+          <th style="text-align: center;"><i class="fas fa-download"></i> Document</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for dividend in dividends %}
+        <tr>
+          <td>
+            <i class="fas fa-calendar-alt" style="color: var(--gold); font-size: 12px;"></i>
+            {{ dividend.effective_month|default:dividend.month|date:"M Y" }}
+          </td>
+          <td>
+            <span class="td-property-name">{{ dividend.investment.property.name }}</span>
+            <span class="td-property-loc">
+              <i class="fas fa-map-marker-alt"></i> {{ dividend.investment.property.location }}
+            </span>
+          </td>
+          <td class="td-amount">+${{ dividend.effective_amount|default:dividend.amount|floatformat:2 }}</td>
+          <td class="td-action">
+            <a href="{% url 'download_dividend_statement' dividend.id %}" class="download-btn" target="_blank">
+              <i class="fas fa-download"></i> Statement
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="empty-cell">
+            <i class="fas fa-chart-line" style="font-size: 48px; opacity: 0.3; margin-bottom: 12px; display: block;"></i>
+            No dividend payments yet.<br>
+            <span style="font-size: 12px;">Dividends will appear here once properties start generating rental income.</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Info Box -->
+  <div class="info-box">
+    <h3><i class="fas fa-question-circle"></i> How Are Monthly Dividends Determined?</h3>
+    <p>
+      Properties start paying dividends once they start generating income and may vary month to month. 
+      The monthly dividend is determined by analyzing several factors, including rental status, 
+      the amount of cash in the property's reserves, last quarter's cash flow, projected expenses, 
+      and lease renewal timing.
+    </p>
+  </div>
+</div>
+{% endblock %}

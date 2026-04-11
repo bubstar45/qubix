@@ -1,0 +1,144 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Withdrawal Receipt | Qubix{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --bg: #0e0f13;
+    --surface: #16181f;
+    --surface2: #1e2029;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0f1f5;
+    --muted: #6b7080;
+    --accent: #4f8ef7;
+    --green: #22c55e;
+    --gold: #f59e0b;
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 30px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    min-height: calc(100vh - 58px);
+  }
+
+  .receipt-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    padding: 32px;
+  }
+
+  .success-icon {
+    text-align: center;
+    font-size: 64px;
+    margin-bottom: 20px;
+  }
+
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .fee-paid {
+    background: rgba(34, 197, 94, 0.1);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    margin-bottom: 24px;
+    color: var(--green);
+    font-size: 13px;
+  }
+
+  .info-box {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .info-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .info-label {
+    color: var(--muted);
+  }
+
+  .info-value {
+    color: var(--text);
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    text-align: right;
+  }
+
+  .btn-dashboard {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    display: block;
+    text-decoration: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="receipt-card">
+    <div class="success-icon">✅</div>
+    <div class="title">Withdrawal Initiated</div>
+
+    <div class="fee-paid">
+      ✓ Fee of ${{ fee_amount|floatformat:2 }} ({{ fee_crypto_amount|floatformat:8 }} {{ crypto_symbol }}) has been paid
+    </div>
+
+    <div class="info-box">
+      <div class="info-row">
+        <span class="info-label">Withdrawal Amount</span>
+        <span class="info-value">${{ withdrawal_amount|floatformat:2 }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">You'll Receive</span>
+        <span class="info-value">{{ crypto_amount|floatformat:8 }} {{ crypto_symbol }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Wallet Address</span>
+        <span class="info-value" style="word-break: break-all;">{{ wallet_address }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="info-value" style="color: var(--gold);">Pending</span>
+      </div>
+    </div>
+
+    <a href="{% url 'dashboard' %}" class="btn-dashboard">Return to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

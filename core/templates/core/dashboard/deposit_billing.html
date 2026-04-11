@@ -1,0 +1,348 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Billing Details | Qubix{% endblock %}
+{% block body_class %}billing-page{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --bg: #0e0f13;
+    --surface: #16181f;
+    --surface2: #1e2029;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0f1f5;
+    --muted: #6b7080;
+    --accent: #4f8ef7;
+    --green: #22c55e;
+  }
+
+  .billing-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 520px;
+    padding: 28px 32px;
+    margin: 0 auto;
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .order-info {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+  }
+
+  .order-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 13px;
+  }
+
+  .order-label {
+    color: var(--muted);
+  }
+
+  .order-value {
+    color: var(--text);
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+    text-align: right;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 0;
+  }
+
+  .billing-section {
+    margin-bottom: 24px;
+  }
+
+  .billing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .billing-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .edit-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+  }
+
+  .edit-btn:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  .billing-details {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+  }
+
+  .detail-row {
+    margin-bottom: 12px;
+  }
+
+  .detail-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .detail-label {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .detail-value {
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .edit-form {
+    display: none;
+    margin-top: 12px;
+  }
+
+  .edit-form.active {
+    display: block;
+  }
+
+  .edit-form input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    color: var(--text);
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  .edit-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .btn-save {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .btn-continue {
+    width: 100%;
+    padding: 14px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+  }
+
+  .btn-continue:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 16px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 13px;
+    text-align: center;
+    width: 100%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="billing-card">
+    <h1 class="page-title">Order info</h1>
+    
+    <div class="order-info">
+      <div class="order-line">
+        <span class="order-label">Amount</span>
+        <span class="order-value" id="displayAmount">$0.00</span>
+      </div>
+      <div class="order-line">
+        <span class="order-label">Currency</span>
+        <span class="order-value" id="displayCurrency">---</span>
+      </div>
+      <div class="order-line">
+        <span class="order-label">Network</span>
+        <span class="order-value" id="displayNetwork">---</span>
+      </div>
+    </div>
+
+    <form method="post" id="billingForm">
+      {% csrf_token %}
+      <input type="hidden" name="full_name" id="full_name_hidden">
+      <input type="hidden" name="email" id="email_hidden">
+      <input type="hidden" name="phone" id="phone_hidden">
+      <input type="hidden" name="country" id="country_hidden">
+
+      <div class="billing-section">
+        <div class="billing-header">
+          <div class="billing-title">Billing details</div>
+          <button type="button" class="edit-btn" id="editBtn">✎ Edit</button>
+        </div>
+
+        <div class="billing-details" id="billingDetails">
+          <div class="detail-row">
+            <div class="detail-label">Full name</div>
+            <div class="detail-value" id="fullName">{{ user.get_full_name|default:user.username }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Email address</div>
+            <div class="detail-value" id="email">{{ user.email }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Phone number</div>
+            <div class="detail-value" id="phone">{{ user.phone|default:"Not provided" }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Country</div>
+            <div class="detail-value" id="country">{{ user.country|default:"United States" }}</div>
+          </div>
+        </div>
+
+        <div class="edit-form" id="editForm">
+          <input type="text" id="editFullName" placeholder="Full name" value="{{ user.get_full_name|default:user.username }}">
+          <input type="email" id="editEmail" placeholder="Email address" value="{{ user.email }}">
+          <input type="tel" id="editPhone" placeholder="Phone number" value="{{ user.phone|default:'' }}">
+          <input type="text" id="editCountry" placeholder="Country" value="{{ user.country|default:'United States' }}">
+          <button type="button" class="btn-save" id="saveBtn">Save changes</button>
+        </div>
+      </div>
+
+      <button type="button" class="btn-continue" id="continueBtn">Continue to Payment</button>
+    </form>
+
+    <a href="{% url 'deposit' %}" class="back-link">← Back</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Get deposit data passed from Django view
+  const amount = {{ deposit_amount|default:"null" }};
+  const cryptoId = {{ deposit_crypto_id|default:"null" }};
+  const network = "{{ deposit_network|default:'' }}";
+
+  const cryptos = {
+    {% for crypto in cryptos %}
+    {{ crypto.id }}: {
+      symbol: "{{ crypto.symbol }}",
+      name: "{{ crypto.name }}",
+      rate: {{ crypto.rate_usd }}
+    },
+    {% endfor %}
+  };
+
+  console.log("=== BILLING DETAILS PAGE ===");
+  console.log("Amount:", amount, "Crypto ID:", cryptoId, "Network:", network);
+
+  const selectedCrypto = cryptos[cryptoId];
+
+  if (selectedCrypto && amount) {
+    const cryptoAmount = (parseFloat(amount) / parseFloat(selectedCrypto.rate)).toFixed(8);
+    
+    document.getElementById('displayAmount').innerHTML = 
+      `$${parseFloat(amount).toFixed(2)} USD<br>
+       <span style="font-size: 11px; color: var(--muted);">≈ ${cryptoAmount} ${selectedCrypto.symbol}</span>`;
+    
+    document.getElementById('displayCurrency').textContent = `${selectedCrypto.symbol} (${selectedCrypto.name})`;
+    document.getElementById('displayNetwork').textContent = network || 'Default';
+  } else {
+    console.warn("No deposit data found, redirecting to deposit page");
+    window.location.href = "{% url 'deposit' %}";
+  }
+
+  // Edit functionality
+  const editBtn = document.getElementById('editBtn');
+  const editForm = document.getElementById('editForm');
+  const billingDetails = document.getElementById('billingDetails');
+  const saveBtn = document.getElementById('saveBtn');
+
+  editBtn.addEventListener('click', () => {
+    document.getElementById('editFullName').value = document.getElementById('fullName').textContent;
+    document.getElementById('editEmail').value = document.getElementById('email').textContent;
+    
+    const phoneValue = document.getElementById('phone').textContent;
+    document.getElementById('editPhone').value = phoneValue === 'Not provided' ? '' : phoneValue;
+    
+    document.getElementById('editCountry').value = document.getElementById('country').textContent;
+
+    editForm.classList.add('active');
+    billingDetails.style.display = 'none';
+  });
+
+  saveBtn.addEventListener('click', () => {
+    const newName = document.getElementById('editFullName').value.trim();
+    const newEmail = document.getElementById('editEmail').value.trim();
+    const newPhone = document.getElementById('editPhone').value.trim();
+    const newCountry = document.getElementById('editCountry').value.trim();
+
+    document.getElementById('fullName').textContent = newName || '—';
+    document.getElementById('email').textContent = newEmail || '—';
+    document.getElementById('phone').textContent = newPhone || 'Not provided';
+    document.getElementById('country').textContent = newCountry || '—';
+
+    editForm.classList.remove('active');
+    billingDetails.style.display = 'block';
+  });
+
+  // Continue to Payment
+  const continueBtn = document.getElementById('continueBtn');
+  continueBtn.addEventListener('click', () => {
+    document.getElementById('full_name_hidden').value = document.getElementById('fullName').textContent;
+    document.getElementById('email_hidden').value = document.getElementById('email').textContent;
+    document.getElementById('phone_hidden').value = document.getElementById('phone').textContent;
+    document.getElementById('country_hidden').value = document.getElementById('country').textContent;
+
+    document.getElementById('billingForm').submit();
+  });
+</script>
+{% endblock %}

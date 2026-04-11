@@ -1,0 +1,843 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Manage Portfolio | Qubix{% endblock %}
+
+{% block body_class %}portfolio-page{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── MAIN ── */
+.main {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 32px 28px;
+}
+
+/* ── HEADER ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.page-title {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.page-title span { color: var(--accent); }
+.page-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+  border: none;
+}
+.btn-green { background: var(--green); color: #000; }
+.btn-green:hover { background: #0db872; box-shadow: 0 0 20px rgba(14,203,129,0.3); }
+.btn-gold { background: var(--gold); color: #000; }
+.btn-gold:hover { background: #d9a608; box-shadow: 0 0 20px rgba(240,185,11,0.3); }
+.btn-ghost {
+  background: var(--surface2);
+  color: var(--muted2);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--border2); }
+
+/* ── STAT CARDS ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-color, var(--accent));
+  opacity: 0.6;
+}
+.stat-card:hover { border-color: rgba(61,126,255,0.25); }
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.stat-sub { font-size: 12px; color: var(--muted2); margin-top: 6px; }
+.stat-green { color: var(--green); }
+.stat-red { color: var(--red); }
+
+/* ── TABLE SECTION ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-title { font-size: 16px; font-weight: 800; }
+.section-count {
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(61,126,255,0.12);
+  color: var(--accent);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.table-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+thead th:last-child { text-align: right; }
+
+tbody td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+tbody tr:hover { background: rgba(61,126,255,0.04); }
+tbody tr:hover .row-arrow { opacity: 1; transform: translateX(0); }
+tbody tr:hover .asset-name { color: var(--accent); }
+
+.asset-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.asset-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  background: var(--surface3);
+}
+.asset-name { font-size: 14px; font-weight: 700; transition: color 0.2s; }
+.asset-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+td.right { text-align: right; }
+
+.pl-pos { color: var(--green); font-weight: 700; }
+.pl-neg { color: var(--red); font-weight: 700; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.pill-green { background: var(--green-dim); color: var(--green); }
+.pill-red { background: var(--red-dim); color: var(--red); }
+
+.btn-sell-row {
+  padding: 7px 16px;
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid rgba(246,70,93,0.25);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.btn-sell-row:hover { background: var(--red); color: #fff; }
+
+.row-arrow {
+  color: var(--accent);
+  font-size: 14px;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: all 0.2s;
+  display: inline-block;
+  margin-left: 6px;
+}
+
+.empty-row td {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ── DRAWER OVERLAY ── */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+/* ── DRAWER PANEL ── */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(520px, 100vw);
+  background: var(--surface);
+  border-left: 1px solid var(--border2);
+  z-index: 400;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.drawer.open { transform: translateX(0); }
+
+.drawer-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.drawer-close {
+  width: 32px;
+  height: 32px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.drawer-close:hover { color: var(--text); border-color: var(--border2); }
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+}
+
+.drawer-asset-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.drawer-badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.drawer-sym {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.3px;
+}
+.drawer-name { font-size: 13px; color: var(--muted2); margin-top: 3px; }
+
+.drawer-price-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.drawer-cur-price {
+  font-size: 36px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -1px;
+}
+.drawer-pl-big { text-align: right; }
+.drawer-pl-val {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+}
+.drawer-pl-label { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 600; }
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.info-tile {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.info-tile-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+.info-tile-val {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.info-tile-sub { font-size: 11px; color: var(--muted2); margin-top: 3px; }
+
+.drawer-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+
+.drawer-sparkline {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.drawer-sparkline svg { width: 100%; height: 80px; }
+
+.forecast-bar {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.forecast-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.forecast-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+.forecast-period { color: var(--muted2); font-weight: 600; }
+.forecast-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+.forecast-track {
+  height: 3px;
+  background: var(--surface3);
+  border-radius: 4px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+.forecast-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+}
+
+.drawer-footer {
+  padding: 20px 28px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.drawer-btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.drawer-btn-sell { background: var(--red-dim); color: var(--red); border: 1px solid rgba(246,70,93,0.3); }
+.drawer-btn-sell:hover { background: var(--red); color: #fff; }
+.drawer-btn-detail { background: var(--surface2); color: var(--muted2); border: 1px solid var(--border); }
+.drawer-btn-detail:hover { color: var(--text); border-color: var(--border2); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  table { display: block; overflow-x: auto; }
+}
+@media (max-width: 600px) {
+  .main { padding: 20px 16px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .page-title { font-size: 24px; }
+  .header-actions { width: 100%; }
+  .info-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Manage <span>Portfolio</span></h1>
+      <p class="page-sub">// Your holdings at a glance • Click any asset for details</p>
+    </div>
+    <div class="header-actions">
+      <a href="{% url 'deposit' %}" class="btn btn-green">＋ Deposit</a>
+      <a href="{% url 'withdraw' %}" class="btn btn-gold">↑ Withdraw</a>
+      <a href="{% url 'dashboard' %}" class="btn btn-ghost">← Dashboard</a>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stats-grid">
+    <div class="stat-card" style="--accent-color: #3d7eff">
+      <div class="stat-label">Total Portfolio Value</div>
+      <div class="stat-value">${{ total_value|floatformat:2 }}</div>
+      <div class="stat-sub">Invested + Cash</div>
+    </div>
+    <div class="stat-card" style="--accent-color: #0ecb81">
+      <div class="stat-label">Cash Balance</div>
+      <div class="stat-value">${{ cash_balance|floatformat:2 }}</div>
+      <div class="stat-sub">Available to invest</div>
+    </div>
+    <div class="stat-card" style="--accent-color: {% if unrealized_pl >= 0 %}#0ecb81{% else %}#f6465d{% endif %}">
+      <div class="stat-label">Unrealized P&amp;L</div>
+      <div class="stat-value {% if unrealized_pl >= 0 %}stat-green{% else %}stat-red{% endif %}">
+        {% if unrealized_pl >= 0 %}+{% endif %}${{ unrealized_pl|floatformat:2 }}
+      </div>
+      <div class="stat-sub">Open position gains/losses</div>
+    </div>
+    <div class="stat-card" style="--accent-color: #a855f7">
+      <div class="stat-label">Total Holdings</div>
+      <div class="stat-value">{{ total_assets }}</div>
+      <div class="stat-sub">Unique assets held</div>
+    </div>
+  </div>
+
+  <!-- HOLDINGS TABLE -->
+  <div class="section-header">
+    <div class="section-title">Current Holdings</div>
+    <div class="section-count" id="holdingCount">—</div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="holdingsTable">
+      <thead>
+        <tr>
+          <th>Asset</th>
+          <th>Quantity</th>
+          <th>Avg Buy Price</th>
+          <th>Current Price</th>
+          <th>Current Value</th>
+          <th>P&amp;L</th>
+          <th style="text-align:right">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for holding_data in holdings %}
+        <tr class="holding-row"
+            data-sym="{{ holding_data.holding.asset.symbol }}"
+            data-name="{{ holding_data.holding.asset.name }}"
+            data-cat="{{ holding_data.holding.asset.category }}"
+            data-qty="{{ holding_data.holding.quantity }}"
+            data-avg="{{ holding_data.holding.average_price }}"
+            data-cur="{{ holding_data.holding.asset.current_price }}"
+            data-val="{{ holding_data.current_value }}"
+            data-pl="{{ holding_data.profit_loss }}"
+            data-plpct="{{ holding_data.profit_percent }}"
+            data-sellurl="{% url 'sell_asset' holding_data.holding.asset.id %}"
+            data-detailurl="{% url 'asset_detail' holding_data.holding.asset.id %}">
+          <td>
+            <div class="asset-cell">
+              <div class="asset-badge">
+                {% if holding_data.holding.asset.category == 'mineral' %}⛏️
+                {% elif holding_data.holding.asset.symbol == 'AAPL' %}🍎
+                {% elif holding_data.holding.asset.symbol == 'TSLA' %}⚡
+                {% elif holding_data.holding.asset.symbol == 'NVDA' %}🎮
+                {% elif holding_data.holding.asset.symbol == 'GOOGL' %}🔍
+                {% elif holding_data.holding.asset.symbol == 'MSFT' %}💻
+                {% elif holding_data.holding.asset.symbol == 'AMZN' %}📦
+                {% elif holding_data.holding.asset.symbol == 'META' %}📘
+                {% else %}📈{% endif %}
+              </div>
+              <div>
+                <div class="asset-name">{{ holding_data.holding.asset.symbol }}</div>
+                <div class="asset-sub">{{ holding_data.holding.asset.name }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="mono">{{ holding_data.holding.quantity|floatformat:4 }}</td>
+          <td class="mono">${{ holding_data.holding.average_price|floatformat:2 }}</td>
+          <td class="mono">${{ holding_data.holding.asset.current_price|floatformat:2 }}</td>
+          <td class="mono">${{ holding_data.current_value|floatformat:2 }}</td>
+          <td>
+            <span class="pill {% if holding_data.profit_loss >= 0 %}pill-green{% else %}pill-red{% endif %}">
+              {% if holding_data.profit_loss >= 0 %}▲{% else %}▼{% endif %}
+              ${{ holding_data.profit_loss|floatformat:2 }}
+              ({{ holding_data.profit_percent|floatformat:2 }}%)
+            </span>
+          </td>
+          <td style="text-align:right">
+            <button class="btn-sell-row" onclick="event.stopPropagation(); window.location.href='{% url 'sell_asset' holding_data.holding.asset.id %}'">Sell</button>
+            <span class="row-arrow">→</span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr class="empty-row">
+          <td colspan="7">
+            <div style="font-size:40px; margin-bottom:10px;">📭</div>
+            <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:6px;">No holdings yet</div>
+            <div>Start investing to see your portfolio here.</div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- HOLDING DETAIL DRAWER -->
+<div class="drawer" id="holdingDrawer">
+  <div class="drawer-header">
+    <div class="drawer-asset-hero">
+      <div class="drawer-badge" id="drawerBadge">📈</div>
+      <div>
+        <div class="drawer-sym" id="drawerSym">—</div>
+        <div class="drawer-name" id="drawerName">—</div>
+      </div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+
+  <div class="drawer-body">
+    <div class="drawer-price-block">
+      <div>
+        <div style="font-size:11px; color:var(--muted); font-weight:600; margin-bottom:6px; letter-spacing:0.5px;">CURRENT PRICE</div>
+        <div class="drawer-cur-price" id="drawerCurPrice">—</div>
+        <div style="font-size:11px; color:var(--muted2); margin-top:4px;" id="drawerCategory">—</div>
+      </div>
+      <div class="drawer-pl-big">
+        <div class="drawer-pl-val" id="drawerPL">—</div>
+        <div class="drawer-pl-label">Unrealized P&amp;L</div>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-tile">
+        <div class="info-tile-label">Quantity Held</div>
+        <div class="info-tile-val" id="drawerQty">—</div>
+      </div>
+      <div class="info-tile">
+        <div class="info-tile-label">Avg Buy Price</div>
+        <div class="info-tile-val" id="drawerAvg">—</div>
+      </div>
+      <div class="info-tile">
+        <div class="info-tile-label">Total Invested</div>
+        <div class="info-tile-val" id="drawerInvested">—</div>
+        <div class="info-tile-sub">qty × avg price</div>
+      </div>
+      <div class="info-tile">
+        <div class="info-tile-label">Current Value</div>
+        <div class="info-tile-val" id="drawerValue">—</div>
+      </div>
+      <div class="info-tile">
+        <div class="info-tile-label">P&amp;L %</div>
+        <div class="info-tile-val" id="drawerPLPct">—</div>
+      </div>
+      <div class="info-tile">
+        <div class="info-tile-label">Price Since Buy</div>
+        <div class="info-tile-val" id="drawerPriceDiff">—</div>
+        <div class="info-tile-sub" id="drawerPriceDiffSub">per unit</div>
+      </div>
+    </div>
+
+    <div class="drawer-section-title">Price Performance (Simulated)</div>
+    <div class="drawer-sparkline">
+      <svg id="drawerSparkSvg" viewBox="0 0 460 80" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="dsg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3d7eff" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#3d7eff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path id="drawerSparkArea" fill="url(#dsg)" d=""/>
+        <path id="drawerSparkLine" fill="none" stroke="#3d7eff" stroke-width="2" d=""/>
+      </svg>
+    </div>
+
+    <div class="drawer-section-title">Analyst Outlook</div>
+    <div class="forecast-bar">
+      <div class="forecast-label">Price Target Scenarios</div>
+      <div id="drawerForecasts"></div>
+    </div>
+
+    <div class="drawer-section-title">Position Summary</div>
+    <div style="background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px;">
+      <p id="drawerSummaryText" style="font-size:13px; color:var(--muted2); line-height:1.7;"></p>
+    </div>
+  </div>
+
+  <div class="drawer-footer">
+    <a href="#" class="drawer-btn drawer-btn-sell" id="drawerSellBtn">📉 Sell Position</a>
+    <a href="#" class="drawer-btn drawer-btn-detail" id="drawerDetailBtn">View Asset Page →</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Count
+const rows = document.querySelectorAll('.holding-row');
+const countEl = document.getElementById('holdingCount');
+if (countEl) countEl.textContent = rows.length + ' assets';
+
+// Sparkline gen
+function makeSparkline(basePrice, isUp, w=460, h=80) {
+  const pts = 30;
+  const vals = [];
+  let v = basePrice * 0.92;
+  for (let i = 0; i < pts; i++) {
+    v += (Math.random() - (isUp ? 0.38 : 0.62)) * basePrice * 0.015;
+    vals.push(Math.max(0, v));
+  }
+  vals[pts-1] = basePrice;
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const range = mx - mn || 1;
+  const points = vals.map((v,i) => {
+    const x = (i/(pts-1)) * w;
+    const y = h - ((v - mn)/range) * (h - 6) - 3;
+    return [x.toFixed(1), y.toFixed(1)];
+  });
+  const line = points.map((p,i) => `${i===0?'M':'L'}${p[0]},${p[1]}`).join(' ');
+  const area = line + ` L${w},${h} L0,${h} Z`;
+  return { line, area };
+}
+
+// Forecast generator
+function buildForecasts(curPrice, isUp) {
+  const targets = [
+    { period: '1 Month', mult: isUp ? 1.03 : 0.97, confidence: isUp ? 72 : 55 },
+    { period: '3 Months', mult: isUp ? 1.08 : 0.94, confidence: isUp ? 65 : 48 },
+    { period: '12 Months', mult: isUp ? 1.18 : 0.90, confidence: isUp ? 60 : 42 },
+  ];
+  return targets.map(t => {
+    const price = (curPrice * t.mult).toFixed(2);
+    const dir = t.mult >= 1;
+    const color = dir ? 'var(--green)' : 'var(--red)';
+    const sign = dir ? '+' : '';
+    const pct = ((t.mult - 1) * 100).toFixed(1);
+    return `
+      <div style="margin-bottom:14px;">
+        <div class="forecast-item">
+          <span class="forecast-period">${t.period}</span>
+          <span class="forecast-val" style="color:${color}">$${price} (${sign}${pct}%)</span>
+        </div>
+        <div class="forecast-track">
+          <div class="forecast-fill" style="width:${t.confidence}%; background:${color};"></div>
+        </div>
+        <div style="font-size:10px; color:var(--muted); margin-top:3px; text-align:right;">${t.confidence}% analyst confidence</div>
+      </div>`;
+  }).join('');
+}
+
+// Emoji map
+function getEmoji(sym, cat) {
+  const map = { AAPL:'🍎', TSLA:'⚡', NVDA:'🎮', GOOGL:'🔍', MSFT:'💻', AMZN:'📦', META:'📘', GOLD:'🥇', SILV:'🥈', LITH:'🔋', DIAM:'💎' };
+  if (cat === 'mineral') return map[sym] || '⛏️';
+  return map[sym] || '📈';
+}
+
+// Open drawer
+function openDrawer(row) {
+  const sym = row.dataset.sym;
+  const name = row.dataset.name;
+  const cat = row.dataset.cat;
+  const qty = parseFloat(row.dataset.qty);
+  const avg = parseFloat(row.dataset.avg);
+  const cur = parseFloat(row.dataset.cur);
+  const val = parseFloat(row.dataset.val);
+  const pl = parseFloat(row.dataset.pl);
+  const plpct = parseFloat(row.dataset.plpct);
+  const sellUrl = row.dataset.sellurl;
+  const detailUrl = row.dataset.detailurl;
+  const isUp = pl >= 0;
+
+  document.getElementById('drawerBadge').textContent = getEmoji(sym, cat);
+  document.getElementById('drawerSym').textContent = sym;
+  document.getElementById('drawerName').textContent = name;
+  document.getElementById('drawerCurPrice').textContent = '$' + cur.toFixed(2);
+  document.getElementById('drawerCategory').textContent = cat === 'mineral' ? '⛏️ Mineral / Commodity' : '📈 Stock / Equity';
+
+  const plEl = document.getElementById('drawerPL');
+  plEl.textContent = (isUp ? '+' : '') + '$' + pl.toFixed(2);
+  plEl.style.color = isUp ? 'var(--green)' : 'var(--red)';
+
+  document.getElementById('drawerQty').textContent = qty.toFixed(4);
+  document.getElementById('drawerAvg').textContent = '$' + avg.toFixed(2);
+  document.getElementById('drawerInvested').textContent = '$' + (qty * avg).toFixed(2);
+  document.getElementById('drawerValue').textContent = '$' + val.toFixed(2);
+
+  const pctEl = document.getElementById('drawerPLPct');
+  pctEl.textContent = (isUp ? '+' : '') + plpct.toFixed(2) + '%';
+  pctEl.style.color = isUp ? 'var(--green)' : 'var(--red)';
+
+  const priceDiff = cur - avg;
+  const pdEl = document.getElementById('drawerPriceDiff');
+  pdEl.textContent = (priceDiff >= 0 ? '+' : '') + '$' + priceDiff.toFixed(2);
+  pdEl.style.color = priceDiff >= 0 ? 'var(--green)' : 'var(--red)';
+
+  // Sparkline
+  const color = isUp ? '#0ecb81' : '#f6465d';
+  const { line, area } = makeSparkline(cur, isUp);
+  const areaEl = document.getElementById('drawerSparkArea');
+  const lineEl = document.getElementById('drawerSparkLine');
+  const grad = document.querySelector('#dsg stop:first-child');
+  const grad2 = document.querySelector('#dsg stop:last-child');
+  areaEl.setAttribute('d', area);
+  lineEl.setAttribute('d', line);
+  lineEl.setAttribute('stroke', color);
+  areaEl.setAttribute('fill', 'url(#dsg)');
+  if (grad) grad.setAttribute('stop-color', color);
+  if (grad2) grad2.setAttribute('stop-color', color);
+
+  // Forecasts
+  document.getElementById('drawerForecasts').innerHTML = buildForecasts(cur, isUp);
+
+  // Summary text
+  const gainWord = isUp ? 'gained' : 'declined';
+  const sentiment = isUp ? 'outperforming' : 'underperforming';
+  document.getElementById('drawerSummaryText').textContent =
+    `You hold ${qty.toFixed(4)} units of ${name} (${sym}), purchased at an average price of $${avg.toFixed(2)}. Since your purchase, the asset has ${gainWord} ${Math.abs(plpct).toFixed(2)}%, ${sentiment} your cost basis. Your total unrealized P&L stands at ${(isUp ? '+' : '')}$${pl.toFixed(2)}, with a current market value of $${val.toFixed(2)}.`;
+
+  document.getElementById('drawerSellBtn').href = sellUrl;
+  document.getElementById('drawerDetailBtn').href = detailUrl;
+
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('holdingDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('holdingDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Attach click to rows
+document.querySelectorAll('.holding-row').forEach(row => {
+  row.addEventListener('click', () => openDrawer(row));
+});
+
+// Staggered row entrance
+document.querySelectorAll('.holding-row').forEach((row, i) => {
+  row.style.opacity = '0';
+  row.style.transition = 'opacity 0.3s ease, background 0.15s';
+  setTimeout(() => row.style.opacity = '1', 60 * i + 100);
+});
+
+// ESC to close
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+</script>
+{% endblock %}

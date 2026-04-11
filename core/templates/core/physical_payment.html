@@ -1,0 +1,298 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Payment | Qubix Physical Investments{% endblock %}
+
+{% block body_class %}shop-page{% endblock %}
+
+{% block extra_css %}
+<style>
+.main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 28px;
+}
+
+.breadcrumb {
+  margin-bottom: 32px;
+  font-size: 12px;
+  color: var(--muted2);
+}
+.breadcrumb a {
+  color: var(--muted2);
+  text-decoration: none;
+}
+.breadcrumb a:hover { color: var(--gold); }
+.breadcrumb span { color: var(--text); }
+
+.order-summary {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.summary-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.summary-item:last-child { border-bottom: none; }
+.summary-label { color: var(--muted2); font-size: 13px; }
+.summary-value { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.product-detail {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.product-thumb {
+  width: 60px;
+  height: 60px;
+  background: var(--surface3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.product-info p { font-size: 11px; color: var(--muted2); }
+
+.payment-section {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.payment-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+}
+.payment-methods {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.payment-method {
+  flex: 1;
+  min-width: 100px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.payment-method:hover {
+  border-color: var(--gold);
+  background: rgba(240,185,11,0.05);
+}
+.payment-method.selected {
+  border-color: var(--gold);
+  background: rgba(240,185,11,0.1);
+}
+.payment-method-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.payment-method-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+.payment-note {
+  font-size: 11px;
+  color: var(--muted2);
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(61,126,255,0.1);
+  border-radius: 8px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+.btn {
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.btn-secondary {
+  background: var(--surface3);
+  color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.btn-secondary:hover { background: var(--surface); color: var(--text); }
+.btn-primary {
+  background: var(--gold);
+  color: #000;
+}
+.btn-primary:hover { background: #f5c800; box-shadow: 0 0 20px rgba(240,185,11,0.3); }
+
+@media (max-width: 768px) {
+  .payment-methods { flex-direction: column; }
+  .action-buttons { flex-direction: column; }
+  .btn { text-align: center; }
+  .main { padding: 20px 16px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="breadcrumb">
+    <a href="{% url 'physical_investments' %}">Physical Investments</a> / 
+    <span>Payment</span>
+  </div>
+
+  <div class="order-summary">
+    <div class="summary-title"><i class="fas fa-receipt"></i> Order Summary</div>
+    
+    {% if cart_items and is_cart_checkout %}
+      {# MULTIPLE ITEMS FROM CART #}
+      {% for item in cart_items %}
+      <div class="summary-item">
+        <div class="product-detail">
+          <div class="product-thumb">
+            {% if item.product_image %}
+              <img src="{{ item.product_image }}" alt="{{ item.product_name }}">
+            {% else %}
+              <i class="fas fa-box" style="font-size: 24px;"></i>
+            {% endif %}
+          </div>
+          <div class="product-info">
+            <h4>{{ item.product_name }} × {{ item.quantity }}</h4>
+            <p>{{ item.product_spec }}</p>
+          </div>
+        </div>
+        <div class="summary-value">${{ item.subtotal|floatformat:2 }}</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      {# SINGLE PRODUCT #}
+      <div class="summary-item">
+        <div class="product-detail">
+          <div class="product-thumb">
+            {% if product.main_image %}
+              <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <i class="fas fa-box" style="font-size: 24px;"></i>
+            {% endif %}
+          </div>
+          <div class="product-info">
+            <h4>{{ product.name }} × {{ quantity }}</h4>
+            <p>{{ product.specification }}</p>
+          </div>
+        </div>
+        <div class="summary-value">${{ subtotal|floatformat:2 }}</div>
+      </div>
+    {% endif %}
+    
+    {% if shipping_fee > 0 %}
+    <div class="summary-item">
+      <span class="summary-label">Shipping Fee</span>
+      <span class="summary-value">+${{ shipping_fee|floatformat:2 }}</span>
+    </div>
+    {% endif %}
+    
+    <div class="summary-item" style="border-top: 2px solid var(--border); margin-top: 8px; padding-top: 16px;">
+      <span class="summary-label" style="font-weight: 800;">TOTAL</span>
+      <span class="summary-value" style="font-size: 20px; color: var(--gold);">${{ total|floatformat:2 }}</span>
+    </div>
+    <div class="summary-item" style="border-top: 1px solid var(--border); margin-top: 12px; padding-top: 12px;">
+      <span class="summary-label">Delivery Method</span>
+      <span class="summary-value">{{ delivery_method_display }}</span>
+    </div>
+  </div>
+
+  <div class="payment-section">
+    <div class="payment-title"><i class="fas fa-credit-card"></i> Select Payment Method</div>
+    
+    <div class="payment-methods">
+      <div class="payment-method selected" onclick="selectPaymentMethod('BTC', this)">
+        <div class="payment-method-icon">₿</div>
+        <div class="payment-method-name">Bitcoin</div>
+      </div>
+      <div class="payment-method" onclick="selectPaymentMethod('ETH', this)">
+        <div class="payment-method-icon">Ξ</div>
+        <div class="payment-method-name">Ethereum</div>
+      </div>
+      <div class="payment-method" onclick="selectPaymentMethod('USDT', this)">
+        <div class="payment-method-icon">₮</div>
+        <div class="payment-method-name">USDT</div>
+      </div>
+      <div class="payment-method" onclick="selectPaymentMethod('LTC', this)">
+        <div class="payment-method-icon">Ł</div>
+        <div class="payment-method-name">Litecoin</div>
+      </div>
+    </div>
+    
+    <div class="payment-note">
+      <i class="fas fa-info-circle"></i> After clicking "Pay with Crypto", you'll be redirected to complete your payment. Your order will be processed after payment confirmation.
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="btn btn-secondary" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+    
+    <form id="paymentForm" method="POST" action="{% url 'physical_payment_process' %}">
+      {% csrf_token %}
+      <input type="hidden" name="payment_method" id="selectedPaymentMethod" value="BTC">
+      <button type="submit" class="btn btn-primary">
+        <i class="fab fa-bitcoin"></i> Pay with Crypto
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function selectPaymentMethod(method, element) {
+    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('selectedPaymentMethod').value = method;
+    
+    // Update button icon and text
+    const btn = document.querySelector('.btn-primary');
+    const icons = {
+        'BTC': 'fab fa-bitcoin',
+        'ETH': 'fab fa-ethereum',
+        'USDT': 'fas fa-dollar-sign',
+        'LTC': 'fab fa-litecoin-sign'
+    };
+    const iconHtml = icons[method] || 'fab fa-bitcoin';
+    btn.innerHTML = `<i class="${iconHtml}"></i> Pay with ${method}`;
+}
+</script>
+{% endblock %}

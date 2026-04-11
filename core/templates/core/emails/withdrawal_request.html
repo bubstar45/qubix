@@ -1,0 +1,76 @@
+{% extends 'core/emails/base_email.html' %}
+
+{% block header_title %}
+<h1 style="color: #D4AF37; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Withdrawal Request Submitted</h1>
+<p style="color: #94a3b8; margin: 8px 0 0;">Your request is pending approval</p>
+{% endblock %}
+
+{% block content %}
+<p class="greeting">Dear {{ user_name }},</p>
+<p class="greeting-light">We have received your withdrawal request. Our team will review and process it shortly.</p>
+
+<div class="info-box warning">
+    <strong>⏳ Pending Approval</strong><br>
+    Status: <span style="color: #f59e0b;">Pending Review</span> • Request Date: {{ date }}
+</div>
+
+<table class="transaction-table">
+    <tr>
+        <td>Request ID</td>
+        <td>#{{ request_id }}</td>
+    </tr>
+    <tr>
+        <td>Amount Requested</td>
+        <td><strong>{{ amount }}</strong></td>
+    </tr>
+    <tr>
+        <td>Crypto Currency</td>
+        <td>{{ crypto_symbol }}</td>
+    </tr>
+    <tr>
+        <td>Crypto Amount</td>
+        <td>{{ crypto_amount }}</td>
+    </tr>
+    <tr>
+        <td>Wallet Address</td>
+        <td><span style="font-family: monospace; font-size: 12px;">{{ wallet_address }}</span></td>
+    </tr>
+    <tr>
+        <td>Fee ({{ fee_percentage }}%)</td>
+        <td><span style="color: #ef4444;">Paid at submission: {{ fee_amount }}</span></td>
+    </tr>
+    <tr>
+        <td style="border-bottom: 2px solid #e2e8f0;"><strong>Amount You'll Receive</strong></td>
+        <td style="border-bottom: 2px solid #e2e8f0;">
+            <strong class="amount-positive">{{ net_amount }}</strong>
+            <br><span style="font-size: 11px; color: #64748b;">(Full amount minus fee already paid)</span>
+        </td>
+    </tr>
+</table>
+
+<div style="text-align: center;">
+    <a href="{{ support_url }}" class="btn" style="background: #f59e0b;">Track Withdrawal Status →</a>
+</div>
+
+<div class="divider"></div>
+
+<div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
+    <div style="font-weight: 700; margin-bottom: 8px;">What happens next?</div>
+    <p style="font-size: 13px; color: #475569; margin: 0;">
+        1. Our team will verify your withdrawal request<br>
+        2. Once approved, the full {{ crypto_amount }} {{ crypto_symbol }} will be sent to your wallet<br>
+        3. You'll receive a confirmation email when complete<br>
+        <br>
+        <strong>Processing time:</strong> Typically 1-2 business days
+    </p>
+</div>
+
+<p style="margin-top: 24px; font-size: 13px; color: #64748b;">
+    Need to cancel this request?<br>
+    <a href="{{ support_url }}" style="color: #3b82f6;">Contact Support Immediately</a>
+</p>
+
+<p style="margin-top: 24px;">
+    Thank you for trusting Qubix.
+</p>
+{% endblock %}

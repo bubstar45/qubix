@@ -1,0 +1,48 @@
+{% extends 'core/emails/base_email.html' %}
+
+{% block header_title %}
+<h1 style="color: #D4AF37; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Verify Your Email</h1>
+<p style="color: #94a3b8; margin: 8px 0 0;">Secure your account in seconds</p>
+{% endblock %}
+
+{% block content %}
+<p class="greeting">Hi {{ user_name }},</p>
+<p class="greeting-light">Thanks for signing up for Qubix! To complete your registration and secure your account, please verify your email address using the code below.</p>
+
+<div class="verification-code">
+    <div class="code">{{ verification_code }}</div>
+    <div class="expiry">⏱️ This code expires in <strong>10 minutes</strong></div>
+</div>
+
+<div style="text-align: center;">
+    <a href="{{ verify_url }}" class="btn">Verify Email Address →</a>
+</div>
+
+<div class="info-box alert" style="margin-top: 24px;">
+    <strong>⚠️ Didn't request this?</strong><br>
+    If you didn't create an account with Qubix, please ignore this email. No further action is needed.
+</div>
+
+<p style="margin-top: 24px; font-size: 13px; color: #64748b;">
+    <strong>Verification code not working?</strong><br>
+    <a href="{{ resend_url }}" style="color: #3b82f6;">Click here to request a new code</a>
+</p>
+
+<p style="margin-top: 32px;">
+    Once verified, you'll have full access to:<br>
+    • Real-time trading dashboard<br>
+    • 68+ global assets<br>
+    • Secure vault storage<br>
+    • 24/7 customer support
+</p>
+
+<p style="margin-top: 24px;">
+    Questions? Our team is here to help.<br>
+    <a href="{{ support_url }}" style="color: #3b82f6; text-decoration: none;">Contact Support</a>
+</p>
+
+<p style="margin-top: 24px;">
+    Best regards,<br>
+    <strong>The Qubix Security Team</strong>
+</p>
+{% endblock %}

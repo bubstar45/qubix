@@ -1,0 +1,504 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}My Real Estate Investments | Qubix{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Real Estate Investments Page Specific Styles */
+  .top-bar {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .back-link {
+    color: var(--muted2);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color .2s;
+  }
+
+  .back-link:hover { color: var(--gold); }
+
+  .qx-nav-links {
+    display: flex;
+    gap: 8px;
+  }
+
+  .qx-nav-links a {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted2);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .qx-nav-links a:hover {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .qx-nav-links a.active {
+    color: var(--gold);
+    background: rgba(240,185,11,0.1);
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .summary-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all .2s;
+  }
+
+  .summary-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .summary-card .label {
+    font-size: 12px;
+    color: var(--muted2);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .summary-card .amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .summary-card .amount.green { color: var(--green); }
+  .summary-card .amount.gold { color: var(--gold); }
+
+  .investments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .investment-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.2s ease;
+  }
+
+  .investment-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+
+  .investment-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .investment-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .investment-location {
+    font-size: 13px;
+    color: var(--muted2);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .investment-date {
+    font-size: 12px;
+    color: var(--muted2);
+    margin-top: 6px;
+  }
+
+  .investment-amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+  }
+
+  .investment-shares {
+    font-size: 13px;
+    color: var(--muted2);
+    text-align: right;
+  }
+
+  .investment-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  .investment-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .investment-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .investment-stat-row .stat-label {
+    color: var(--muted2);
+  }
+
+  .investment-stat-row .stat-val {
+    font-weight: 600;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .investment-stat-row .stat-val.green {
+    color: var(--green);
+  }
+
+  .investment-footer {
+    margin-top: 20px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .investment-footer a {
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all .2s;
+  }
+
+  .investment-footer a:hover {
+    gap: 10px;
+    color: #e0a800;
+  }
+
+  /* Documents Dropdown Styles */
+  .documents-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .btn-docs {
+    background: rgba(168,85,247,0.12);
+    color: #a855f7;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .btn-docs:hover {
+    background: rgba(168,85,247,0.22);
+    transform: translateY(-1px);
+  }
+
+  .documents-menu {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-width: 240px;
+    z-index: 1000;
+    margin-bottom: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .documents-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .documents-menu a:last-child {
+    border-bottom: none;
+  }
+
+  .documents-menu a:hover {
+    background: rgba(240,185,11,0.1);
+    color: var(--gold);
+  }
+
+  .documents-menu i {
+    width: 20px;
+    font-size: 13px;
+    color: var(--gold);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 24px;
+  }
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .empty-sub {
+    font-size: 14px;
+    color: var(--muted2);
+    margin-bottom: 24px;
+  }
+
+  .btn-browse {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: var(--gold);
+    color: #000;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all .2s;
+  }
+
+  .btn-browse:hover {
+    background: #e0a800;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 640px) {
+    .investment-card-top {
+      flex-direction: column;
+    }
+    .investment-amount, .investment-shares {
+      text-align: left;
+    }
+    .summary-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <!-- Top Bar with Back + My Investments / Dividends -->
+  <div class="top-bar">
+    <a href="{% url 'real_estate_list' %}" class="back-link">
+      <i class="fas fa-arrow-left"></i> Back to Real Estate
+    </a>
+
+    <div class="qx-nav-links">
+      <a href="{% url 'real_estate_my_investments' %}" class="active">
+        <i class="fas fa-chart-line"></i> My Investments
+      </a>
+      <a href="{% url 'real_estate_dividends' %}">
+        <i class="fas fa-dollar-sign"></i> Dividends
+      </a>
+    </div>
+  </div>
+
+  <!-- Page Title -->
+  <h1 class="page-title" style="margin-bottom: 24px;">
+    <i class="fas fa-building" style="color: var(--gold);"></i> My Real Estate Investments
+  </h1>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="label"><i class="fas fa-coins"></i> Total Invested</div>
+      <div class="amount gold">${{ total_invested|floatformat:2 }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label"><i class="fas fa-chart-line"></i> Total Dividends Received</div>
+      <div class="amount green">${{ total_dividends|floatformat:2 }}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label"><i class="fas fa-home"></i> Total Properties</div>
+      <div class="amount">{{ investments|length }}</div>
+    </div>
+  </div>
+
+  <!-- Investments List -->
+  <div class="investments-list">
+    {% for investment in investments %}
+    <div class="investment-card">
+      <div class="investment-card-top">
+        <div>
+          <div class="investment-name">{{ investment.property.name }}</div>
+          <div class="investment-location">
+            <i class="fas fa-map-marker-alt" style="font-size: 11px;"></i> {{ investment.property.location }}
+          </div>
+          <div class="investment-date">
+            <i class="fas fa-calendar-alt"></i> Invested on {{ investment.effective_invested_at|default:investment.invested_at|date:"M d, Y" }}
+          </div>
+        </div>
+        <div>
+          <div class="investment-amount">${{ investment.effective_amount|default:investment.amount_invested|floatformat:2 }}</div>
+          <div class="investment-shares">{{ investment.shares }} shares @ ${{ investment.property.price_per_share|floatformat:2 }}/share</div>
+        </div>
+      </div>
+
+      <hr class="investment-divider">
+
+      <div class="investment-stats">
+        <div class="investment-stat-row">
+          <span class="stat-label"><i class="fas fa-chart-simple"></i> Current Value</span>
+          <span class="stat-val">${{ investment.effective_amount|default:investment.amount_invested|floatformat:2 }}</span>
+        </div>
+        <div class="investment-stat-row">
+          <span class="stat-label"><i class="fas fa-percent"></i> Funded Progress</span>
+          <span class="stat-val">{{ investment.personal_funded_percent|default:0|floatformat:1 }}%</span>
+        </div>
+        <div class="investment-stat-row">
+          <span class="stat-label"><i class="fas fa-dollar-sign"></i> Dividends Received</span>
+          <span class="stat-val green">${{ investment.total_dividends|default:0|floatformat:2 }}</span>
+        </div>
+        <div class="investment-stat-row">
+          <span class="stat-label"><i class="fas fa-chart-line"></i> Est. Annual Return</span>
+          <span class="stat-val green">{{ investment.property.annual_cash_flow|default:0|floatformat:0 }}%</span>
+        </div>
+      </div>
+
+      <div class="investment-footer">
+        <a href="{% url 'real_estate_detail' investment.property.id %}">
+          View Property Details <i class="fas fa-arrow-right"></i>
+        </a>
+        
+        <!-- Documents Dropdown Button -->
+        <div class="documents-dropdown">
+          <button class="btn-docs" onclick="toggleDocumentsMenu({{ investment.id }})">
+            <i class="fas fa-file-alt"></i> Documents
+          </button>
+          <div class="documents-menu" id="documentsMenu{{ investment.id }}">
+            <a href="{% url 'download_investment_certificate' investment.id %}" target="_blank">
+              <i class="fas fa-certificate"></i> Investment Certificate
+            </a>
+            <a href="{% url 'download_purchase_invoice_real_estate' investment.id %}" target="_blank">
+              <i class="fas fa-file-invoice-dollar"></i> Purchase Invoice
+            </a>
+            <a href="{% url 'download_title_certificate' investment.id %}" target="_blank">
+              <i class="fas fa-file-contract"></i> Title Certificate
+            </a>
+            <a href="{% url 'download_property_prospectus' investment.property.id %}" target="_blank">
+              <i class="fas fa-chart-line"></i> Property Prospectus
+            </a>
+            <a href="{% url 'download_operating_agreement' investment.id %}" target="_blank">
+              <i class="fas fa-file-signature"></i> Operating Agreement
+            </a>
+            <a href="{% url 'download_annual_report' investment.id %}" target="_blank">
+              <i class="fas fa-calendar-alt"></i> Annual Report
+            </a>
+            <a href="{% url 'download_k1_tax_summary' investment.id %}" target="_blank">
+              <i class="fas fa-file-tax"></i> K-1 Tax Summary
+            </a>
+            <a href="{% url 'download_capital_call' investment.id %}" target="_blank">
+              <i class="fas fa-hand-holding-usd"></i> Capital Call Notice
+            </a>
+            <a href="{% url 'download_exit_statement' investment.id %}" target="_blank">
+              <i class="fas fa-sign-out-alt"></i> Exit Statement
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-icon">🏠</div>
+      <div class="empty-title">No investments yet</div>
+      <div class="empty-sub">Start building your real estate portfolio today</div>
+      <a href="{% url 'real_estate_list' %}" class="btn-browse">
+        Browse Properties <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Toggle documents dropdown menu
+function toggleDocumentsMenu(menuId) {
+    const menu = document.getElementById('documentsMenu' + menuId);
+    if (menu) {
+        // Close all other menus first
+        document.querySelectorAll('.documents-menu').forEach(m => {
+            if (m !== menu) m.style.display = 'none';
+        });
+        // Toggle this menu
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.documents-dropdown')) {
+        document.querySelectorAll('.documents-menu').forEach(m => {
+            m.style.display = 'none';
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('My Investments page loaded');
+});
+</script>
+{% endblock %}

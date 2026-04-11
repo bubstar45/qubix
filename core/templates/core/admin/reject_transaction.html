@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+    <div class="w-full max-w-md bg-[#111] rounded-3xl p-10">
+        <h2 class="text-3xl font-semibold text-center">Reject Transaction</h2>
+        
+        <div class="mt-8 bg-white/5 rounded-3xl p-6">
+            <p><strong>User:</strong> {{ transaction.user.email }}</p>
+            <p><strong>Type:</strong> {{ transaction.get_transaction_type_display }}</p>
+            <p><strong>Total Amount:</strong> ${{ transaction.total_amount|floatformat:2 }}</p>
+        </div>
+        
+        <form method="post" class="mt-8">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Reason for Rejection</label>
+                <textarea name="reason" rows="3" class="w-full bg-white/10 border border-white/20 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-[#00d4ff]"></textarea>
+            </div>
+            
+            <div class="flex gap-4">
+                <button type="submit" 
+                        class="flex-1 h-12 bg-red-500 text-white font-semibold rounded-3xl hover:bg-red-600">
+                    Confirm Rejection
+                </button>
+                <a href="{% url 'admin_pending_transactions' %}" 
+                   class="flex-1 h-12 bg-gray-500 text-white font-semibold rounded-3xl text-center leading-10 hover:bg-gray-600">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

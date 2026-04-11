@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+    <div class="w-full max-w-md bg-[#111] rounded-3xl p-10">
+        <h2 class="text-3xl font-semibold text-center">Approve Transaction</h2>
+        
+        <div class="mt-8 bg-white/5 rounded-3xl p-6">
+            <p><strong>User:</strong> {{ transaction.user.email }}</p>
+            <p><strong>Type:</strong> {{ transaction.get_transaction_type_display }}</p>
+            {% if transaction.asset %}
+            <p><strong>Asset:</strong> {{ transaction.asset.symbol }} - {{ transaction.asset.name }}</p>
+            <p><strong>Quantity:</strong> {{ transaction.quantity|floatformat:4 }}</p>
+            <p><strong>Price:</strong> ${{ transaction.price_at_time|floatformat:2 }}</p>
+            {% endif %}
+            <p><strong>Total Amount:</strong> ${{ transaction.total_amount|floatformat:2 }}</p>
+            <p><strong>Date:</strong> {{ transaction.created_at|date:"M d, Y H:i" }}</p>
+        </div>
+        
+        <form method="post" class="mt-8">
+            {% csrf_token %}
+            <div class="flex gap-4">
+                <button type="submit" 
+                        class="flex-1 h-12 bg-green-500 text-white font-semibold rounded-3xl hover:bg-green-600">
+                    Confirm Approval
+                </button>
+                <a href="{% url 'admin_pending_transactions' %}" 
+                   class="flex-1 h-12 bg-gray-500 text-white font-semibold rounded-3xl text-center leading-10 hover:bg-gray-600">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

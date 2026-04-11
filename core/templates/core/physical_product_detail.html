@@ -1,0 +1,784 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | Qubix Physical Investments{% endblock %}
+
+{% block body_class %}shop-page{% endblock %}
+
+{% block ticker %}
+<span class="ticker-item"><span class="ticker-sym">XAU/USD</span><span class="ticker-price">$2298.00</span><span class="ticker-chg pos">▲ 0.89%</span></span>
+<span class="ticker-sep">|</span>
+<span class="ticker-item"><span class="ticker-sym">XAG/USD</span><span class="ticker-price">$27.40</span><span class="ticker-chg neg">▼ 0.34%</span></span>
+<span class="ticker-sep">|</span>
+<span class="ticker-item"><span class="ticker-sym">XPT/USD</span><span class="ticker-price">$1012.00</span><span class="ticker-chg pos">▲ 2.14%</span></span>
+<span class="ticker-sep">|</span>
+<span class="ticker-item"><span class="ticker-sym">BTC/USD</span><span class="ticker-price">$63800</span><span class="ticker-chg pos">▲ 1.23%</span></span>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 40px;
+}
+
+.product-gallery {
+  position: sticky;
+  top: 90px;
+}
+
+.main-image {
+  background: var(--surface2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.thumbnail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.thumbnail {
+  background: var(--surface3);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail.active {
+  border-color: var(--gold);
+}
+
+.thumbnail:hover {
+  border-color: rgba(240,185,11,0.5);
+}
+
+.product-category {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--surface3);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.product-name {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.product-spec {
+  font-size: 14px;
+  color: var(--muted2);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 16px;
+}
+
+.product-price {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 8px;
+}
+
+.product-spot {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.product-description {
+  margin-bottom: 24px;
+}
+
+.product-description h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.product-description p {
+  font-size: 13px;
+  color: var(--muted2);
+  line-height: 1.6;
+}
+
+.specs-table {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+}
+
+.spec-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.spec-row:last-child {
+  border-bottom: none;
+}
+
+.spec-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.spec-value {
+  font-size: 12px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.delivery-options {
+  margin-bottom: 24px;
+}
+
+.delivery-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.delivery-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.delivery-card {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delivery-card:hover {
+  border-color: var(--border2);
+}
+
+.delivery-card.selected {
+  border-color: var(--gold);
+  background: rgba(240,185,11,0.05);
+}
+
+.delivery-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.delivery-title-sm {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.delivery-desc {
+  font-size: 11px;
+  color: var(--muted2);
+  line-height: 1.4;
+}
+
+.delivery-tag {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 6px;
+}
+
+.tag-free {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.tag-ship {
+  background: rgba(61,126,255,0.1);
+  color: var(--accent2);
+}
+
+.qty-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.qty-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted2);
+}
+
+.qty-control {
+  display: flex;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.qty-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--surface3);
+  border: none;
+  color: var(--text);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.qty-input {
+  width: 50px;
+  text-align: center;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  outline: none;
+}
+
+.total-price {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.total-label {
+  font-size: 12px;
+  color: var(--muted2);
+  font-weight: 600;
+}
+
+.total-amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-cart {
+  background: var(--surface3);
+  color: var(--text);
+  border: 1px solid var(--border2);
+}
+
+.btn-cart:hover {
+  background: var(--surface);
+  border-color: var(--gold);
+}
+
+.btn-buy {
+  background: var(--gold);
+  color: #000;
+}
+
+.btn-buy:hover {
+  background: #f5c800;
+  box-shadow: 0 0 20px rgba(240,185,11,0.3);
+}
+
+.legal-note {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.breadcrumb {
+  margin-bottom: 24px;
+  font-size: 12px;
+  color: var(--muted2);
+}
+
+.breadcrumb a {
+  color: var(--muted2);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--gold);
+}
+
+.breadcrumb span {
+  color: var(--text);
+}
+
+/* Toast Notification Styles */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toast {
+  min-width: 280px;
+  max-width: 380px;
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-left: 4px solid;
+  animation: slideInRight 0.3s ease forwards;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  backdrop-filter: blur(10px);
+  background: rgba(17, 21, 32, 0.95);
+  position: relative;
+  overflow: hidden;
+}
+
+.toast.toast-success {
+  border-left-color: var(--green);
+}
+.toast.toast-success .toast-icon {
+  color: var(--green);
+}
+
+.toast.toast-error {
+  border-left-color: var(--red);
+}
+.toast.toast-error .toast-icon {
+  color: var(--red);
+}
+
+.toast.toast-info {
+  border-left-color: var(--accent);
+}
+.toast.toast-info .toast-icon {
+  color: var(--accent);
+}
+
+.toast-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.toast-message {
+  font-size: 12px;
+  color: var(--muted2);
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.toast-close:hover {
+  color: var(--text);
+}
+
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 0 0 0 12px;
+  animation: progressBar 3s linear forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .product-gallery {
+    position: relative;
+    top: 0;
+  }
+  .toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+  .toast {
+    max-width: none;
+    width: auto;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="breadcrumb">
+    <a href="{% url 'physical_investments' %}">Physical Investments</a> / 
+    <span>{{ product.name }}</span>
+  </div>
+
+  <div class="product-detail-grid">
+    <!-- Image Gallery -->
+    <div class="product-gallery">
+      <div class="main-image">
+        <img id="mainImage" src="{% if product.main_image %}{{ product.main_image.url }}{% else %}https://placehold.co/500x500/111520/8891a8?text=No+Image{% endif %}" alt="{{ product.name }}">
+      </div>
+      <div class="thumbnail-grid">
+        {% if product.main_image %}
+        <div class="thumbnail active" onclick="changeImage('{{ product.main_image.url }}', this)">
+          <img src="{{ product.main_image.url }}" alt="Main">
+        </div>
+        {% endif %}
+        {% for img in product.gallery_images %}
+        <div class="thumbnail" onclick="changeImage('{{ img }}', this)">
+          <img src="{{ img }}" alt="Gallery image">
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <div class="product-category">{{ product.get_category_display }}</div>
+      <h1 class="product-name">{{ product.name }}{% if product.year %} ({{ product.year }}){% endif %}</h1>
+      <div class="product-spec">{{ product.specification }}</div>
+      <div class="product-price">${{ product.current_price|floatformat:2 }}</div>
+      <div class="product-spot">Spot price: ${{ product.spot_price|floatformat:2 }}/oz · Premium: {{ product.get_premium_percent|floatformat:1 }}%</div>
+
+      <div class="specs-table">
+        <div class="spec-row"><div class="spec-label">Purity</div><div class="spec-value">{{ product.purity }}</div></div>
+        <div class="spec-row"><div class="spec-label">Weight</div><div class="spec-value">{{ product.weight }}</div></div>
+        <div class="spec-row"><div class="spec-label">Mint</div><div class="spec-value">{{ product.mint }}</div></div>
+        {% if product.dimensions %}<div class="spec-row"><div class="spec-label">Dimensions</div><div class="spec-value">{{ product.dimensions }}</div></div>{% endif %}
+        <div class="spec-row"><div class="spec-label">Stock</div><div class="spec-value">{% if product.stock_quantity > 0 %}{{ product.stock_quantity }} available{% else %}Out of stock{% endif %}</div></div>
+      </div>
+
+      <div class="product-description">
+        <h4>About this item</h4>
+        <p>{{ product.description|default:"This high-quality bullion product is sourced from reputable mints and guaranteed for purity and weight. Perfect for both investors and collectors." }}</p>
+      </div>
+
+      <!-- Delivery Options -->
+      <div class="delivery-options">
+        <div class="delivery-title">Storage Method</div>
+        <div class="delivery-cards">
+          <div class="delivery-card selected" id="vaultCard" onclick="selectDelivery('vault')">
+            <div class="delivery-icon">🔒</div>
+            <div class="delivery-title-sm">Qubix Vault</div>
+            <div class="delivery-desc">Secured, insured storage. Sell instantly.</div>
+            <div class="delivery-tag tag-free">NO FEE</div>
+          </div>
+          <div class="delivery-card" id="shipCard" onclick="selectDelivery('ship')">
+            <div class="delivery-icon">🚚</div>
+            <div class="delivery-title-sm">Ship to Me</div>
+            <div class="delivery-desc">Insured delivery to your address.</div>
+            <div class="delivery-tag tag-ship">+FEE</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quantity -->
+      <div class="qty-section">
+        <span class="qty-label">QUANTITY</span>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input class="qty-input" id="qtyVal" value="1" readonly>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="total-price">
+        <span class="total-label">ORDER TOTAL</span>
+        <span class="total-amount" id="orderTotal">${{ product.current_price|floatformat:2 }}</span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-cart" onclick="addToCart()">
+          <i class="fas fa-shopping-cart"></i> Add to Cart
+        </button>
+        <button class="btn btn-buy" onclick="buyNow()">
+          <i class="fab fa-bitcoin"></i> Buy Now
+        </button>
+      </div>
+      <div class="legal-note">
+        By proceeding you agree to Qubix's physical investment terms. All ownership documents will be emailed upon payment confirmation.
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+'use strict';
+
+// ============= CSRF TOKEN - USE FUNCTION TO AVOID CONFLICT =============
+function getCsrfToken() {
+    const name = 'csrftoken';
+    const value = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return value ? value.pop() : '';
+}
+
+// Store product data
+const productData = {
+    id: {{ product.id }},
+    name: "{{ product.name|escapejs }}",
+    current_price: {{ product.current_price }},
+    shipping_fee: {{ product.shipping_fee }},
+    spot_price: {{ product.spot_price }},
+    stock_quantity: {{ product.stock_quantity }}
+};
+
+let currentService = 'vault';
+let currentQty = 1;
+
+// ============= TOAST NOTIFICATION =============
+function showToast(options) {
+    const { title, message, type = 'info', duration = 3000 } = options;
+    
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    
+    let icon = '✓';
+    if (type === 'success') icon = '✓';
+    if (type === 'error') icon = '✕';
+    if (type === 'info') icon = 'ℹ';
+    
+    toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.closest('.toast').remove()">×</button>
+        <div class="toast-progress"></div>
+    `;
+    
+    container.appendChild(toast);
+    const progressBar = toast.querySelector('.toast-progress');
+    progressBar.style.animationDuration = `${duration}ms`;
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.style.animation = 'slideOutRight 0.3s ease forwards';
+            setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+            }, 300);
+        }
+    }, duration);
+}
+
+// ============= IMAGE GALLERY =============
+window.changeImage = function(src, element) {
+    document.getElementById('mainImage').src = src;
+    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+    element.classList.add('active');
+};
+
+// ============= DELIVERY SELECTION =============
+window.selectDelivery = function(type) {
+    currentService = type;
+    document.getElementById('vaultCard').classList.toggle('selected', type === 'vault');
+    document.getElementById('shipCard').classList.toggle('selected', type === 'ship');
+    updateTotal();
+};
+
+// ============= QUANTITY CONTROLS =============
+window.changeQty = function(delta) {
+    let newQty = currentQty + delta;
+    if (newQty >= 1 && newQty <= productData.stock_quantity) {
+        currentQty = newQty;
+        document.getElementById('qtyVal').value = currentQty;
+        updateTotal();
+    } else if (newQty > productData.stock_quantity) {
+        showToast({
+            title: 'Stock Limit',
+            message: `Only ${productData.stock_quantity} units available`,
+            type: 'error',
+            duration: 3000
+        });
+    }
+};
+
+// ============= UPDATE TOTAL =============
+function updateTotal() {
+    let total = productData.current_price * currentQty;
+    document.getElementById('orderTotal').textContent = '$' + total.toFixed(2);
+}
+
+// ============= ADD TO CART =============
+window.addToCart = async function() {
+    const csrfToken = getCsrfToken();
+    
+    try {
+        const response = await fetch(`/physical/api/add-to-cart/${productData.id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: `quantity=${currentQty}`
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            const cartCountEl = document.getElementById('cartCount');
+            if (cartCountEl) cartCountEl.textContent = data.cart_count;
+            
+            showToast({
+                title: 'Added to Cart!',
+                message: `${currentQty} × ${productData.name} added to your cart`,
+                type: 'success',
+                duration: 3000
+            });
+        } else {
+            showToast({
+                title: 'Error',
+                message: data.message || 'Failed to add to cart',
+                type: 'error',
+                duration: 3000
+            });
+        }
+    } catch (err) {
+        console.error('Add to cart error:', err);
+        showToast({
+            title: 'Error',
+            message: 'Error adding to cart. Please try again.',
+            type: 'error',
+            duration: 3000
+        });
+    }
+};
+
+// ============= BUY NOW =============
+window.buyNow = function() {
+    if (currentService === 'vault') {
+        window.location.href = `/physical/checkout/vault/confirm/${productData.id}/?quantity=${currentQty}`;
+    } else {
+        window.location.href = `/physical/checkout/shipping/${productData.id}/?quantity=${currentQty}`;
+    }
+};
+
+// ============= INITIALIZATION =============
+document.addEventListener('DOMContentLoaded', function() {
+    updateTotal();
+    console.log('Product detail page loaded');
+});
+</script>
+{% endblock %}

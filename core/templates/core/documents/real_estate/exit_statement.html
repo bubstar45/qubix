@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exit Statement — Qubix Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap');
+
+  :root {
+    --gold:#f0b90b; --gold-dark:#c9960a; --gold-pale:#fdf6dc;
+    --navy:#0d1f3c; --slate:#2c3e5d;
+    --green:#1a7a4a; --green-bg:#e8f5ef;
+    --text:#1a1a2e; --muted:#5a6a84; --border:#c8d4e8;
+    --bg:#fff; --subtle:#f5f7fa;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Source Sans 3',sans-serif; background:#d8dde8; display:flex; justify-content:center; padding:40px 20px; color:var(--text); }
+  .document { background:var(--bg); max-width:800px; width:100%; box-shadow:0 8px 60px rgba(13,31,60,0.2); }
+
+  /* Header */
+  .hdr { background:var(--navy); padding:28px 44px; display:flex; justify-content:space-between; align-items:center; }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; letter-spacing:5px; color:white; }
+  .logo-div { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-top:3px; }
+  .hdr-r { text-align:right; }
+  .hr-lbl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); }
+  .hr-val { font-size:13px; font-weight:600; color:var(--gold); margin-top:3px; }
+  .accent { height:4px; background:linear-gradient(to right, var(--gold), var(--gold-dark)); }
+
+  .body-pad { padding:36px 44px; }
+
+  /* Title row */
+  .title-row { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:28px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+  .doc-title { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:var(--navy); }
+  .doc-sub { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-top:5px; }
+  .closed-badge { background:var(--green-bg); border:1px solid #a0d8b8; color:var(--green); font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:6px 14px; }
+
+  /* Meta grid */
+  .meta-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:24px; }
+  .mc { border:1px solid var(--border); padding:14px 16px; }
+  .mc .lbl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .mc .val { font-size:14px; font-weight:600; }
+
+  /* Sale price hero */
+  .sale-hero { background:linear-gradient(135deg, var(--navy), var(--slate)); color:white; padding:28px 32px; margin-bottom:24px; }
+  .sh-label { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:8px; }
+  .sh-price { font-family:'Cormorant Garamond',serif; font-size:50px; font-weight:700; color:var(--gold); line-height:1; margin-bottom:6px; }
+  .sh-sub { font-size:12px; color:rgba(255,255,255,.45); }
+  .sh-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,.1); }
+  .sh-item .sl { font-size:8px; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:4px; }
+  .sh-item .sv { font-size:16px; font-weight:700; }
+  .sh-item .sv.gold { color:var(--gold); }
+  .sh-item .sv.green { color:#6ee7b7; }
+
+  /* Calculation waterfall */
+  .waterfall { border:1px solid var(--border); margin-bottom:24px; }
+  .wf-header { background:var(--navy); color:white; padding:10px 18px; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.6); }
+  .wf-row { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; border-bottom:1px solid var(--border); font-size:13px; }
+  .wf-row:last-child { border-bottom:none; }
+  .wf-row.subtotal { background:var(--subtle); font-weight:600; }
+  .wf-row.total { background:var(--navy); color:white; font-weight:700; }
+  .wf-row.total .wv { color:var(--gold); font-size:16px; }
+  .wf-row .wl { color:var(--muted); }
+  .wf-row.subtotal .wl, .wf-row.total .wl { color:inherit; opacity:.7; }
+  .wf-row .wv { font-weight:600; }
+  .wf-row .deduct { color:var(--muted); }
+  .wf-row .deduct.wv { color:#c0392b; }
+
+  /* Payout confirmation */
+  .payout-confirm { background:var(--green-bg); border:1px solid #a0d8b8; padding:20px 24px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+  .pc-left .pl { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#1a5a36; margin-bottom:5px; }
+  .pc-left .pv { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:700; color:var(--green); }
+  .pc-left .ps { font-size:11px; color:#3a6a4a; margin-top:3px; }
+  .pc-right { font-size:9px; letter-spacing:2px; text-transform:uppercase; background:var(--green); color:white; font-weight:700; padding:8px 16px; }
+
+  /* Wire instructions */
+  .wire-sec { border:1px solid var(--border); padding:18px 20px; margin-bottom:20px; font-family:'Source Sans 3',sans-serif; }
+  .ws-title { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .ws-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--border); font-size:13px; }
+  .ws-row:last-child { border-bottom:none; }
+  .ws-row .wk { color:var(--muted); }
+  .ws-row .wv { font-weight:600; font-family:'Courier New',monospace; }
+
+  /* Signature */
+  .sig-row { display:grid; grid-template-columns:1fr 1fr; gap:44px; padding-top:24px; margin-top:16px; border-top:1px solid var(--border); }
+  .sig-col .sl { border-bottom:1px solid var(--text); height:44px; margin-bottom:6px; }
+  .sig-col .sn { font-family:'Cormorant Garamond',serif; font-size:15px; font-style:italic; }
+  .sig-col .sr { font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+
+  .footer { border-top:4px solid var(--gold); padding:13px 44px; display:flex; justify-content:space-between; background:var(--subtle); font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  @media print { body { background:white; padding:0; } .document { box-shadow:none; } }
+</style>
+</head>
+<body>
+<div class="document">
+  <div class="hdr">
+    <div><div class="logo">QUBIX</div><div class="logo-div">Real Estate Division</div></div>
+    <div class="hdr-r">
+      <div class="hr-lbl">Exit Reference</div><div class="hr-val">{{ exit_reference }}</div>
+      <div class="hr-lbl" style="margin-top:8px;">Closing Date</div><div class="hr-val">{{ closing_date }}</div>
+    </div>
+  </div>
+  <div class="accent"></div>
+
+  <div class="body-pad">
+    <!-- Title -->
+    <div class="title-row">
+      <div>
+        <div class="doc-title">Exit Statement</div>
+        <div class="doc-sub">Property Sale &amp; Final Distribution</div>
+      </div>
+      <div class="closed-badge">Investment Closed ✓</div>
+    </div>
+
+    <!-- Meta -->
+    <div class="meta-3">
+      <div class="mc"><div class="lbl">Investor</div><div class="val">{{ investor_name }}</div></div>
+      <div class="mc"><div class="lbl">Property</div><div class="val">{{ property_name }}</div></div>
+      <div class="mc"><div class="lbl">Closing Date</div><div class="val">{{ closing_date }}</div></div>
+    </div>
+
+    <!-- Sale price hero -->
+    <div class="sale-hero">
+      <div class="sh-label">Final Sale Price</div>
+      <div class="sh-price">{{ sale_price }}</div>
+      <div class="sh-sub">{{ property_name }} · Sold {{ closing_date }}</div>
+      <div class="sh-grid">
+        <div class="sh-item"><div class="sl">Your Ownership</div><div class="sv gold">{{ ownership_percentage }}</div></div>
+        <div class="sh-item"><div class="sl">Original Investment</div><div class="sv">{{ original_investment }}</div></div>
+        <div class="sh-item"><div class="sl">Total Return</div><div class="sv green">{{ total_return_pct }}</div></div>
+      </div>
+    </div>
+
+    <!-- Calculation waterfall -->
+    <div class="waterfall">
+      <div class="wf-header">Distribution Calculation — Your Share</div>
+      <div class="wf-row"><span class="wl">Gross Sale Price</span><span class="wv">{{ sale_price }}</span></div>
+      <div class="wf-row"><span class="wl deduct">Closing Costs &amp; Agent Fees</span><span class="wv deduct">— {{ closing_costs }}</span></div>
+      <div class="wf-row"><span class="wl deduct">Outstanding Debt / Mortgage (if any)</span><span class="wv deduct">— {{ outstanding_debt }}</span></div>
+      <div class="wf-row"><span class="wl deduct">Performance Fee ({{ performance_fee_rate }})</span><span class="wv deduct">— {{ performance_fee }}</span></div>
+      <div class="wf-row subtotal"><span class="wl">Net Sale Proceeds (Total)</span><span class="wv">{{ net_sale_proceeds }}</span></div>
+      <div class="wf-row"><span class="wl">Your Ownership Percentage</span><span class="wv">{{ ownership_percentage }}</span></div>
+      <div class="wf-row subtotal"><span class="wl">Your Gross Distribution</span><span class="wv">{{ gross_distribution }}</span></div>
+      <div class="wf-row"><span class="wl deduct">Capital Gains (Est. Tax Liability)</span><span class="wv deduct">— {{ estimated_tax }}</span></div>
+      <div class="wf-row subtotal"><span class="wl">Original Investment Returned</span><span class="wv">{{ original_investment }}</span></div>
+      <div class="wf-row total"><span class="wl">Net Profit to Investor</span><span class="wv">{{ net_profit }}</span></div>
+    </div>
+
+    <!-- Payout confirmation -->
+    <div class="payout-confirm">
+      <div class="pc-left">
+        <div class="pl">Total Payout to Investor</div>
+        <div class="pv">{{ total_payout }}</div>
+        <div class="ps">Original investment + net profit · Wired {{ closing_date }}</div>
+      </div>
+      <div class="pc-right">Disbursed ✓</div>
+    </div>
+
+    <!-- Wire instructions -->
+    <div class="wire-sec">
+      <div class="ws-title">Wire / Payment Details</div>
+      <div class="ws-row"><span class="wk">Payment Method</span><span class="wv">{{ payment_method }}</span></div>
+      <div class="ws-row"><span class="wk">Amount Disbursed</span><span class="wv">{{ total_payout }}</span></div>
+      <div class="ws-row"><span class="wk">Reference / Memo</span><span class="wv">{{ exit_reference }}</span></div>
+      <div class="ws-row"><span class="wk">Disbursement Date</span><span class="wv">{{ closing_date }}</span></div>
+      {% if wire_reference %}
+      <div class="ws-row"><span class="wk">Wire Reference</span><span class="wv">{{ wire_reference }}</span></div>
+      {% endif %}
+    </div>
+
+    <!-- Capital gains note -->
+    <div style="font-size:10.5px; color:var(--muted); border:1px solid var(--border); padding:13px 17px; background:var(--subtle); line-height:1.65; margin-bottom:20px;">
+      <strong style="color:var(--text);">Tax Notice:</strong> Capital gains figures above are estimates only.
+      Actual tax liability depends on your jurisdiction, holding period, and individual tax situation. A
+      Schedule K-1 or equivalent tax document will be issued separately. Consult your tax advisor. Qubix
+      Real Estate Ltd. does not provide tax advice.
+    </div>
+
+    <!-- Signatures -->
+    <div class="sig-row">
+      <div class="sig-col">
+        <div class="sl"></div>
+        <div class="sn">Authorised Signatory</div>
+        <div class="sr">Qubix Real Estate Ltd.</div>
+      </div>
+      <div class="sig-col">
+        <div class="sl"></div>
+        <div class="sn">{{ investor_name }}</div>
+        <div class="sr">Investor — Acknowledged</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Qubix Real Estate — All rights reserved</span>
+    <span>Generated: {% now "d M Y, H:i" %} UTC · Page 1 of 1</span>
+  </div>
+</div>
+</body>
+</html>

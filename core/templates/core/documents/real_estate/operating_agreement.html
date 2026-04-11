@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operating Agreement — Qubix Real Estate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&family=EB+Garamond:wght@400;500&display=swap');
+
+  :root {
+    --gold:#f0b90b; --gold-dark:#c9960a; --gold-pale:#fdf6dc;
+    --navy:#0d1f3c; --slate:#2c3e5d;
+    --text:#1a1a2e; --muted:#5a6a84; --border:#c8d4e8;
+    --bg:#fff; --subtle:#f5f7fa;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'EB Garamond',serif; background:#d8dde8; display:flex; justify-content:center; padding:40px 20px; color:var(--text); font-size:14px; }
+  .document { background:var(--bg); max-width:800px; width:100%; box-shadow:0 8px 60px rgba(13,31,60,0.2); }
+
+  /* Header */
+  .doc-hdr { background:var(--navy); padding:30px 48px; display:flex; justify-content:space-between; align-items:center; }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:700; letter-spacing:5px; color:white; }
+  .logo-div { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,.4); margin-top:3px; }
+  .hdr-r { text-align:right; }
+  .hl { font-size:8px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.4); }
+  .hv { font-size:12px; font-weight:600; color:var(--gold); margin-top:3px; }
+  .accent { height:4px; background:linear-gradient(to right, var(--gold), var(--gold-dark)); }
+
+  .body-pad { padding:44px 50px; }
+
+  /* Title */
+  .agreement-title { text-align:center; margin-bottom:32px; padding-bottom:24px; border-bottom:1px solid var(--border); }
+  .at-eyebrow { font-family:'Source Sans 3',sans-serif; font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--gold-dark); margin-bottom:10px; }
+  .at-main { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:var(--navy); margin-bottom:6px; }
+  .at-sub { font-family:'Source Sans 3',sans-serif; font-size:11px; color:var(--muted); letter-spacing:1px; }
+
+  /* Parties */
+  .parties { display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:start; margin-bottom:24px; }
+  .party-card { border:1px solid var(--border); padding:16px 18px; background:var(--subtle); }
+  .party-role { font-family:'Source Sans 3',sans-serif; font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border); padding-bottom:7px; margin-bottom:10px; }
+  .party-name { font-size:16px; font-weight:500; margin-bottom:3px; }
+  .party-detail { font-family:'Source Sans 3',sans-serif; font-size:11px; color:var(--muted); }
+  .and-lbl { font-family:'Source Sans 3',sans-serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); align-self:center; text-align:center; padding:8px; }
+
+  /* Key terms summary */
+  .key-summary { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); margin-bottom:28px; }
+  .ks-cell { background:var(--bg); padding:16px 16px; }
+  .ks-cell .kl { font-family:'Source Sans 3',sans-serif; font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+  .ks-cell .kv { font-family:'Source Sans 3',sans-serif; font-size:15px; font-weight:700; color:var(--gold-dark); }
+
+  /* Sections */
+  .section { margin-bottom:22px; }
+  .sec-num { font-family:'Source Sans 3',sans-serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--gold-dark); font-weight:700; margin-bottom:3px; }
+  .sec-title { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:600; color:var(--navy); border-bottom:1px solid var(--border); padding-bottom:7px; margin-bottom:12px; }
+  .sec-body { font-size:13.5px; line-height:1.85; color:#333; text-align:justify; }
+  .sec-body p { margin-bottom:10px; }
+  .clause { font-size:13px; line-height:1.8; color:#333; padding:8px 16px; border-left:2px solid var(--border); margin:8px 0; background:var(--subtle); }
+  .clause strong { color:var(--navy); }
+
+  /* Distribution table */
+  .dist-table { width:100%; border-collapse:collapse; margin:14px 0; }
+  .dist-table thead tr { background:var(--navy); }
+  .dist-table thead th { padding:9px 14px; text-align:left; font-family:'Source Sans 3',sans-serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.6); font-weight:600; }
+  .dist-table tbody tr { border-bottom:1px solid var(--border); }
+  .dist-table tbody tr:nth-child(even) { background:var(--subtle); }
+  .dist-table tbody td { padding:11px 14px; font-size:13px; }
+
+  /* Notice box */
+  .notice { border:1px solid var(--gold); background:var(--gold-pale); padding:14px 18px; margin:20px 0; font-family:'Source Sans 3',sans-serif; font-size:11px; color:#5a4500; line-height:1.6; }
+  .notice strong { color:var(--gold-dark); }
+
+  /* Signature block */
+  .sig-area { border-top:1px solid var(--border); padding-top:28px; margin-top:28px; }
+  .sig-date { font-family:'Source Sans 3',sans-serif; font-size:12px; color:var(--muted); margin-bottom:28px; }
+  .sig-date strong { color:var(--text); }
+  .sig-grid { display:grid; grid-template-columns:1fr 1fr; gap:48px; }
+  .sig-col .sig-line { border-bottom:1px solid var(--text); height:52px; margin-bottom:7px; }
+  .sig-col .sig-name { font-size:15px; font-weight:500; }
+  .sig-col .sig-role { font-family:'Source Sans 3',sans-serif; font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+  .sig-col .sig-d { font-family:'Source Sans 3',sans-serif; font-size:11px; color:var(--muted); margin-top:5px; }
+
+  .footer { border-top:4px solid var(--gold); padding:13px 50px; display:flex; justify-content:space-between; background:var(--subtle); font-family:'Source Sans 3',sans-serif; font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  @media print { body { background:white; padding:0; } .document { box-shadow:none; } }
+</style>
+</head>
+<body>
+<div class="document">
+  <div class="doc-hdr">
+    <div><div class="logo">QUBIX</div><div class="logo-div">Real Estate Division</div></div>
+    <div class="hdr-r">
+      <div class="hl">Agreement Reference</div><div class="hv">{{ agreement_reference }}</div>
+      <div class="hl" style="margin-top:8px;">Effective Date</div><div class="hv">{{ effective_date }}</div>
+    </div>
+  </div>
+  <div class="accent"></div>
+
+  <div class="body-pad">
+    <!-- Title -->
+    <div class="agreement-title">
+      <div class="at-eyebrow">Qubix Real Estate — Legal Document</div>
+      <div class="at-main">Operating Agreement</div>
+      <div class="at-sub">Fractional Real Estate Investment — Terms, Rights &amp; Obligations</div>
+    </div>
+
+    <!-- Parties -->
+    <div class="parties">
+      <div class="party-card">
+        <div class="party-role">Managing Member / Operator</div>
+        <div class="party-name">Qubix Real Estate Ltd.</div>
+        <div class="party-detail">Registered Investment Manager</div>
+        <div class="party-detail">Reg. No: {{ qubix_reg_number }}</div>
+      </div>
+      <div class="and-lbl">AND</div>
+      <div class="party-card">
+        <div class="party-role">Investor Member</div>
+        <div class="party-name">{{ investor_name }}</div>
+        <div class="party-detail">Registered Qubix Investor</div>
+        <div class="party-detail">Account: {{ investor_account }}</div>
+      </div>
+    </div>
+
+    <!-- Key terms -->
+    <div class="key-summary">
+      <div class="ks-cell"><div class="kl">Property</div><div class="kv">{{ property_name }}</div></div>
+      <div class="ks-cell"><div class="kl">Mgmt Fee</div><div class="kv">{{ management_fee_rate }}</div></div>
+      <div class="ks-cell"><div class="kl">Distribution Frequency</div><div class="kv">{{ distribution_frequency }}</div></div>
+    </div>
+
+    <!-- Sections -->
+    <div class="section">
+      <div class="sec-num">Article 1</div>
+      <div class="sec-title">Formation, Purpose &amp; Property</div>
+      <div class="sec-body">
+        <p>This Operating Agreement ("Agreement") governs the fractional ownership and co-investment arrangement
+        in the real property known as <strong>{{ property_name }}</strong>, located at <strong>{{ property_location }}</strong>
+        ("the Property"). Qubix Real Estate Ltd. ("the Manager") serves as the managing member responsible for
+        all operational, financial, and administrative functions related to the Property.</p>
+        <p>The purpose of this arrangement is to facilitate fractional real estate investment, providing Members
+        with proportional economic interests including rental income distributions and capital appreciation upon
+        the eventual sale of the Property.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-num">Article 2</div>
+      <div class="sec-title">Management Rights &amp; Responsibilities</div>
+      <div class="sec-body">
+        <div class="clause">The Manager has sole authority over property management decisions including tenant selection, lease terms, maintenance, and capital improvements. Investor Members are passive investors with no day-to-day management rights.</div>
+        <div class="clause">The Manager shall maintain proper books of account and provide quarterly financial reports to all Members. Annual audited financial statements shall be provided within 90 days of each fiscal year end.</div>
+        <div class="clause">The Manager may engage third-party property managers, accountants, legal counsel, and other service providers as deemed necessary, the costs of which are property operating expenses.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-num">Article 3</div>
+      <div class="sec-title">Distribution Policy</div>
+      <div class="sec-body">
+        <p>Net rental income shall be distributed to Members on a <strong>{{ distribution_frequency }}</strong> basis,
+        in proportion to each Member's ownership percentage. Distributions are calculated as follows:</p>
+        <table class="dist-table">
+          <thead><tr><th>Item</th><th>Description</th><th>Treatment</th></tr></thead>
+          <tbody>
+            <tr><td>Gross Rental Income</td><td>Collected rent from tenants</td><td>100% allocated to Members</td></tr>
+            <tr><td>Management Fee</td><td>Property &amp; fund management</td><td>{{ management_fee_rate }} of gross rent</td></tr>
+            <tr><td>Operating Expenses</td><td>Insurance, repairs, utilities</td><td>Deducted before distribution</td></tr>
+            <tr><td>Reserve Fund</td><td>Capital expenditure reserve</td><td>{{ reserve_rate }} of gross rent</td></tr>
+            <tr><td>Net Distribution</td><td>Paid to Members pro-rata</td><td>Per ownership percentage</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-num">Article 4</div>
+      <div class="sec-title">Voting Rights</div>
+      <div class="sec-body">
+        <div class="clause"><strong>Major Decisions</strong> — Sale of the Property, refinancing, or capital calls exceeding {{ major_decision_threshold }} require approval of Members holding &gt;50% of shares.</div>
+        <div class="clause"><strong>Routine Operations</strong> — All day-to-day management decisions are at the sole discretion of the Manager and do not require Member approval.</div>
+        <div class="clause">Each share carries one vote. Votes may be cast electronically via the Qubix investor portal within 14 days of any notice of major decision.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-num">Article 5</div>
+      <div class="sec-title">Transfer Restrictions &amp; Exit Provisions</div>
+      <div class="sec-body">
+        <div class="clause"><strong>Lock-up Period:</strong> Shares may not be transferred or sold during the initial lock-up period of <strong>{{ lockup_period }}</strong> from the date of acquisition.</div>
+        <div class="clause"><strong>Secondary Market:</strong> After the lock-up period, Members may list shares for sale on the Qubix secondary marketplace, subject to platform terms and a transfer fee of {{ transfer_fee }}.</div>
+        <div class="clause"><strong>Property Sale:</strong> Upon sale of the Property, net proceeds shall be distributed to Members in proportion to ownership percentages after repayment of any debt and payment of sale costs.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-num">Article 6</div>
+      <div class="sec-title">Fees Disclosure</div>
+      <div class="sec-body">
+        <div class="clause"><strong>Platform Fee:</strong> A one-time platform fee is charged on initial share purchase (disclosed at point of sale).</div>
+        <div class="clause"><strong>Management Fee:</strong> {{ management_fee_rate }} of gross rental income, charged monthly.</div>
+        <div class="clause"><strong>Performance Fee:</strong> {{ performance_fee }} of capital gain upon sale of the Property, above a hurdle rate of {{ hurdle_rate }}.</div>
+        <div class="clause"><strong>Transfer Fee:</strong> {{ transfer_fee }} per secondary market transaction.</div>
+      </div>
+    </div>
+
+    <div class="notice">
+      <strong>Important Notice:</strong> This Agreement is a binding legal document. By investing through the
+      Qubix platform, the Investor Member acknowledges having read and accepted all terms herein. This Agreement
+      is governed by the laws of the applicable jurisdiction. Disputes shall be resolved through binding arbitration.
+    </div>
+
+    <!-- Signatures -->
+    <div class="sig-area">
+      <div class="sig-date">This Agreement is effective as of <strong>{{ effective_date }}</strong>.</div>
+      <div class="sig-grid">
+        <div class="sig-col">
+          <div class="sig-line"></div>
+          <div class="sig-name">Authorised Signatory</div>
+          <div class="sig-role">Qubix Real Estate Ltd. — Managing Member</div>
+          <div class="sig-d">Date: {{ effective_date }}</div>
+        </div>
+        <div class="sig-col">
+          <div class="sig-line"></div>
+          <div class="sig-name">{{ investor_name }}</div>
+          <div class="sig-role">Investor Member</div>
+          <div class="sig-d">Date: ____________________</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Qubix Real Estate — All rights reserved</span>
+    <span>Generated: {% now "d M Y, H:i" %} UTC · Page 1 of 1</span>
+  </div>
+</div>
+</body>
+</html>

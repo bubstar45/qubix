@@ -1,0 +1,633 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Crypto Payment | Qubix{% endblock %}
+
+{% block body_class %}shop-page{% endblock %}
+
+{% block extra_css %}
+<style>
+.main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 28px;
+}
+
+.crypto-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  text-align: center;
+}
+.crypto-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.crypto-sub {
+  font-size: 13px;
+  color: var(--muted2);
+  margin-bottom: 32px;
+}
+.amount-box {
+  background: var(--surface3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.amount-label {
+  font-size: 12px;
+  color: var(--muted2);
+  margin-bottom: 8px;
+}
+.amount-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+}
+.amount-currency {
+  font-size: 16px;
+  color: var(--muted2);
+}
+.qr-code {
+  background: white;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 24px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.qr-code img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.wallet-address {
+  background: var(--surface3);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+  word-break: break-all;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted2);
+  cursor: pointer;
+}
+.copy-btn {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 24px;
+  width: 100%;
+}
+.copy-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.timer {
+  background: rgba(240,185,11,0.1);
+  border: 1px solid rgba(240,185,11,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.timer i { color: var(--gold); }
+.timer span { color: var(--gold); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.confirm-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--green);
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+.confirm-btn:hover {
+  background: #12e690;
+  box-shadow: 0 0 20px rgba(14,203,129,0.3);
+}
+.cancel-btn {
+  width: 100%;
+  padding: 12px;
+  background: none;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  color: var(--muted2);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cancel-btn:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+.note {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 16px;
+  text-align: center;
+  line-height: 1.5;
+}
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Copy Tooltip */
+.copy-tooltip {
+  position: fixed;
+  background: var(--green);
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-weight: 500;
+  z-index: 1000;
+  animation: fadeOut 1.5s ease forwards;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; transform: translateY(0); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-8px); visibility: hidden; }
+}
+
+/* Toast Notification */
+.toast-notification {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--surface2);
+  border-left: 4px solid var(--green);
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-width: 320px;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  z-index: 1000;
+  animation: slideInRight 0.3s ease forwards;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.toast-notification.hide {
+  animation: slideOutRight 0.3s ease forwards;
+}
+
+.toast-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(14,203,129,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.toast-message {
+  font-size: 12px;
+  color: var(--muted2);
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.toast-close:hover {
+  color: var(--text);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+}
+
+/* Modals */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+
+.modal-content {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.modal-icon { font-size: 48px; margin-bottom: 16px; }
+.modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.modal-message { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+.modal-buttons { display: flex; gap: 12px; }
+.modal-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.modal-btn.confirm { background: var(--green); color: white; }
+.modal-btn.confirm:hover { background: #1ea34d; }
+.modal-btn.cancel {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.modal-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="crypto-card">
+    <div class="crypto-title">Crypto Payment</div>
+    <div class="crypto-sub">Complete your purchase by sending the exact amount</div>
+    
+    <div class="amount-box">
+      <div class="amount-label">AMOUNT TO SEND</div>
+      <div class="amount-value">{{ crypto_amount|floatformat:8 }} <span class="amount-currency">{{ crypto_currency }}</span></div>
+      <div class="amount-label" style="margin-top: 8px;">≈ ${{ total|floatformat:2 }} USD</div>
+    </div>
+    
+    <div class="qr-code">
+      {% if wallet_address %}
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ wallet_address|urlencode }}" alt="QR Code">
+      {% else %}
+        <div class="qr-placeholder"></div>
+      {% endif %}
+    </div>
+    
+    <div class="wallet-address" id="walletAddress" onclick="copyAddress(event)">{{ wallet_address }}</div>
+    
+    <button class="copy-btn" onclick="copyAddressButton(event)">
+      <i class="fas fa-copy"></i> Copy Address
+    </button>
+    
+    <div class="timer">
+      <i class="fas fa-clock"></i>
+      <span>Payment window expires in <span id="timer">14:59</span></span>
+    </div>
+    
+    <button class="confirm-btn" id="confirmBtn">
+      <i class="fas fa-check-circle"></i> I've Sent the Payment
+    </button>
+    
+    <button class="cancel-btn" id="cancelBtn">
+      <i class="fas fa-times"></i> Cancel
+    </button>
+    
+    <div class="note">
+      <i class="fas fa-info-circle"></i> Send exactly the amount shown above. Any deviation may cause delays.<br>
+      Payment will be confirmed automatically within 10-30 minutes after network confirmation.
+    </div>
+  </div>
+</div>
+
+<!-- Payment Confirm Modal -->
+<div class="modal-overlay" id="paymentConfirmModal">
+  <div class="modal-content">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">Confirm Payment</div>
+    <div class="modal-message">
+      Please confirm you have sent the exact amount to the wallet address shown.<br><br>
+      <strong>Only click confirm after sending the payment.</strong><br><br>
+      This action cannot be undone.
+    </div>
+    <div class="modal-buttons">
+      <button class="modal-btn cancel" id="paymentModalCancelBtn">Cancel</button>
+      <button class="modal-btn confirm" id="paymentModalConfirmBtn">Confirm Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Confirm Modal -->
+<div class="modal-overlay" id="cancelConfirmModal">
+  <div class="modal-content">
+    <div class="modal-icon">❓</div>
+    <div class="modal-title">Cancel Transaction</div>
+    <div class="modal-message">
+      Are you sure you want to cancel this payment?<br><br>
+      This action cannot be undone. You will be redirected back to the shop.
+    </div>
+    <div class="modal-buttons">
+      <button class="modal-btn cancel" id="cancelModalNoBtn">No, Go Back</button>
+      <button class="modal-btn confirm" id="cancelModalYesBtn">Yes, Cancel</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+'use strict';
+
+// ============= CSRF TOKEN - USE FUNCTION TO AVOID CONFLICT =============
+function getCsrfToken() {
+    const name = 'csrftoken';
+    const value = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return value ? value.pop() : '';
+}
+
+let timerSeconds = 899; // 15 minutes
+let timerInterval = null;
+let isProcessing = false;
+
+// ============= TOAST NOTIFICATION =============
+function showToast(message, type = 'success') {
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) existingToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    
+    const icon = type === 'success' ? '✓' : (type === 'error' ? '✕' : 'ℹ');
+    const iconColor = type === 'success' ? 'var(--green)' : (type === 'error' ? 'var(--red)' : 'var(--gold)');
+    const title = type === 'success' ? 'Payment Received!' : (type === 'error' ? 'Error' : 'Notice');
+    
+    toast.innerHTML = `
+        <div class="toast-icon" style="background: rgba(14,203,129,0.15); color: ${iconColor};">${icon}</div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.closest('.toast-notification').remove()">✕</button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.classList.add('hide');
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 5000);
+}
+
+// ============= TOOLTIP =============
+function showTooltip(event, message) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'copy-tooltip';
+    tooltip.textContent = message;
+    
+    const rect = event.target.getBoundingClientRect();
+    tooltip.style.position = 'fixed';
+    tooltip.style.left = rect.right + 10 + 'px';
+    tooltip.style.top = rect.top + (rect.height / 2) - 10 + 'px';
+    
+    document.body.appendChild(tooltip);
+    
+    setTimeout(() => {
+        tooltip.remove();
+    }, 1500);
+}
+
+// ============= COPY FUNCTIONS =============
+window.copyAddress = function(event) {
+    const text = document.getElementById('walletAddress').textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+        showTooltip(event, 'Copied!');
+    });
+};
+
+window.copyAddressButton = function(event) {
+    event.stopPropagation();
+    const text = document.getElementById('walletAddress').textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+        showTooltip(event, 'Copied!');
+    });
+};
+
+// ============= MODAL FUNCTIONS =============
+window.openModal = function(id) { 
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.add('active'); 
+};
+
+window.closeModal = function(id) { 
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('active'); 
+};
+
+// ============= START TIMER =============
+function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timerSeconds--;
+        if (timerSeconds <= 0) {
+            clearInterval(timerInterval);
+            const timerEl = document.getElementById('timer');
+            if (timerEl) timerEl.textContent = '00:00';
+            showToast('Payment session expired. Please try again.', 'error');
+            setTimeout(() => {
+                window.location.href = '/physical/';
+            }, 2000);
+        } else {
+            const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const s = (timerSeconds % 60).toString().padStart(2, '0');
+            const timerEl = document.getElementById('timer');
+            if (timerEl) timerEl.textContent = `${m}:${s}`;
+        }
+    }, 1000);
+}
+
+// ============= SETUP EVENT LISTENERS =============
+function setupEventListeners() {
+    // Confirm button
+    const confirmBtn = document.getElementById('confirmBtn');
+    if (confirmBtn) {
+        confirmBtn.onclick = () => window.openModal('paymentConfirmModal');
+    }
+    
+    // Payment modal cancel
+    const paymentModalCancel = document.getElementById('paymentModalCancelBtn');
+    if (paymentModalCancel) {
+        paymentModalCancel.onclick = () => window.closeModal('paymentConfirmModal');
+    }
+    
+    // Payment modal confirm
+    const paymentModalConfirm = document.getElementById('paymentModalConfirmBtn');
+    if (paymentModalConfirm) {
+        paymentModalConfirm.onclick = async () => {
+            if (isProcessing) return;
+            
+            window.closeModal('paymentConfirmModal');
+            isProcessing = true;
+            const confirmBtn = document.getElementById('confirmBtn');
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '<span class="loading"></span> Processing...';
+            confirmBtn.disabled = true;
+            
+            try {
+                {% if transaction_id %}
+                const transactionId = {{ transaction_id }};
+                {% else %}
+                const transactionId = null;
+                {% endif %}
+                
+                const csrfToken = getCsrfToken();
+                
+                const response = await fetch('/physical/api/confirm-payment/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ transaction_id: transactionId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Your payment has been received and is being reviewed by our team. You will receive a confirmation email once approved.', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/physical/';
+                    }, 2000);
+                } else {
+                    showToast(data.error || 'Payment confirmation failed. Please contact support.', 'error');
+                    confirmBtn.innerHTML = originalText;
+                    confirmBtn.disabled = false;
+                    isProcessing = false;
+                }
+            } catch (err) {
+                console.error('Confirmation error:', err);
+                showToast('Network error. Please check your connection and try again.', 'error');
+                confirmBtn.innerHTML = originalText;
+                confirmBtn.disabled = false;
+                isProcessing = false;
+            }
+        };
+    }
+    
+    // Cancel button
+    const cancelBtn = document.getElementById('cancelBtn');
+    if (cancelBtn) {
+        cancelBtn.onclick = () => window.openModal('cancelConfirmModal');
+    }
+    
+    // Cancel modal - No button
+    const cancelModalNo = document.getElementById('cancelModalNoBtn');
+    if (cancelModalNo) {
+        cancelModalNo.onclick = () => window.closeModal('cancelConfirmModal');
+    }
+    
+    // Cancel modal - Yes button
+    const cancelModalYes = document.getElementById('cancelModalYesBtn');
+    if (cancelModalYes) {
+        cancelModalYes.onclick = () => {
+            window.closeModal('cancelConfirmModal');
+            showToast('Payment cancelled. Returning to shop...', 'info');
+            setTimeout(() => {
+                window.location.href = '/physical/';
+            }, 1500);
+        };
+    }
+    
+    // Close modals when clicking outside
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.onclick = (e) => {
+            if (e.target === modal) window.closeModal(modal.id);
+        };
+    });
+}
+
+// ============= INITIALIZATION =============
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Payment page loaded');
+    startTimer();
+    setupEventListeners();
+});
+</script>
+{% endblock %}

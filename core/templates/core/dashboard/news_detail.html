@@ -1,0 +1,557 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ news.title }} | Qubix News{% endblock %}
+{% block body_class %}news-page{% endblock %}
+
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+/* ── Base ── */
+.nd-wrap {
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  animation: nd-fade 0.4s ease;
+  overflow-x: hidden;
+}
+@keyframes nd-fade {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Back link ── */
+.nd-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted2);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 28px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.nd-back:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(61,126,255,0.05);
+}
+
+/* ── Article header ── */
+.nd-header {
+  margin-bottom: 24px;
+}
+
+.nd-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.nd-category.stock      { background: rgba(46,125,50,0.12); color: #2e7d32; }
+.nd-category.mineral    { background: rgba(184,134,11,0.12); color: #b8860b; }
+.nd-category.realestate { background: rgba(139,105,20,0.12); color: #8b6914; }
+.nd-category.other      { background: rgba(168,85,247,0.12); color: #c084fc; }
+
+.nd-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  margin-bottom: 16px;
+  word-wrap: break-word;
+}
+
+.nd-meta {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+.nd-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted2);
+}
+.nd-meta-item i {
+  font-size: 11px;
+  color: var(--muted);
+}
+.nd-meta-item strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ── Hero Image ── */
+.nd-hero {
+  margin-bottom: 32px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+}
+.nd-hero-image {
+  width: 100%;
+  height: auto;
+  max-height: 480px;
+  object-fit: cover;
+  display: block;
+}
+.nd-hero-caption {
+  padding: 12px 20px;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  font-style: italic;
+}
+
+/* Fallback when no image */
+.nd-hero-placeholder {
+  height: 240px;
+  background: linear-gradient(135deg, var(--surface2), var(--surface3));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--muted2);
+}
+.nd-hero-placeholder i {
+  font-size: 48px;
+  opacity: 0.3;
+}
+
+/* ── Content ── */
+.nd-content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.nd-summary {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text);
+  font-weight: 450;
+  padding: 20px 24px;
+  background: var(--surface2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 12px 12px 0;
+}
+
+.nd-body {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--muted2);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+.nd-body p {
+  margin-bottom: 20px;
+}
+.nd-body p:last-child {
+  margin-bottom: 0;
+}
+.nd-body h2, .nd-body h3 {
+  color: var(--text);
+  margin: 28px 0 12px;
+  font-weight: 600;
+}
+.nd-body blockquote {
+  border-left: 3px solid var(--gold);
+  padding: 12px 0 12px 20px;
+  margin: 20px 0;
+  font-style: italic;
+  color: var(--muted2);
+  background: var(--surface2);
+  border-radius: 0 8px 8px 0;
+}
+.nd-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+/* ── Asset Card ── */
+.nd-asset-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.nd-asset-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.nd-asset-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(61,126,255,0.1);
+  border: 1px solid rgba(61,126,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.nd-asset-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nd-asset-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.nd-asset-price {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+.nd-asset-price .current {
+  font-weight: 700;
+  color: var(--text);
+  font-family: monospace;
+}
+.nd-asset-price .up   { color: var(--green); font-weight: 600; }
+.nd-asset-price .down { color: var(--red); font-weight: 600; }
+.nd-asset-btn {
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.nd-asset-btn:hover {
+  background: var(--accent2);
+  transform: translateY(-1px);
+}
+
+/* ── Related News ── */
+.nd-related {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.nd-related-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.nd-related-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+.nd-related-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.nd-related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.nd-related-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nd-related-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.nd-related-badge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.nd-related-badge.stock      { background: rgba(46,125,50,0.12); color: #2e7d32; }
+.nd-related-badge.mineral    { background: rgba(184,134,11,0.12); color: #b8860b; }
+.nd-related-badge.realestate { background: rgba(139,105,20,0.12); color: #8b6914; }
+.nd-related-badge.other      { background: rgba(168,85,247,0.12); color: #c084fc; }
+.nd-related-title-sm {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.nd-related-date {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ── Share section ── */
+.nd-share {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.nd-share-label {
+  font-size: 11px;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.nd-share-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.nd-share-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.nd-share-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .nd-wrap { padding: 0 16px; }
+  .nd-title { font-size: 28px; }
+  .nd-summary { font-size: 15px; padding: 16px; }
+  .nd-body { font-size: 14px; }
+  .nd-meta { gap: 14px; }
+  .nd-related-grid { grid-template-columns: 1fr; }
+  .nd-asset-card { flex-direction: column; align-items: flex-start; }
+  .nd-asset-btn { width: 100%; text-align: center; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+<div class="nd-wrap">
+
+  <!-- Back button -->
+  <a href="{% url 'market_news' %}" class="nd-back">
+    <i class="fas fa-arrow-left"></i> Back to News
+  </a>
+
+  <!-- Article Header -->
+  <div class="nd-header">
+    <div class="nd-category {{ news.category }}">
+      <i class="fas fa-tag"></i> {{ news.get_category_display|default:news.category|upper }}
+    </div>
+    <h1 class="nd-title">{{ news.title }}</h1>
+    <div class="nd-meta">
+      <div class="nd-meta-item">
+        <i class="far fa-calendar-alt"></i>
+        <span>{{ news.published_at|date:"F d, Y" }}</span>
+      </div>
+      <div class="nd-meta-item">
+        <i class="far fa-clock"></i>
+        <span>{{ news.published_at|timesince }} ago</span>
+      </div>
+      <div class="nd-meta-item">
+        <i class="fas fa-newspaper"></i>
+        <strong>{{ news.source|default:"Qubix News" }}</strong>
+      </div>
+      <div class="nd-meta-item">
+        <i class="fas fa-chart-line"></i>
+        <span>{{ news.views|default:"0" }} reads</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero Image -->
+  <div class="nd-hero">
+    {% if news.image %}
+      <img class="nd-hero-image" src="{{ news.image.url }}" alt="{{ news.title }}">
+      <div class="nd-hero-caption">
+        <i class="fas fa-camera"></i> {{ news.title }} | Qubix Market Intelligence
+      </div>
+    {% else %}
+      <div class="nd-hero-placeholder">
+        <i class="fas fa-newspaper"></i>
+        <span>Market News</span>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Content Area -->
+  <div class="nd-content">
+    
+    <!-- Summary -->
+    <div class="nd-summary">
+      {{ news.summary }}
+    </div>
+
+    <!-- Main body -->
+    <div class="nd-body">
+      {{ news.content|linebreaks }}
+    </div>
+
+  </div>
+
+  <!-- Asset Card -->
+  {% if news.asset %}
+  <div class="nd-asset-card">
+    <div class="nd-asset-info">
+      <div class="nd-asset-icon">
+        {% if news.asset.category == 'mineral' %}⛏️{% elif news.asset.category == 'stock' %}📈{% else %}💎{% endif %}
+      </div>
+      <div class="nd-asset-details">
+        <div class="nd-asset-name">
+          {{ news.asset.name }} <span style="color:var(--muted2);font-weight:400;">({{ news.asset.symbol }})</span>
+        </div>
+        <div class="nd-asset-price">
+          <span class="current">${{ news.asset.current_price|floatformat:2 }}</span>
+          {% if news.asset.price_change_24h >= 0 %}
+            <span class="up">▲ {{ news.asset.price_change_24h|floatformat:2 }}%</span>
+          {% else %}
+            <span class="down">▼ {{ news.asset.price_change_24h|floatformat:2 }}%</span>
+          {% endif %}
+          <span>24h change</span>
+        </div>
+      </div>
+    </div>
+    <a href="{% url 'asset_detail' news.asset.id %}" class="nd-asset-btn">
+      View Asset <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Share Section -->
+  <div class="nd-share">
+    <span class="nd-share-label">
+      <i class="fas fa-share-alt"></i> Share this article
+    </span>
+    <div class="nd-share-buttons">
+      <button class="nd-share-btn" onclick="shareArticle('twitter')">
+        <i class="fab fa-twitter"></i>
+      </button>
+      <button class="nd-share-btn" onclick="shareArticle('linkedin')">
+        <i class="fab fa-linkedin-in"></i>
+      </button>
+      <button class="nd-share-btn" onclick="shareArticle('facebook')">
+        <i class="fab fa-facebook-f"></i>
+      </button>
+      <button class="nd-share-btn" onclick="copyArticleLink()">
+        <i class="fas fa-link"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Related News -->
+  {% if related_news %}
+  <div class="nd-related">
+    <div class="nd-related-header">
+      <h3 class="nd-related-title">More from Qubix</h3>
+      <div class="nd-related-line"></div>
+    </div>
+    <div class="nd-related-grid">
+      {% for item in related_news %}
+      <div class="nd-related-card" onclick="location.href='{% url 'news_detail' item.id %}'">
+        <span class="nd-related-badge {{ item.category }}">{{ item.get_category_display|default:item.category|upper }}</span>
+        <div class="nd-related-title-sm">{{ item.title|truncatechars:70 }}</div>
+        <div class="nd-related-date">{{ item.published_at|date:"M d, Y" }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Smooth scroll to top
+window.scrollTo({ top: 0, behavior: 'smooth' });
+
+// Share functions
+function shareArticle(platform) {
+  const url = encodeURIComponent(window.location.href);
+  const title = encodeURIComponent(document.querySelector('.nd-title').innerText);
+  
+  const shareUrls = {
+    twitter: `https://twitter.com/intent/tweet?text=${title}&url=${url}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`
+  };
+  
+  if (shareUrls[platform]) {
+    window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+  }
+}
+
+function copyArticleLink() {
+  navigator.clipboard.writeText(window.location.href);
+  alert('Link copied to clipboard!');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'core/emails/base_email.html' %}
+
+{% block header_title %}
+<h1 style="color: #D4AF37; margin: 20px 0 0; font-size: 28px; font-weight: 700;">Withdrawal Approved</h1>
+<p style="color: #94a3b8; margin: 8px 0 0;">Your funds are on the way</p>
+{% endblock %}
+
+{% block content %}
+<p class="greeting">Dear {{ user_name }},</p>
+<p class="greeting-light">Great news! Your withdrawal request has been approved and is being processed.</p>
+
+<div class="info-box success">
+    <strong>✓ Withdrawal Approved</strong><br>
+    Status: <span style="color: #10b981;">Approved</span> • Processed Date: {{ date }}
+</div>
+
+<table class="transaction-table">
+    <tr>
+        <td>Request ID</td>
+        <td>#{{ request_id }}</td>
+    </tr>
+    <tr>
+        <td>Amount Withdrawn</td>
+        <td><strong>{{ amount }}</strong></td>
+    </tr>
+    <tr>
+        <td>Crypto Currency</td>
+        <td>{{ crypto_symbol }}</td>
+    </tr>
+    <tr>
+        <td>Crypto Amount Sent</td>
+        <td>{{ crypto_amount }}</td>
+    </tr>
+    <tr>
+        <td>Wallet Address</td>
+        <td><span style="font-family: monospace; font-size: 12px;">{{ wallet_address }}</span></td>
+    </tr>
+    <tr>
+        <td>Fee ({{ fee_percentage }}%)</td>
+        <td><span style="color: #10b981;">✓ Already Paid</span></td>
+    </tr>
+    <tr>
+        <td style="border-bottom: 2px solid #e2e8f0;"><strong>Total Amount Sent</strong></td>
+        <td style="border-bottom: 2px solid #e2e8f0;">
+            <strong class="amount-positive">{{ crypto_amount }} {{ crypto_symbol }}</strong>
+            <br><span style="font-size: 11px; color: #64748b;">(Full amount - fee already paid at time of request)</span>
+        </td>
+    </tr>
+</table>
+
+<div style="text-align: center;">
+    <a href="{{ support_url }}" class="btn">View Withdrawal History →</a>
+</div>
+
+<div class="divider"></div>
+
+<div style="background: #f8fafc; border-radius: 12px; padding: 20px;">
+    <div style="font-weight: 700; margin-bottom: 8px;">Important Information</div>
+    <p style="font-size: 13px; color: #475569; margin: 0;">
+        Funds have been sent to your wallet. Please allow additional time for blockchain confirmations.<br>
+        <br>
+        <strong>Note:</strong> The 5% processing fee was paid at the time of your withdrawal request.
+    </p>
+</div>
+
+<p style="margin-top: 24px;">
+    Questions about this withdrawal?<br>
+    <a href="{{ support_url }}" style="color: #3b82f6;">Contact Support</a>
+</p>
+
+<p style="margin-top: 24px;">
+    Thank you for investing with Qubix.
+</p>
+{% endblock %}

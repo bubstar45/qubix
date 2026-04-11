@@ -1,0 +1,496 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Invoice — Qubix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+  :root {
+    --gold: #f0b90b;
+    --gold-light: #fdf3d0;
+    --gold-dark: #c9960a;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --bg: #ffffff;
+    --subtle: #f9fafb;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: #dfe3e8;
+    color: var(--text);
+    padding: 40px 20px;
+  }
+
+  .document-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--bg);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.07), 0 20px 40px rgba(0,0,0,0.1);
+    position: relative;
+  }
+
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    font-family: 'Playfair Display', serif;
+    font-size: 90px;
+    font-weight: 700;
+    color: rgba(240,185,11,0.045);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+    letter-spacing: 8px;
+  }
+
+  /* Invoice header */
+  .invoice-header {
+    padding: 40px 50px 30px;
+    border-bottom: 3px solid var(--text);
+    position: relative;
+    z-index: 2;
+  }
+  .invoice-header::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+  }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--text);
+  }
+  .logo-text span { color: var(--gold); }
+  .logo-sub {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .invoice-badge {
+    text-align: right;
+  }
+  .invoice-badge .invoice-word {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: 2px;
+    opacity: 0.15;
+  }
+  .invoice-badge .invoice-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gold-dark);
+    margin-top: -5px;
+  }
+
+  /* Billing info row */
+  .billing-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+  }
+  .billing-block .b-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .billing-block .b-value {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .billing-block .b-value strong {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .document-inner {
+    padding: 35px 50px 40px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  /* Line items table */
+  .items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+  }
+  .items-table thead tr {
+    background: var(--text);
+  }
+  .items-table thead th {
+    padding: 11px 16px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+    font-weight: 500;
+    text-align: left;
+  }
+  .items-table thead th:last-child,
+  .items-table thead th:nth-child(3),
+  .items-table thead th:nth-child(4) { text-align: right; }
+
+  .items-table tbody tr { border-bottom: 1px solid var(--border); }
+  .items-table tbody tr:last-child { border-bottom: none; }
+  .items-table tbody tr:nth-child(even) td { background: var(--subtle); }
+  .items-table tbody td {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .items-table tbody td.right { text-align: right; }
+  .items-table tbody td.mono { font-family: 'IBM Plex Mono', monospace; }
+  .items-table tbody td.gold { color: var(--gold-dark); font-weight: 600; }
+
+  .item-name { font-weight: 500; }
+  .item-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Totals section */
+  .totals-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0;
+    border-top: 1px solid var(--border);
+  }
+  .totals-table {
+    min-width: 320px;
+  }
+  .totals-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .totals-row:last-child { border-bottom: none; }
+  .totals-row .t-label { color: var(--muted); }
+  .totals-row .t-value { font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+  .totals-row.grand-total {
+    background: var(--text);
+    color: #fff;
+  }
+  .totals-row.grand-total .t-label { color: rgba(255,255,255,0.8); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+  .totals-row.grand-total .t-value { color: var(--gold); font-size: 18px; }
+
+  /* Payment info */
+  .payment-section {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .payment-block {
+    background: var(--subtle);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+  }
+  .payment-block .pb-title {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .payment-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 7px;
+    line-height: 1.4;
+  }
+  .payment-row .pr-label { color: var(--muted); }
+  .payment-row .pr-value {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text);
+    font-size: 11px;
+    word-break: break-all;
+    text-align: right;
+    max-width: 200px;
+  }
+  .payment-row .pr-value.gold { color: var(--gold-dark); font-weight: 600; }
+
+  /* Paid stamp */
+  .paid-stamp {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 25px 0 10px;
+  }
+  .stamp-inner {
+    border: 4px solid var(--green, #0d6b3b);
+    border: 4px solid #0d6b3b;
+    padding: 12px 30px;
+    transform: rotate(-4deg);
+    opacity: 0.7;
+  }
+  .stamp-inner .stamp-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: #0d6b3b;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+  }
+
+  /* Footer */
+  .doc-footer {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .footer-left { font-size: 9px; color: var(--muted); line-height: 1.8; }
+  .footer-right { text-align: right; font-size: 9px; color: var(--muted); line-height: 1.8; }
+
+  .security-strip {
+    background: var(--text);
+    padding: 8px 50px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .security-strip span {
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .security-strip .sec-id {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--gold);
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .document-wrapper { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== PURCHASE INVOICE / RECEIPT ====== -->
+<div class="document-wrapper">
+
+  <div class="watermark">INVOICE</div>
+
+  <!-- Invoice Header -->
+  <div class="invoice-header">
+    <div class="header-top">
+      <div>
+        <div class="logo-text">Q<span>U</span>BIX</div>
+        <div class="logo-sub">Precious Metals Investment Platform</div>
+      </div>
+      <div class="invoice-badge">
+        <div class="invoice-word">INVOICE</div>
+        <div class="invoice-num">{{ invoice_number }}</div>
+      </div>
+    </div>
+
+    <!-- Billing info row: From / To / Invoice details -->
+    <div class="billing-row">
+      <div class="billing-block">
+        <div class="b-label">Issued By</div>
+        <div class="b-value">
+          <strong>Qubix Investments Ltd.</strong>
+          One Qubix Tower<br>
+          EC2V 7AB London, UK<br>
+          VAT No. GB123456789<br>
+          invoices@qubixinvestments.com
+        </div>
+      </div>
+      <div class="billing-block">
+        <div class="b-label">Billed To</div>
+        <div class="b-value">
+          <strong>{{ user_name }}</strong>
+          {{ user_email }}
+        </div>
+      </div>
+      <div class="billing-block">
+        <div class="b-label">Invoice Details</div>
+        <div class="b-value">
+          <strong>Invoice No: {{ invoice_number }}</strong>
+          Date: {{ invoice_date }}<br>
+          Order ID: {{ order_id }}<br>
+          Status: <span style="color:#0d6b3b;font-weight:600;">PAID</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="document-inner">
+
+    <!-- Line items -->
+    <div class="section-label">Items Purchased</div>
+
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th style="width:40%">Description</th>
+          <th style="width:15%">Qty</th>
+          <th style="width:20%;text-align:right">Unit Price</th>
+          <th style="width:25%;text-align:right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="item-name">{{ product_name }}</div>
+            <div class="item-desc">Physical precious metal — vault storage included</div>
+          </td>
+          <td class="mono">{{ quantity }}</td>
+          <td class="right mono">{{ unit_price }}</td>
+          <td class="right mono gold">{{ total_amount }}</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="item-name">Vault Storage (First Year)</div>
+            <div class="item-desc">Allocated segregated storage — includes insurance</div>
+          </td>
+          <td class="mono">1</td>
+          <td class="right mono">Included</td>
+          <td class="right mono" style="color:var(--muted)">—</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="item-name">Assay & Authentication</div>
+            <div class="item-desc">Independent verification of purity and weight</div>
+          </td>
+          <td class="mono">1</td>
+          <td class="right mono">Included</td>
+          <td class="right mono" style="color:var(--muted)">—</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="totals-section">
+      <div class="totals-table">
+        <div class="totals-row">
+          <span class="t-label">Subtotal</span>
+          <span class="t-value">{{ total_amount }}</span>
+        </div>
+        <div class="totals-row">
+          <span class="t-label">Platform Fee</span>
+          <span class="t-value">Included</span>
+        </div>
+        <div class="totals-row">
+          <span class="t-label">VAT (0% — Investment Gold)</span>
+          <span class="t-value">£0.00</span>
+        </div>
+        <div class="totals-row grand-total">
+          <span class="t-label">Total Paid</span>
+          <span class="t-value">{{ total_amount }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paid stamp -->
+    <div class="paid-stamp">
+      <div class="stamp-inner">
+        <div class="stamp-text">PAID</div>
+      </div>
+    </div>
+
+    <!-- Payment details -->
+    <div class="payment-section">
+      <div class="payment-block">
+        <div class="pb-title">Payment Method</div>
+        <div class="payment-row">
+          <span class="pr-label">Method</span>
+          <span class="pr-value gold">{{ payment_method }}</span>
+        </div>
+        <div class="payment-row">
+          <span class="pr-label">Transaction Hash</span>
+          <span class="pr-value">{{ transaction_hash }}</span>
+        </div>
+        <div class="payment-row">
+          <span class="pr-label">Invoice Date</span>
+          <span class="pr-value">{{ invoice_date }}</span>
+        </div>
+      </div>
+      <div class="payment-block">
+        <div class="pb-title">Order Reference</div>
+        <div class="payment-row">
+          <span class="pr-label">Order ID</span>
+          <span class="pr-value gold">{{ order_id }}</span>
+        </div>
+        <div class="payment-row">
+          <span class="pr-label">Invoice Number</span>
+          <span class="pr-value">{{ invoice_number }}</span>
+        </div>
+        <div class="payment-row">
+          <span class="pr-label">Customer</span>
+          <span class="pr-value">{{ user_name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="doc-footer">
+      <div class="footer-left">
+        <strong style="font-size:10px;letter-spacing:1px;">QUBIX INVESTMENTS LTD.</strong><br>
+        Registered in England & Wales No. 12345678 · FCA Ref. 987654<br>
+        VAT Registration No. GB123456789 · Investment gold is VAT exempt (HMRC Notice 701/21)
+      </div>
+      <div class="footer-right">
+        Invoice Date: {{ invoice_date }}<br>
+        Generated: {% now "d M Y" %} · Page 1 of 1
+      </div>
+    </div>
+
+  </div><!-- /document-inner -->
+
+  <div class="security-strip">
+    <span>Tax Invoice · Official Record</span>
+    <span class="sec-id">INV-{{ invoice_number }}</span>
+    <span>Qubix Investments Ltd. — All rights reserved</span>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,565 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate of Authenticity — Qubix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&family=Courier+Prime:wght@400;700&display=swap');
+
+  :root {
+    --gold: #f0b90b;
+    --gold-light: #fdf3d0;
+    --gold-dark: #c9960a;
+    --gold-deep: #9a7208;
+    --text: #1a1a2e;
+    --muted: #5a5a72;
+    --border: #d4c5a9;
+    --bg: #fffef8;
+    --cream: #faf6ea;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: #c8b89a;
+    color: var(--text);
+    padding: 40px 20px;
+  }
+
+  .document-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--bg);
+    position: relative;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.08),
+      0 2px 4px rgba(0,0,0,0.06),
+      0 8px 16px rgba(0,0,0,0.08),
+      0 20px 48px rgba(0,0,0,0.12);
+  }
+
+  /* Ornate outer border */
+  .ornate-border {
+    position: absolute;
+    inset: 14px;
+    border: 2px solid var(--gold);
+    pointer-events: none;
+    z-index: 10;
+  }
+  .ornate-border::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 0.5px solid rgba(240,185,11,0.3);
+  }
+
+  /* Corner ornamental flourishes */
+  .corner { position: absolute; z-index: 11; width: 50px; height: 50px; }
+  .corner-tl { top: 10px; left: 10px; }
+  .corner-tr { top: 10px; right: 10px; transform: scaleX(-1); }
+  .corner-bl { bottom: 10px; left: 10px; transform: scaleY(-1); }
+  .corner-br { bottom: 10px; right: 10px; transform: scale(-1); }
+  .corner svg { width: 100%; height: 100%; }
+
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-family: 'Cinzel', serif;
+    font-size: 70px;
+    font-weight: 700;
+    color: rgba(240,185,11,0.04);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+    letter-spacing: 6px;
+  }
+
+  /* Background guilloche pattern suggestion */
+  .guilloche-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 22px, rgba(240,185,11,0.03) 22px, rgba(240,185,11,0.03) 23px),
+      repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(240,185,11,0.015) 24px, rgba(240,185,11,0.015) 25px),
+      repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(240,185,11,0.015) 24px, rgba(240,185,11,0.015) 25px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .document-inner {
+    padding: 60px 65px 55px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Top decorative bar */
+  .top-ornament {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .top-ornament .orn-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+  }
+  .orn-dash { height: 1px; width: 80px; background: var(--gold); }
+  .orn-diamond { color: var(--gold); font-size: 10px; }
+
+  /* Logo and title block */
+  .cert-header {
+    text-align: center;
+    margin-bottom: 35px;
+  }
+  .logo-text {
+    font-family: 'Cinzel', serif;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 8px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .logo-text span { color: var(--gold-dark); }
+  .logo-tagline {
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  /* "CERTIFICATE OF AUTHENTICITY" title */
+  .cert-title-wrap {
+    position: relative;
+    padding: 18px 40px;
+    margin: 0 auto;
+    max-width: 600px;
+  }
+  .cert-title-wrap::before,
+  .cert-title-wrap::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--gold), transparent);
+  }
+  .cert-title-wrap::before { top: 0; }
+  .cert-title-wrap::after { bottom: 0; }
+
+  .cert-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  .cert-subtitle {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* Cert number badge */
+  .cert-number-band {
+    background: var(--text);
+    margin: 0 -65px;
+    padding: 12px 65px;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  .cnb-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+  .cnb-value {
+    font-family: 'Courier Prime', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 3px;
+  }
+  .cnb-divider { color: rgba(255,255,255,0.2); font-size: 20px; }
+
+  /* Intro text */
+  .cert-intro {
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 28px;
+    font-style: italic;
+  }
+
+  /* Main specs table */
+  .specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+  }
+  .specs-table tr {
+    border-bottom: 1px solid var(--border);
+  }
+  .specs-table tr:last-child { border-bottom: none; }
+  .specs-table tr:nth-child(even) td { background: var(--cream); }
+  .specs-table td {
+    padding: 13px 16px;
+    font-size: 13px;
+  }
+  .specs-table .spec-label {
+    width: 40%;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .specs-table .spec-value {
+    font-weight: 600;
+    color: var(--text);
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .specs-table .spec-value.gold {
+    color: var(--gold-dark);
+    font-family: 'Courier Prime', monospace;
+    font-size: 15px;
+  }
+
+  /* QR + Seal row */
+  .authentication-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0;
+    border-top: 2px solid var(--gold);
+    border-bottom: 2px solid var(--gold);
+    margin: 0 0 28px;
+    gap: 20px;
+  }
+
+  .qr-block {
+    text-align: center;
+  }
+  .qr-frame {
+    border: 2px solid var(--gold);
+    padding: 8px;
+    display: inline-block;
+    background: #fff;
+    margin-bottom: 6px;
+  }
+  .qr-frame img {
+    display: block;
+    width: 90px;
+    height: 90px;
+  }
+  .qr-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .qr-url {
+    font-family: 'Courier Prime', monospace;
+    font-size: 9px;
+    color: var(--gold-dark);
+    word-break: break-all;
+    max-width: 110px;
+    margin: 3px auto 0;
+  }
+
+  /* Central seal */
+  .main-seal {
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .seal-outer {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    background: radial-gradient(circle at center, var(--gold-light) 0%, #fff 70%);
+    position: relative;
+  }
+  .seal-outer::before {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    border: 1px dashed var(--gold);
+  }
+  .seal-inner {
+    text-align: center;
+    z-index: 1;
+  }
+  .seal-star { font-size: 28px; color: var(--gold); display: block; }
+  .seal-text-main {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--gold-deep);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    line-height: 1.4;
+    margin-top: 3px;
+  }
+  .seal-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Signature */
+  .sig-block {
+    text-align: center;
+    min-width: 150px;
+  }
+  .sig-line-area {
+    height: 60px;
+    border-bottom: 2px solid var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 4px;
+  }
+  .sig-cursive {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 24px;
+    color: var(--text);
+    opacity: 0.5;
+  }
+  .sig-name { font-size: 11px; font-weight: 600; color: var(--text); }
+  .sig-title { font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+  /* Issue date */
+  .issue-date-row {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 20px;
+  }
+  .issue-date-row strong { color: var(--text); font-style: normal; font-family: 'Courier Prime', monospace; }
+
+  /* Footer */
+  .doc-footer {
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .footer-right { text-align: right; }
+
+  .security-strip {
+    background: var(--text);
+    padding: 8px 65px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .security-strip span {
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .security-strip .sec-id {
+    font-family: 'Courier Prime', monospace;
+    color: var(--gold);
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .document-wrapper { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== CERTIFICATE OF AUTHENTICITY ====== -->
+<div class="document-wrapper">
+
+  <!-- Decorative elements -->
+  <div class="guilloche-bg"></div>
+  <div class="ornate-border"></div>
+
+  <!-- Ornamental corners (SVG) -->
+  <div class="corner corner-tl">
+    <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2 L48 2 M2 2 L2 48" stroke="#f0b90b" stroke-width="2"/>
+      <path d="M8 8 L20 8 M8 8 L8 20" stroke="#f0b90b" stroke-width="1" opacity="0.5"/>
+      <circle cx="2" cy="2" r="3" fill="#f0b90b"/>
+    </svg>
+  </div>
+  <div class="corner corner-tr">
+    <svg viewBox="0 0 50 50" fill="none">
+      <path d="M2 2 L48 2 M2 2 L2 48" stroke="#f0b90b" stroke-width="2"/>
+      <path d="M8 8 L20 8 M8 8 L8 20" stroke="#f0b90b" stroke-width="1" opacity="0.5"/>
+      <circle cx="2" cy="2" r="3" fill="#f0b90b"/>
+    </svg>
+  </div>
+  <div class="corner corner-bl">
+    <svg viewBox="0 0 50 50" fill="none">
+      <path d="M2 2 L48 2 M2 2 L2 48" stroke="#f0b90b" stroke-width="2"/>
+      <path d="M8 8 L20 8 M8 8 L8 20" stroke="#f0b90b" stroke-width="1" opacity="0.5"/>
+      <circle cx="2" cy="2" r="3" fill="#f0b90b"/>
+    </svg>
+  </div>
+  <div class="corner corner-br">
+    <svg viewBox="0 0 50 50" fill="none">
+      <path d="M2 2 L48 2 M2 2 L2 48" stroke="#f0b90b" stroke-width="2"/>
+      <path d="M8 8 L20 8 M8 8 L8 20" stroke="#f0b90b" stroke-width="1" opacity="0.5"/>
+      <circle cx="2" cy="2" r="3" fill="#f0b90b"/>
+    </svg>
+  </div>
+
+  <div class="watermark">AUTHENTIC</div>
+
+  <div class="document-inner">
+
+    <!-- Top ornament -->
+    <div class="top-ornament">
+      <div class="orn-line">
+        <div class="orn-dash"></div>
+        <span class="orn-diamond">◆</span>
+        <span class="orn-diamond" style="color:#1a1a2e;font-size:14px;">★</span>
+        <span class="orn-diamond">◆</span>
+        <div class="orn-dash"></div>
+      </div>
+    </div>
+
+    <!-- Header: logo + title -->
+    <div class="cert-header">
+      <div class="logo-text">Q<span>U</span>BIX</div>
+      <div class="logo-tagline">Precious Metals Investment Platform</div>
+      <div class="cert-title-wrap">
+        <div class="cert-title">Certificate of Authenticity</div>
+        <div class="cert-subtitle">Official Verification Document · Non-Transferable</div>
+      </div>
+    </div>
+
+    <!-- Certificate number band -->
+    <div class="cert-number-band">
+      <span class="cnb-label">Certificate No.</span>
+      <span class="cnb-value">{{ certificate_number }}</span>
+      <span class="cnb-divider">|</span>
+      <span class="cnb-label">Issue Date</span>
+      <span class="cnb-value" style="font-size:14px;letter-spacing:1px;">{{ issue_date }}</span>
+    </div>
+
+    <!-- Intro -->
+    <div class="cert-intro">
+      Qubix Investments Ltd. hereby certifies that the following precious metal product has been
+      independently verified, assayed, and confirmed to meet the specifications stated below.
+    </div>
+
+    <!-- Specifications table -->
+    <table class="specs-table">
+      <tr>
+        <td class="spec-label">Product Name</td>
+        <td class="spec-value">{{ product_name }}</td>
+      </tr>
+      <tr>
+        <td class="spec-label">Purity</td>
+        <td class="spec-value gold">{{ purity }}</td>
+      </tr>
+      <tr>
+        <td class="spec-label">Weight</td>
+        <td class="spec-value gold">{{ weight }}</td>
+      </tr>
+      <tr>
+        <td class="spec-label">Mint / Manufacturer</td>
+        <td class="spec-value">{{ mint }}</td>
+      </tr>
+      <tr>
+        <td class="spec-label">Serial / Assay Number</td>
+        <td class="spec-value gold">{{ serial_number }}</td>
+      </tr>
+      <tr>
+        <td class="spec-label">Certificate Number</td>
+        <td class="spec-value gold">{{ certificate_number }}</td>
+      </tr>
+    </table>
+
+    <!-- Issue date -->
+    <div class="issue-date-row">
+      Issued on <strong>{{ issue_date }}</strong> by Qubix Investments Ltd.
+    </div>
+
+    <!-- Verification row: QR, Seal, Signature -->
+    <div class="authentication-row">
+
+      <div class="qr-block">
+        <div class="qr-frame">
+          <img src="{{ qr_code_base64 }}" alt="Verification QR Code">
+        </div>
+        <div class="qr-label">Scan to Verify</div>
+        <div class="qr-url">{{ verification_url }}</div>
+      </div>
+
+      <div class="main-seal">
+        <div class="seal-outer">
+          <div class="seal-inner">
+            <span class="seal-star">★</span>
+            <div class="seal-text-main">QUBIX<br>CERTIFIED<br>AUTHENTIC</div>
+          </div>
+        </div>
+        <div class="seal-label">Official Seal</div>
+      </div>
+
+      <div class="sig-block">
+        <div class="sig-line-area">
+          <span class="sig-cursive">Verified</span>
+        </div>
+        <div class="sig-name">Head of Assay &amp; Verification</div>
+        <div class="sig-title">Qubix Investments Ltd.</div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="doc-footer">
+      <div>
+        <strong style="font-size:10px;letter-spacing:1px;">QUBIX INVESTMENTS LTD.</strong><br>
+        Registered in England & Wales No. 12345678 · FCA Ref. 987654<br>
+        Verify this certificate at: verify.qubixinvestments.com
+      </div>
+      <div class="footer-right">
+        Generated: {% now "d M Y" %}<br>
+        Certificate: {{ certificate_number }} · Page 1 of 1
+      </div>
+    </div>
+
+  </div>
+
+  <div class="security-strip">
+    <span>Certificate of Authenticity · Official Document</span>
+    <span class="sec-id">AUTH-{{ certificate_number }}</span>
+    <span>Qubix Investments Ltd. — All rights reserved</span>
+  </div>
+
+</div>
+
+</body>
+</html>

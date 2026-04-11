@@ -1,0 +1,297 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Support Tickets | Admin{% endblock %}
+
+{% block body_class %}portfolio-page{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Support <span>Tickets</span></h1>
+      <p class="page-sub">// Manage customer support requests</p>
+    </div>
+    <a href="{% url 'dashboard' %}" class="live-badge" style="text-decoration: none;">
+      <i class="fas fa-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <!-- Stats Cards -->
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+    <div style="background: var(--surface2); border-radius: 12px; padding: 16px;">
+      <div style="font-size: 11px; color: var(--muted);">Total Tickets</div>
+      <div style="font-size: 28px; font-weight: 800;">{{ tickets|length }}</div>
+    </div>
+    <div style="background: rgba(240,185,11,0.1); border-radius: 12px; padding: 16px;">
+      <div style="font-size: 11px; color: var(--gold);">Open</div>
+      <div style="font-size: 28px; font-weight: 800;">{{ open_count }}</div>
+    </div>
+    <div style="background: rgba(61,126,255,0.1); border-radius: 12px; padding: 16px;">
+      <div style="font-size: 11px; color: var(--accent);">In Progress</div>
+      <div style="font-size: 28px; font-weight: 800;">{{ in_progress_count }}</div>
+    </div>
+    <div style="background: rgba(14,203,129,0.1); border-radius: 12px; padding: 16px;">
+      <div style="font-size: 11px; color: var(--green);">Resolved</div>
+      <div style="font-size: 28px; font-weight: 800;">{{ resolved_count }}</div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+    <a href="?status=" class="filter-tab {% if not current_status %}active{% endif %}" style="padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 12px; background: var(--surface2); color: var(--muted2);">All</a>
+    <a href="?status=open" class="filter-tab {% if current_status == 'open' %}active{% endif %}" style="padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 12px; background: var(--surface2); color: var(--muted2);">Open</a>
+    <a href="?status=in_progress" class="filter-tab {% if current_status == 'in_progress' %}active{% endif %}" style="padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 12px; background: var(--surface2); color: var(--muted2);">In Progress</a>
+    <a href="?status=resolved" class="filter-tab {% if current_status == 'resolved' %}active{% endif %}" style="padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 12px; background: var(--surface2); color: var(--muted2);">Resolved</a>
+    <a href="?status=closed" class="filter-tab {% if current_status == 'closed' %}active{% endif %}" style="padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 12px; background: var(--surface2); color: var(--muted2);">Closed</a>
+  </div>
+
+ <!-- Pending Calls Section -->
+{% if pending_calls %}
+<div style="margin-bottom: 24px;">
+  <h3 style="margin-bottom: 12px;">📞 Pending Scheduled Calls</h3>
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    {% for call in pending_calls %}
+    <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div><strong>{{ call.user.email }}</strong></div>
+        <div style="font-size: 12px; color: var(--muted);">📞 {{ call.phone_number|default:"No phone" }} · {{ call.scheduled_date }} at {{ call.scheduled_time }} · {{ call.get_call_type_display }}</div>
+        {% if call.message %}<div style="font-size: 11px; color: var(--muted2); margin-top: 4px;">{{ call.message|truncatechars:80 }}</div>{% endif %}
+      </div>
+      <div>
+        <button class="confirm-call-btn" data-call-id="{{ call.id }}" style="background: var(--green); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Confirm Call</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+  <!-- Tickets List -->
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    {% for ticket in tickets %}
+    <div class="ticket-card" data-ticket-id="{{ ticket.id }}" data-ticket-title="{{ ticket.title|escapejs }}" data-user-email="{{ ticket.user.email|escapejs }}" data-ticket-type="{{ ticket.get_ticket_type_display|escapejs }}" data-ticket-status="{{ ticket.status }}" style="background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; cursor: pointer; transition: all 0.2s;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <span style="font-family: monospace; font-size: 11px; color: var(--muted);">#{{ ticket.id }}</span>
+            <span class="status-badge status-{{ ticket.status }}" style="font-size: 10px; padding: 2px 8px; border-radius: 12px; font-weight: 600;">{{ ticket.get_status_display }}</span>
+            <span style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: var(--surface3); color: var(--muted2);">{{ ticket.get_ticket_type_display }}</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px;">{{ ticket.title }}</div>
+          <div style="font-size: 12px; color: var(--muted);">{{ ticket.user.email }}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 11px; color: var(--muted);">{{ ticket.created_at|date:"M d, Y H:i" }}</div>
+          <div style="font-size: 11px; color: var(--accent); margin-top: 4px;">{{ ticket.messages.count }} message{{ ticket.messages.count|pluralize }}</div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div style="text-align: center; padding: 60px 20px; color: var(--muted);">
+      <div style="font-size: 48px; margin-bottom: 16px;">🎫</div>
+      <div style="font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 8px;">No Tickets</div>
+      <div style="font-size: 13px;">No support tickets found.</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Reply Modal -->
+<div class="modal-overlay" id="replyModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center;">
+  <div style="background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--border);">
+      <h3 style="font-size: 16px; font-weight: 700;">Reply to Ticket <span id="modalTicketId"></span></h3>
+      <button class="close-modal" style="background: var(--surface2); border: 1px solid var(--border); width: 32px; height: 32px; border-radius: 8px; cursor: pointer;">✕</button>
+    </div>
+    <div style="padding: 20px;">
+      <div style="margin-bottom: 16px; padding: 12px; background: var(--surface2); border-radius: 8px;">
+        <div><strong>User:</strong> <span id="modalUserEmail"></span></div>
+        <div><strong>Type:</strong> <span id="modalTicketType"></span></div>
+        <div><strong>Title:</strong> <span id="modalTitle"></span></div>
+      </div>
+      
+      <div id="modalMessages" style="max-height: 300px; overflow-y: auto; margin-bottom: 16px; padding: 12px; background: var(--surface); border-radius: 8px;">
+        Loading messages...
+      </div>
+      
+      <textarea id="replyMessage" style="width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: var(--text); font-size: 13px; resize: vertical; margin-bottom: 16px;" rows="4" placeholder="Type your reply here..."></textarea>
+      
+      <div style="display: flex; gap: 12px;">
+        <select id="statusSelect" style="flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text);">
+          <option value="open">Open</option>
+          <option value="in_progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button id="sendReplyBtn" style="background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">Send Reply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.filter-tab.active {
+  background: var(--accent) !important;
+  color: white !important;
+}
+.filter-tab:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+.ticket-card:hover {
+  transform: translateX(4px);
+  border-color: var(--accent);
+}
+.status-badge.status-open { background: rgba(240,185,11,0.15); color: var(--gold); }
+.status-badge.status-in_progress { background: rgba(61,126,255,0.15); color: var(--accent); }
+.status-badge.status-resolved { background: rgba(14,203,129,0.15); color: var(--green); }
+.status-badge.status-closed { background: rgba(100,100,100,0.15); color: var(--muted); }
+</style>
+
+<script>
+// Get CSRF token
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+// Open modal when clicking a ticket
+document.querySelectorAll('.ticket-card').forEach(card => {
+  card.addEventListener('click', function(e) {
+    const ticketId = this.dataset.ticketId;
+    const title = this.dataset.ticketTitle;
+    const userEmail = this.dataset.userEmail;
+    const ticketType = this.dataset.ticketType;
+    const status = this.dataset.ticketStatus;
+    
+    document.getElementById('modalTicketId').textContent = ticketId;
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalUserEmail').textContent = userEmail;
+    document.getElementById('modalTicketType').textContent = ticketType;
+    document.getElementById('statusSelect').value = status;
+    
+    // Load messages
+    loadMessages(ticketId);
+    
+    document.getElementById('replyModal').style.display = 'flex';
+  });
+});
+
+// Close modal
+document.querySelector('.close-modal').addEventListener('click', function() {
+  document.getElementById('replyModal').style.display = 'none';
+});
+document.getElementById('replyModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    this.style.display = 'none';
+  }
+});
+
+// Load messages
+async function loadMessages(ticketId) {
+  const container = document.getElementById('modalMessages');
+  container.innerHTML = '<div style="text-align: center; padding: 20px;">Loading messages...</div>';
+  
+  try {
+    const response = await fetch(`/api/support/messages/?ticket_id=${ticketId}`);
+    const data = await response.json();
+    
+    if (data.messages && data.messages.length > 0) {
+      container.innerHTML = data.messages.map(msg => `
+        <div style="margin-bottom: 12px; display: flex; justify-content: ${msg.is_user ? 'flex-end' : 'flex-start'};">
+          <div style="max-width: 70%; padding: 10px 14px; border-radius: 18px; ${msg.is_user ? 'background: var(--accent); color: white; border-bottom-right-radius: 4px;' : 'background: var(--surface2); color: var(--text); border-bottom-left-radius: 4px;'}">
+            <div style="font-size: 12px; word-wrap: break-word;">${escapeHtml(msg.message)}</div>
+            <div style="font-size: 9px; opacity: 0.6; margin-top: 4px;">${msg.created_at}</div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--muted);">No messages yet</div>';
+    }
+    container.scrollTop = container.scrollHeight;
+  } catch (err) {
+    container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--red);">Error loading messages</div>';
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Send reply
+document.getElementById('sendReplyBtn').addEventListener('click', async function() {
+  const ticketId = document.getElementById('modalTicketId').textContent;
+  const message = document.getElementById('replyMessage').value.trim();
+  const status = document.getElementById('statusSelect').value;
+  
+  if (!message) {
+    alert('Please enter a reply message');
+    return;
+  }
+  
+  this.disabled = true;
+  this.textContent = 'Sending...';
+  
+  try {
+    const response = await fetch(`/staff/support/reply/${ticketId}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrftoken
+      },
+      body: new URLSearchParams({
+        message: message,
+        status: status
+      })
+    });
+    
+    if (response.ok) {
+      alert('Reply sent successfully!');
+      document.getElementById('replyMessage').value = '';
+      loadMessages(ticketId);
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      const errorText = await response.text();
+      alert('Error sending reply: ' + errorText);
+    }
+  } catch (err) {
+    alert('Error: ' + err.message);
+  } finally {
+    this.disabled = false;
+    this.textContent = 'Send Reply';
+  }
+});
+
+// Confirm call buttons - FIXED URL
+document.querySelectorAll('.confirm-call-btn').forEach(btn => {
+  btn.addEventListener('click', async function(e) {
+    e.stopPropagation();
+    const callId = this.dataset.callId;
+    
+    try {
+      await fetch(`/staff/support/confirm-call/${callId}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrftoken }
+      });
+      alert('Call confirmed!');
+      location.reload();
+    } catch (err) {
+      alert('Error confirming call: ' + err.message);
+    }
+  });
+});
+</script>
+{% endblock %}

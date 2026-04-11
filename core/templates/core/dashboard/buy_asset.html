@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#0a0a0a]">
+    <div class="w-full max-w-md bg-[#111] rounded-3xl p-10">
+        <h2 class="text-3xl font-semibold text-center">Buy {{ asset.symbol }}</h2>
+        <p class="text-center text-white/60 mt-2">{{ asset.name }}</p>
+        
+        <div class="mt-6 bg-white/5 rounded-3xl p-6">
+            <div class="flex justify-between text-lg">
+                <span>Current Price:</span>
+                <span class="font-bold text-[#00d4ff]">${{ asset.price|floatformat:2 }}</span>
+            </div>
+            <div class="flex justify-between mt-2">
+                <span>Your Cash Balance:</span>
+                <span class="font-bold">${{ request.user.portfolio.cash_balance|floatformat:2 }}</span>
+            </div>
+        </div>
+        
+        <form method="post" class="mt-8 space-y-6">
+            {% csrf_token %}
+            {{ form|crispy }}
+            
+            <button type="submit" 
+                    class="w-full h-14 bg-[#00d4ff] text-black font-semibold rounded-3xl text-lg hover:bg-[#00c4ef] transition-colors">
+                Submit Purchase Request
+            </button>
+        </form>
+        
+        <p class="text-center text-xs text-white/40 mt-6">
+            Your purchase will be reviewed by an admin and processed shortly.
+        </p>
+        
+        <div class="text-center mt-6">
+            <a href="{% url 'dashboard' %}" class="text-[#00d4ff] hover:underline">← Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
