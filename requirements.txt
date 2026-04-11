@@ -13,6 +13,3 @@ requests==2.32.3
 python-decouple==3.8
 gunicorn==21.2.0
 tzdata==2026.1
-greenlet==3.0.1
-pyee==11.0.1
-typing-extensions==4.15.0
