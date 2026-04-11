@@ -139,8 +139,23 @@ SESSION_COOKIE_AGE = 1800  # 30 minutes
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+# ============= PRODUCTION OPTIMIZATIONS for Render Free Tier =============
+if not DEBUG:
+    # Reduce memory usage
+    CONN_MAX_AGE = 60  # Close database connections after 60 seconds
+    DATA_UPLOAD_MAX_NUMBER_FIELDS = 1024
+    
+    # Disable unused features to save memory
+    USE_THOUSAND_SEPARATOR = False
+    
+    # Static files optimization
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    
+    # Session optimization
+    SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+    SESSION_CACHE_ALIAS = 'default'
+    
 # ============= PRODUCTION SECURITY SETTINGS =============
-# Only enable these when using HTTPS (production)
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     CSRF_COOKIE_SECURE = True
