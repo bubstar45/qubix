@@ -30,9 +30,6 @@ pytz==2024.2
 # Parsing
 python-dateutil==2.9.0
 
-# Forms
-crispy-forms==2.3
+# Forms (FIXED - was crispy-forms, now django-crispy-forms)
+django-crispy-forms==2.3
 crispy-tailwind==1.0.0
-
-# Production database URL parsing
-dj-database-url==2.2.0
