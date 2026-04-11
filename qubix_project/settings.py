@@ -16,8 +16,8 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'  # Default to False
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'your-domain.com',  # ← CHANGE THIS to your actual domain
-    'www.your-domain.com',
+    'qubix-lmr7.onrender.com',  # ← ADD YOUR RENDER DOMAIN
+    '.onrender.com',  # Allows all Render subdomains
 ]
 
 INSTALLED_APPS = [
@@ -122,7 +122,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'apikey'
 EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY', '')
-DEFAULT_FROM_EMAIL = 'noreply@your-domain.com'  # ← CHANGE to your domain
+DEFAULT_FROM_EMAIL = 'lisam00333m@gmail.com'  # ← CHANGE to your domain
 
 # ============= Login/Logout URLs =============
 LOGIN_URL = 'login'
