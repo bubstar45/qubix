@@ -1,37 +1,18 @@
-# Core Django
 Django==5.2.9
-gunicorn==21.2.0
-
-# Database
-psycopg2-binary==2.9.10
-dj-database-url==2.2.0
-
-# Static files
-whitenoise==6.7.0
-
-# Environment variables
+psycopg2-binary==2.9.11
+dj-database-url==3.1.2
+whitenoise==6.12.0
+qrcode==8.2
+pillow==12.0.0
+reportlab==4.4.10
+playwright==1.40.0
+sendgrid==3.6.5
+crispy-tailwind==1.0.3
+django-crispy-forms==2.6
+requests==2.32.3
 python-decouple==3.8
-
-# Images & Media
-Pillow==10.4.0
-
-# PDF Generation
-reportlab==4.2.2
-weasyprint==63.0
-playwright==1.50.0
-qrcode==7.4.2
-
-# Email
-sendgrid==6.11.0
-
-# Timezone
-pytz==2024.2
-
-# Parsing
-python-dateutil==2.9.0
-
-# Forms
-django-crispy-forms==2.3
-crispy-tailwind==1.0.0
-
-gunicorn
+gunicorn==21.2.0
+tzdata==2026.1
+greenlet==3.0.1
+pyee==11.0.1
+typing-extensions==4.15.0
