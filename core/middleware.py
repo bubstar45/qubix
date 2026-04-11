@@ -10,7 +10,8 @@ class TimezoneMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.user.is_authenticated and request.user.timezone:
+        # ✅ FIX: Check if user attribute exists first
+        if hasattr(request, 'user') and request.user.is_authenticated and hasattr(request.user, 'timezone') and request.user.timezone:
             try:
                 timezone.activate(pytz.timezone(request.user.timezone))
             except:
@@ -28,7 +29,8 @@ class SessionTimeoutMiddleware:
         self.timeout_minutes = 30
 
     def __call__(self, request):
-        if request.user.is_authenticated and not request.path.startswith('/admin/'):
+        # ✅ FIX: Check if user attribute exists first
+        if hasattr(request, 'user') and request.user.is_authenticated and not request.path.startswith('/admin/'):
             last_activity = request.session.get('last_activity')
             current_time = timezone.now()
             
