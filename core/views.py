@@ -29,7 +29,7 @@ from .utils.email_utils import (
     send_physical_order_shipped_email,
     send_physical_order_delivered_email,
 )
-from weasyprint import HTML
+#from weasyprint import HTML
 from playwright.sync_api import sync_playwright
 from django.template.loader import render_to_string
 from django.http import HttpResponse
