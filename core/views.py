@@ -30,15 +30,15 @@ from .utils.email_utils import (
     send_physical_order_delivered_email,
 )
 #from weasyprint import HTML
-# # from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright
 from django.template.loader import render_to_string
 from django.http import HttpResponse
-# from reportlab.lib import colors
-# from reportlab.lib.pagesizes import letter, A4
-# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
-# from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-# from reportlab.lib.units import inch
-# from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from django.utils import timezone
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -3266,9 +3266,6 @@ def physical_track_order(request, transaction_id):
     return render(request, 'core/physical_tracking.html', context)
 
 def generate_certificate_pdf(transaction, holding):
-    return None
-    
-    # === ORIGINAL CODE BELOW ===
     """Generate PDF certificate for vault holdings"""
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.5*inch, bottomMargin=0.5*inch)
@@ -3364,7 +3361,7 @@ def download_certificate(request, holding_id):
     import tempfile
     import os
     import qrcode
-    # from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+    from reportlab.platypus import Image as ReportLabImage
     
     holding = get_object_or_404(PhysicalHolding, id=holding_id, user=request.user, service_type='vault')
     transaction = holding.transaction
@@ -3598,12 +3595,12 @@ def physical_sell_holding(request, holding_id):
 def download_invoice(request, transaction_id):
     """Download PDF invoice for transaction"""
     from django.http import HttpResponse
-    # from reportlab.lib import colors
+    from reportlab.lib import colors
     from reportlab.lib.pagesizes import letter
-    # from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
-    # from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    # from reportlab.lib.units import inch
-    # from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib.enums import TA_CENTER, TA_RIGHT
     
     transaction = get_object_or_404(PhysicalTransaction, id=transaction_id, user=request.user)
     
@@ -4080,12 +4077,6 @@ def get_wkhtmltopdf_path():
 WKHTMLTOPDF_PATH = get_wkhtmltopdf_path()
 
 def render_to_pdf(template_src, context_dict={}):
-    return None
-    
-    # === ORIGINAL CODE BELOW ===
-    return None
-    
-    # === ORIGINAL CODE BELOW ===
     """
     Renders a Django HTML template to PDF using Playwright + Chromium.
     Returns an HttpResponse with the PDF, or None on failure.
@@ -4094,7 +4085,7 @@ def render_to_pdf(template_src, context_dict={}):
     Google Fonts, gradients — everything renders perfectly.
     """
     from django.template.loader import render_to_string
-    # # from playwright.sync_api import sync_playwright
+    from playwright.sync_api import sync_playwright
     
     # Render the Django template to an HTML string
     html_string = render_to_string(template_src, context_dict)
@@ -4128,12 +4119,6 @@ def render_to_pdf(template_src, context_dict={}):
 
 @login_required
 def download_vault_certificate_html(request, holding_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
-    return HttpResponse('PDF temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     holding = get_object_or_404(PhysicalHolding, id=holding_id, user=request.user, service_type='vault')
     transaction = holding.transaction
 
@@ -4165,9 +4150,6 @@ def download_vault_certificate_html(request, holding_id):
 
 @login_required
 def download_allocated_storage(request, holding_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Allocated Storage Confirmation PDF"""
     holding = get_object_or_404(PhysicalHolding, id=holding_id, user=request.user)
     
@@ -4196,18 +4178,12 @@ def download_allocated_storage(request, holding_id):
 
 @login_required
 def download_authenticity_certificate(request, holding_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
-    return HttpResponse('PDF temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Authenticity Certificate PDF with effective dates"""
     holding = get_object_or_404(PhysicalHolding, id=holding_id, user=request.user)
     transaction = holding.transaction
     
     import hashlib
-    # # from playwright.sync_api import sync_playwright
+    from playwright.sync_api import sync_playwright
     from django.template.loader import render_to_string
 
     verification_code = hashlib.sha256(
@@ -4271,9 +4247,6 @@ def download_authenticity_certificate(request, holding_id):
 
 @login_required
 def download_delivery_receipt(request, transaction_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Delivery Receipt PDF with effective delivery date"""
     from datetime import timedelta
     
@@ -4345,9 +4318,6 @@ def download_delivery_receipt(request, transaction_id):
 
 @login_required
 def download_insurance_certificate(request, holding_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Insurance Certificate PDF with effective dates"""
     from datetime import timedelta
     
@@ -4385,9 +4355,6 @@ def download_insurance_certificate(request, holding_id):
 
 @login_required
 def download_proof_of_ownership(request, holding_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Proof of Ownership PDF"""
     holding = get_object_or_404(PhysicalHolding, id=holding_id, user=request.user)
     
@@ -4413,9 +4380,6 @@ def download_proof_of_ownership(request, holding_id):
 
 @login_required
 def download_purchase_invoice(request, transaction_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Purchase Invoice PDF with effective values"""
     transaction = get_object_or_404(PhysicalTransaction, id=transaction_id, user=request.user)
     product = transaction.product
@@ -4451,9 +4415,6 @@ def download_purchase_invoice(request, transaction_id):
 
 @login_required
 def download_shipping_confirmation(request, transaction_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Shipping Confirmation PDF with effective dates"""
     from datetime import timedelta
     
@@ -4517,9 +4478,6 @@ def download_shipping_confirmation(request, transaction_id):
 
 @login_required
 def download_shipping_invoice(request, transaction_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Shipping Invoice PDF with effective values"""
     from datetime import timedelta
     
@@ -4572,9 +4530,6 @@ def download_shipping_invoice(request, transaction_id):
 
 @login_required
 def download_storage_agreement(request, holding_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Storage Agreement PDF"""
     holding = get_object_or_404(PhysicalHolding, id=holding_id, user=request.user)
     
@@ -5350,9 +5305,6 @@ def admin_reply_ticket_page(request, ticket_id):
 
 @login_required
 def download_investment_certificate(request, investment_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Real Estate Investment Certificate PDF with effective dates"""
     from django.utils import timezone
     from datetime import datetime
@@ -5414,9 +5366,6 @@ def download_investment_certificate(request, investment_id):
 
 @login_required
 def download_dividend_statement(request, dividend_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Dividend Statement PDF with effective dates"""
     from django.utils import timezone
     from datetime import datetime
@@ -5500,9 +5449,6 @@ def download_dividend_statement(request, dividend_id):
     
 @login_required
 def download_purchase_invoice_real_estate(request, investment_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Real Estate Purchase Invoice PDF with effective dates"""
     from django.utils import timezone
     from datetime import datetime
@@ -5552,9 +5498,6 @@ def download_purchase_invoice_real_estate(request, investment_id):
 
 @login_required
 def download_property_prospectus(request, property_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Property Prospectus PDF"""
     from django.utils import timezone
     from datetime import datetime
@@ -5717,9 +5660,6 @@ def download_property_prospectus(request, property_id):
 
 @login_required
 def download_title_certificate(request, investment_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Fractional Title Certificate PDF with effective dates"""
     from django.utils import timezone
     from datetime import datetime
@@ -5785,9 +5725,6 @@ def download_title_certificate(request, investment_id):
 
 @login_required
 def download_operating_agreement(request, investment_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Operating Agreement PDF"""
     from django.utils import timezone
     from datetime import datetime
@@ -5845,9 +5782,6 @@ def download_operating_agreement(request, investment_id):
 
 @login_required
 def download_annual_report(request, investment_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Annual Report PDF"""
     from django.utils import timezone
     from datetime import datetime
@@ -5953,9 +5887,6 @@ def download_annual_report(request, investment_id):
 
 @login_required
 def download_capital_call(request, investment_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Capital Call Notice PDF"""
     from django.utils import timezone
     from datetime import datetime, timedelta
@@ -6022,9 +5953,6 @@ def download_capital_call(request, investment_id):
 
 @login_required
 def download_exit_statement(request, investment_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download Exit Statement PDF"""
     from django.utils import timezone
     from datetime import datetime
@@ -6121,9 +6049,6 @@ def download_exit_statement(request, investment_id):
 
 @login_required
 def download_k1_tax_summary(request, investment_id):
-    return HttpResponse('PDF generation temporarily disabled', status=503)
-    
-    # === ORIGINAL CODE BELOW ===
     """Download K-1 Tax Summary PDF"""
     from django.utils import timezone
     from datetime import datetime
