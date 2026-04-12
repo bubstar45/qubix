@@ -2,6 +2,7 @@ import os
 import dj_database_url
 from pathlib import Path
 import warnings
+from django.utils import timezone
 warnings.filterwarnings('ignore', '.*Unexpectedly, UWP app.*')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -180,3 +181,29 @@ if not DEBUG:
     
     # Use less memory for sessions
     SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'    
+
+# ============= MEMORY MONITORING (TEMPORARY) =============
+import resource
+import sys
+import os
+
+def log_memory():
+    try:
+        # Get memory usage in MB
+        mem = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        # On Linux, ru_maxrss is in KB; on macOS, it's in bytes
+        if sys.platform == 'linux':
+            mem_mb = mem / 1024
+        else:
+            mem_mb = mem / (1024 * 1024)
+        
+        print(f"🔍 MEMORY USAGE: {mem_mb:.2f} MB")
+        
+        # Log to file as well
+        with open('/tmp/memory_log.txt', 'a') as f:
+            f.write(f"{timezone.now()} - {mem_mb:.2f} MB\n")
+    except Exception as e:
+        print(f"Memory logging error: {e}")
+
+# Log memory at startup
+log_memory()    
