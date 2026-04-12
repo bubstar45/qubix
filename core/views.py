@@ -30,7 +30,7 @@ from .utils.email_utils import (
     send_physical_order_delivered_email,
 )
 #from weasyprint import HTML
-from playwright.sync_api import sync_playwright
+# from playwright.sync_api import sync_playwright
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from reportlab.lib import colors
@@ -4077,6 +4077,9 @@ def get_wkhtmltopdf_path():
 WKHTMLTOPDF_PATH = get_wkhtmltopdf_path()
 
 def render_to_pdf(template_src, context_dict={}):
+    return None
+    
+    # === ORIGINAL CODE BELOW ===
     """
     Renders a Django HTML template to PDF using Playwright + Chromium.
     Returns an HttpResponse with the PDF, or None on failure.
@@ -4085,7 +4088,7 @@ def render_to_pdf(template_src, context_dict={}):
     Google Fonts, gradients — everything renders perfectly.
     """
     from django.template.loader import render_to_string
-    from playwright.sync_api import sync_playwright
+    # from playwright.sync_api import sync_playwright
     
     # Render the Django template to an HTML string
     html_string = render_to_string(template_src, context_dict)
@@ -4119,6 +4122,9 @@ def render_to_pdf(template_src, context_dict={}):
 
 @login_required
 def download_vault_certificate_html(request, holding_id):
+    return HttpResponse('PDF temporarily disabled', status=503)
+    
+    # === ORIGINAL CODE BELOW ===
     holding = get_object_or_404(PhysicalHolding, id=holding_id, user=request.user, service_type='vault')
     transaction = holding.transaction
 
@@ -4178,12 +4184,15 @@ def download_allocated_storage(request, holding_id):
 
 @login_required
 def download_authenticity_certificate(request, holding_id):
+    return HttpResponse('PDF temporarily disabled', status=503)
+    
+    # === ORIGINAL CODE BELOW ===
     """Download Authenticity Certificate PDF with effective dates"""
     holding = get_object_or_404(PhysicalHolding, id=holding_id, user=request.user)
     transaction = holding.transaction
     
     import hashlib
-    from playwright.sync_api import sync_playwright
+    # from playwright.sync_api import sync_playwright
     from django.template.loader import render_to_string
 
     verification_code = hashlib.sha256(
