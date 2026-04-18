@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Qubix Investment — Secure Global Assets</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -48,135 +48,68 @@ button { font-family:var(--font); cursor:pointer; }
 ::-webkit-scrollbar-thumb { background:var(--bg-3); border-radius:2px; }
 
 /* ═══════════════════════════════════
-   NAVIGATION - FIXED FOR MOBILE
+   NAVIGATION
 ═══════════════════════════════════ */
 #nav {
   position:fixed; top:0; left:0; right:0; z-index:1000;
-  min-height:64px; display:flex; align-items:center;
-  justify-content:space-between; padding:0 20px;
+  height:64px; display:flex; align-items:center;
+  justify-content:space-between; padding:0 40px;
   background:rgba(4,8,15,0.92);
   backdrop-filter:blur(24px);
   border-bottom:1px solid var(--border);
   transition:background 0.3s;
-  flex-wrap:wrap;
-  gap:10px;
-}
-@media (min-width: 768px) {
-  #nav { padding:0 40px; flex-wrap:nowrap; }
 }
 #nav.solid { background:var(--bg-1); }
 
-.nav-logo { display:flex; align-items:center; gap:11px; flex-shrink:0; }
+.nav-logo { display:flex; align-items:center; gap:11px; }
 .nav-logo-box {
   width:36px; height:36px; border-radius:9px;
   background:var(--blue); display:flex; align-items:center; justify-content:center;
 }
 .nav-logo-box svg { width:18px; height:18px; }
-.nav-logo-name { font-size:1rem; font-weight:700; color:var(--white); letter-spacing:-0.2px; }
-@media (min-width: 480px) { .nav-logo-name { font-size:1.05rem; } }
+.nav-logo-name { font-size:1.05rem; font-weight:700; color:var(--white); letter-spacing:-0.2px; }
 .nav-logo-tag { font-size:8px; font-weight:600; color:var(--t3); letter-spacing:2px; text-transform:uppercase; display:block; margin-top:-2px; }
 
-.nav-links {
-  display: none;
-  gap:2px;
-  list-style:none;
-  background:rgba(255,255,255,0.03);
-  padding:4px;
-  border-radius:50px;
-  border:1px solid var(--border);
-}
-@media (min-width: 900px) {
-  .nav-links { display: flex; }
-}
+.nav-links { display:flex; gap:2px; list-style:none; }
 .nav-links a {
   display:block; padding:7px 15px; border-radius:8px;
   font-size:0.85rem; font-weight:500; color:var(--t2);
   transition:all 0.2s; cursor:pointer;
-  white-space:nowrap;
 }
-@media (min-width: 1100px) { .nav-links a { padding:7px 20px; } }
 .nav-links a:hover { color:var(--white); background:rgba(255,255,255,0.05); }
 .nav-links a.active { color:var(--white); background:rgba(22,89,255,0.15); }
 
-.nav-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.nav-actions { display:flex; align-items:center; gap:10px; }
 .btn-ghost {
-  padding:8px 16px; border:1px solid var(--border-2); border-radius:8px;
+  padding:8px 20px; border:1px solid var(--border-2); border-radius:8px;
   font-size:0.85rem; font-weight:500; color:var(--t1);
   background:none; transition:all 0.2s;
 }
-@media (min-width: 480px) { .btn-ghost { padding:8px 20px; } }
 .btn-ghost:hover { border-color:var(--t3); color:var(--white); }
 .btn-solid {
-  padding:8px 16px; border-radius:8px; border:none;
+  padding:9px 22px; border-radius:8px; border:none;
   background:var(--blue); color:var(--white);
   font-size:0.85rem; font-weight:600; transition:all 0.2s;
 }
-@media (min-width: 480px) { .btn-solid { padding:9px 22px; } }
 .btn-solid:hover { background:var(--blue-h); box-shadow:0 6px 20px rgba(22,89,255,0.35); }
 
-/* Mobile Menu Button */
-.mobile-menu-btn {
-  display: flex;
-  width:36px; height:36px;
-  background:rgba(255,255,255,0.05);
-  border:1px solid var(--border);
-  border-radius:8px;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  color:var(--t2);
-}
-@media (min-width: 900px) {
-  .mobile-menu-btn { display: none; }
-}
-
-.mobile-nav {
-  display: none;
-  position: fixed;
-  top:64px;
-  left:0;
-  right:0;
-  background:var(--bg-1);
-  border-bottom:1px solid var(--border);
-  flex-direction:column;
-  padding:16px;
-  gap:6px;
-  z-index:999;
-}
-.mobile-nav.open { display: flex; }
-.mobile-nav a {
-  padding:12px 16px;
-  color:var(--t2);
-  text-decoration:none;
-  font-weight:500;
-  border-radius:8px;
-  transition:all 0.2s;
-}
-.mobile-nav a:hover { background:rgba(255,255,255,0.05); color:var(--white); }
-
 /* ═══════════════════════════════════
-   TICKER - RESPONSIVE
+   TICKER
 ═══════════════════════════════════ */
 .ticker-bar {
   margin-top:64px; background:var(--bg-1);
   border-bottom:1px solid var(--border);
   padding:9px 0; overflow:hidden;
 }
-.ticker-track { display:flex; gap:30px; animation:scroll-tick 40s linear infinite; width:max-content; }
-@media (min-width: 768px) { .ticker-track { gap:40px; } }
+.ticker-track { display:flex; gap:40px; animation:scroll-tick 40s linear infinite; width:max-content; }
 .ticker-track:hover { animation-play-state:paused; }
 @keyframes scroll-tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-.tick { display:flex; align-items:center; gap:6px; font-size:0.7rem; white-space:nowrap; }
-@media (min-width: 480px) { .tick { gap:8px; font-size:0.75rem; } }
-@media (min-width: 768px) { .tick { gap:10px; font-size:0.78rem; } }
+.tick { display:flex; align-items:center; gap:10px; font-size:0.78rem; white-space:nowrap; }
 .tick-sym { font-weight:700; color:var(--white); font-family:var(--mono); }
 .tick-px { color:var(--t2); font-family:var(--mono); }
-.up { color:var(--green); font-size:0.65rem; font-weight:600; }
-@media (min-width: 480px) { .up { font-size:0.72rem; } }
-.dn { color:var(--red); font-size:0.65rem; font-weight:600; }
-@media (min-width: 480px) { .dn { font-size:0.72rem; } }
-.tick-sep { width:1px; height:10px; background:var(--border-2); }
-@media (min-width: 480px) { .tick-sep { height:12px; } }
+.up { color:var(--green); font-size:0.72rem; font-weight:600; }
+.dn { color:var(--red); font-size:0.72rem; font-weight:600; }
+.tick-sep { width:1px; height:12px; background:var(--border-2); }
 
 /* ═══════════════════════════════════
    PAGE SYSTEM
@@ -186,51 +119,42 @@ button { font-family:var(--font); cursor:pointer; }
 @keyframes fadein { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
 /* ═══════════════════════════════════
-   SHARED LAYOUT - RESPONSIVE
+   SHARED LAYOUT
 ═══════════════════════════════════ */
-.wrap { max-width:1280px; margin:0 auto; padding:0 20px; }
-@media (min-width: 768px) { .wrap { padding:0 40px; } }
-.section { padding:50px 0; }
-@media (min-width: 768px) { .section { padding:80px 0; } }
-.section-sm { padding:35px 0; }
-@media (min-width: 768px) { .section-sm { padding:56px 0; } }
+.wrap { max-width:1280px; margin:0 auto; padding:0 40px; }
+.section { padding:80px 0; }
+.section-sm { padding:56px 0; }
 
 .label-tag {
   display:inline-flex; align-items:center; gap:7px;
-  font-size:0.65rem; font-weight:700; letter-spacing:2px;
-  text-transform:uppercase; color:var(--blue-h); margin-bottom:15px;
+  font-size:0.72rem; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; color:var(--blue-h); margin-bottom:18px;
 }
-@media (min-width: 480px) { .label-tag { font-size:0.72rem; margin-bottom:18px; } }
 .label-tag::before { content:''; width:18px; height:2px; background:var(--blue); border-radius:1px; }
 
-.section-heading { font-size:clamp(1.6rem, 5vw, 2.8rem); font-weight:700; color:var(--white); line-height:1.2; letter-spacing:-0.5px; margin-bottom:16px; }
-.section-sub { font-size:0.9rem; color:var(--t2); max-width:580px; line-height:1.75; }
-@media (min-width: 768px) { .section-sub { font-size:1rem; } }
+.section-heading { font-size:clamp(1.9rem,3vw,2.8rem); font-weight:700; color:var(--white); line-height:1.18; letter-spacing:-0.5px; margin-bottom:16px; }
+.section-sub { font-size:1rem; color:var(--t2); max-width:580px; line-height:1.75; }
 
 /* ═══════════════════════════════════
-   BUTTONS - RESPONSIVE
+   BUTTONS
 ═══════════════════════════════════ */
 .btn-primary {
   display:inline-flex; align-items:center; gap:8px;
-  padding:10px 20px; background:var(--blue); color:var(--white);
-  border-radius:var(--radius); font-size:0.85rem; font-weight:600;
+  padding:13px 28px; background:var(--blue); color:var(--white);
+  border-radius:var(--radius); font-size:0.9rem; font-weight:600;
   border:none; transition:all 0.2s; cursor:pointer;
 }
-@media (min-width: 480px) { .btn-primary { padding:12px 24px; font-size:0.9rem; } }
-@media (min-width: 768px) { .btn-primary { padding:13px 28px; } }
 .btn-primary:hover { background:var(--blue-h); transform:translateY(-1px); box-shadow:0 10px 25px rgba(22,89,255,0.38); }
 .btn-secondary {
   display:inline-flex; align-items:center; gap:8px;
-  padding:10px 20px; background:transparent; color:var(--t1);
-  border-radius:var(--radius); font-size:0.85rem; font-weight:600;
+  padding:13px 28px; background:transparent; color:var(--t1);
+  border-radius:var(--radius); font-size:0.9rem; font-weight:600;
   border:1px solid var(--border-2); transition:all 0.2s; cursor:pointer;
 }
-@media (min-width: 480px) { .btn-secondary { padding:12px 24px; font-size:0.9rem; } }
-@media (min-width: 768px) { .btn-secondary { padding:13px 28px; } }
 .btn-secondary:hover { border-color:var(--t3); color:var(--white); background:rgba(255,255,255,0.04); }
 
 /* ═══════════════════════════════════
-   HERO - RESPONSIVE
+   HERO
 ═══════════════════════════════════ */
 .hero {
   min-height:calc(100vh - 96px); display:flex; align-items:center;
@@ -244,35 +168,29 @@ button { font-family:var(--font); cursor:pointer; }
   background-size:64px 64px;
   mask-image:radial-gradient(ellipse at 60% 50%,black 0%,transparent 72%);
 }
-.hero-inner { position:relative; z-index:1; display:grid; grid-template-columns:1fr; gap:40px; align-items:center; padding:40px 0; }
-@media (min-width: 1024px) { .hero-inner { grid-template-columns:1fr 1fr; gap:60px; padding:0; } }
+.hero-inner { position:relative; z-index:1; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
 
 .hero-eyebrow {
   display:inline-flex; align-items:center; gap:8px;
   background:rgba(22,89,255,0.1); border:1px solid rgba(22,89,255,0.22);
   border-radius:50px; padding:5px 16px;
-  font-size:0.7rem; font-weight:600; color:#7aacff;
-  letter-spacing:0.5px; margin-bottom:20px;
+  font-size:0.75rem; font-weight:600; color:#7aacff;
+  letter-spacing:0.5px; margin-bottom:28px;
 }
-@media (min-width: 480px) { .hero-eyebrow { font-size:0.75rem; margin-bottom:28px; } }
 .hero-eyebrow-dot { width:6px; height:6px; border-radius:50%; background:var(--teal); animation:blink 2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 .hero-title {
-  font-size:clamp(2rem, 6vw, 3.7rem); font-weight:800;
-  color:var(--white); line-height:1.12; letter-spacing:-1px; margin-bottom:18px;
+  font-size:clamp(2.4rem,4vw,3.7rem); font-weight:800;
+  color:var(--white); line-height:1.12; letter-spacing:-1px; margin-bottom:22px;
 }
-.hero-desc { font-size:0.9rem; color:var(--t2); line-height:1.7; max-width:480px; margin-bottom:28px; font-weight:300; }
-@media (min-width: 768px) { .hero-desc { font-size:1rem; line-height:1.78; margin-bottom:36px; } }
-.hero-ctas { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:30px; }
-@media (min-width: 768px) { .hero-ctas { gap:14px; margin-bottom:40px; } }
-.hero-trust { display:flex; gap:16px; flex-wrap:wrap; }
-@media (min-width: 480px) { .hero-trust { gap:24px; } }
+.hero-desc { font-size:1.05rem; color:var(--t2); line-height:1.78; max-width:480px; margin-bottom:36px; font-weight:300; }
+.hero-ctas { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:40px; }
+.hero-trust { display:flex; gap:24px; flex-wrap:wrap; }
 .trust-badge {
   display:flex; align-items:center; gap:7px;
-  font-size:0.7rem; color:var(--t3); font-weight:500;
+  font-size:0.78rem; color:var(--t3); font-weight:500;
 }
-@media (min-width: 480px) { .trust-badge { font-size:0.78rem; } }
 .trust-badge svg { width:13px; height:13px; color:var(--teal); }
 
 /* HERO DASHBOARD CARD */
@@ -286,593 +204,449 @@ button { font-family:var(--font); cursor:pointer; }
 
 .dash-bar {
   background:var(--bg-3); border-bottom:1px solid var(--border);
-  padding:10px 14px; display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px; display:flex; align-items:center; justify-content:space-between;
 }
-@media (min-width: 480px) { .dash-bar { padding:12px 18px; } }
 .dash-dots { display:flex; gap:5px; }
-.dash-dot { width:8px; height:8px; border-radius:50%; }
-@media (min-width: 480px) { .dash-dot { width:9px; height:9px; } }
-.dash-title { font-size:0.65rem; color:var(--t2); font-weight:500; }
-@media (min-width: 480px) { .dash-title { font-size:0.72rem; } }
-.dash-live { display:flex; align-items:center; gap:5px; font-size:0.65rem; color:var(--teal); font-weight:600; }
-@media (min-width: 480px) { .dash-live { font-size:0.7rem; } }
-.dash-live::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--teal); animation:blink 2s infinite; }
-@media (min-width: 480px) { .dash-live::before { width:6px; height:6px; } }
+.dash-dot { width:9px; height:9px; border-radius:50%; }
+.dash-title { font-size:0.72rem; color:var(--t2); font-weight:500; }
+.dash-live { display:flex; align-items:center; gap:5px; font-size:0.7rem; color:var(--teal); font-weight:600; }
+.dash-live::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--teal); animation:blink 2s infinite; }
 
-.dash-body { padding:14px; }
-@media (min-width: 480px) { .dash-body { padding:20px; } }
+.dash-body { padding:20px; }
 
-.dash-total-label { font-size:0.6rem; color:var(--t3); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
-@media (min-width: 480px) { .dash-total-label { font-size:0.68rem; } }
-.dash-total-val { font-size:1.4rem; font-weight:800; color:var(--white); letter-spacing:-1px; font-family:var(--mono); }
-@media (min-width: 480px) { .dash-total-val { font-size:1.7rem; } }
-@media (min-width: 640px) { .dash-total-val { font-size:1.9rem; } }
-.dash-total-chg { font-size:0.7rem; color:var(--green); font-weight:600; margin-top:3px; margin-bottom:14px; }
-@media (min-width: 480px) { .dash-total-chg { font-size:0.82rem; margin-bottom:18px; } }
+.dash-total-label { font-size:0.68rem; color:var(--t3); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+.dash-total-val { font-size:1.9rem; font-weight:800; color:var(--white); letter-spacing:-1px; font-family:var(--mono); }
+.dash-total-chg { font-size:0.82rem; color:var(--green); font-weight:600; margin-top:3px; margin-bottom:18px; }
 
-.dash-chart { height:50px; margin-bottom:14px; }
-@media (min-width: 480px) { .dash-chart { height:60px; } }
-@media (min-width: 640px) { .dash-chart { height:72px; margin-bottom:18px; } }
+.dash-chart { height:72px; margin-bottom:18px; }
 .dash-chart svg { width:100%; height:100%; }
 
-.dash-rows { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
-@media (min-width: 480px) { .dash-rows { gap:8px; margin-bottom:16px; } }
+.dash-rows { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
 .dash-row {
   display:flex; align-items:center; justify-content:space-between;
   background:rgba(255,255,255,0.03); border:1px solid var(--border);
-  border-radius:9px; padding:6px 10px;
+  border-radius:9px; padding:9px 13px;
 }
-@media (min-width: 480px) { .dash-row { padding:8px 12px; } }
-@media (min-width: 640px) { .dash-row { padding:9px 13px; } }
-.dash-row-l { display:flex; align-items:center; gap:8px; }
-@media (min-width: 480px) { .dash-row-l { gap:9px; } }
-.dash-row-ico { width:24px; height:24px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; }
-@media (min-width: 480px) { .dash-row-ico { width:28px; height:28px; font-size:0.85rem; } }
-.dash-row-name { font-size:0.7rem; font-weight:600; color:var(--white); }
-@media (min-width: 480px) { .dash-row-name { font-size:0.78rem; } }
-.dash-row-sub { font-size:0.55rem; color:var(--t3); }
-@media (min-width: 480px) { .dash-row-sub { font-size:0.65rem; } }
-.dash-row-val { font-size:0.7rem; font-weight:700; color:var(--white); font-family:var(--mono); }
-@media (min-width: 480px) { .dash-row-val { font-size:0.8rem; } }
-.dash-row-pct { font-size:0.6rem; font-weight:600; margin-top:1px; }
-@media (min-width: 480px) { .dash-row-pct { font-size:0.68rem; } }
+.dash-row-l { display:flex; align-items:center; gap:9px; }
+.dash-row-ico { width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:0.85rem; }
+.dash-row-name { font-size:0.78rem; font-weight:600; color:var(--white); }
+.dash-row-sub { font-size:0.65rem; color:var(--t3); }
+.dash-row-val { font-size:0.8rem; font-weight:700; color:var(--white); font-family:var(--mono); }
+.dash-row-pct { font-size:0.68rem; font-weight:600; margin-top:1px; }
 
 .dash-btns { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.dash-btn { padding:7px; border-radius:8px; font-size:0.7rem; font-weight:700; text-align:center; border:none; cursor:pointer; }
-@media (min-width: 480px) { .dash-btn { padding:8px; font-size:0.75rem; } }
-@media (min-width: 640px) { .dash-btn { padding:9px; font-size:0.78rem; } }
+.dash-btn { padding:9px; border-radius:8px; font-size:0.78rem; font-weight:700; text-align:center; border:none; cursor:pointer; }
 .dash-btn-d { background:rgba(22,89,255,0.18); color:#7aacff; border:1px solid rgba(22,89,255,0.28); }
 .dash-btn-w { background:rgba(13,197,168,0.1); color:var(--teal); border:1px solid rgba(13,197,168,0.2); }
 
 /* ═══════════════════════════════════
-   STATS STRIP - RESPONSIVE
+   STATS STRIP
 ═══════════════════════════════════ */
 .stats-strip { background:var(--bg-1); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-.stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--border); }
-@media (min-width: 640px) { .stats-grid { grid-template-columns:repeat(3,1fr); } }
-@media (min-width: 1024px) { .stats-grid { grid-template-columns:repeat(5,1fr); } }
+.stats-grid { display:grid; grid-template-columns:repeat(5,1fr); }
 .stat-cell {
-  padding:20px 12px; text-align:center;
-  background:var(--bg-1);
+  padding:28px 0; text-align:center;
+  border-right:1px solid var(--border);
 }
-@media (min-width: 480px) { .stat-cell { padding:24px 12px; } }
-@media (min-width: 768px) { .stat-cell { padding:28px 0; } }
-.stat-cell-num { font-size:1.3rem; font-weight:800; color:var(--white); letter-spacing:-1px; font-family:var(--mono); }
-@media (min-width: 480px) { .stat-cell-num { font-size:1.5rem; } }
-@media (min-width: 640px) { .stat-cell-num { font-size:1.7rem; } }
-@media (min-width: 768px) { .stat-cell-num { font-size:1.9rem; } }
+.stat-cell:last-child { border-right:none; }
+.stat-cell-num { font-size:1.9rem; font-weight:800; color:var(--white); letter-spacing:-1px; font-family:var(--mono); }
 .stat-cell-num span { color:var(--blue-h); }
-.stat-cell-lbl { font-size:0.6rem; color:var(--t3); margin-top:4px; font-weight:500; }
-@media (min-width: 480px) { .stat-cell-lbl { font-size:0.65rem; } }
-@media (min-width: 768px) { .stat-cell-lbl { font-size:0.73rem; } }
+.stat-cell-lbl { font-size:0.73rem; color:var(--t3); margin-top:4px; font-weight:500; }
 
 /* ═══════════════════════════════════
-   ASSET CARDS - RESPONSIVE GRID
+   ASSET CARDS
 ═══════════════════════════════════ */
-.asset-grid { display:grid; grid-template-columns:1fr; gap:16px; margin-top:32px; }
-@media (min-width: 640px) { .asset-grid { grid-template-columns:repeat(2,1fr); gap:20px; margin-top:48px; } }
-@media (min-width: 1024px) { .asset-grid { grid-template-columns:repeat(4,1fr); } }
+.asset-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-top:48px; }
 .asset-card {
   background:var(--card); border:1px solid var(--border);
-  border-radius:var(--radius-lg); padding:20px 18px;
+  border-radius:var(--radius-lg); padding:28px 24px;
   transition:all 0.25s; position:relative; overflow:hidden;
 }
-@media (min-width: 480px) { .asset-card { padding:24px 20px; } }
-@media (min-width: 640px) { .asset-card { padding:28px 24px; } }
 .asset-card:hover { border-color:var(--border-2); transform:translateY(-3px); box-shadow:0 20px 40px rgba(0,0,0,0.25); }
-.asset-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-@media (min-width: 480px) { .asset-card-top { margin-bottom:20px; } }
-.asset-ico { font-size:1.3rem; }
-@media (min-width: 480px) { .asset-ico { font-size:1.5rem; } }
-@media (min-width: 640px) { .asset-ico { font-size:1.6rem; } }
+.asset-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.asset-ico { font-size:1.6rem; }
 .asset-ret {
-  padding:4px 8px; border-radius:50px; font-size:0.6rem; font-weight:700;
+  padding:4px 10px; border-radius:50px; font-size:0.68rem; font-weight:700;
   background:rgba(23,201,100,0.1); color:var(--green); border:1px solid rgba(23,201,100,0.2);
 }
-@media (min-width: 480px) { .asset-ret { font-size:0.68rem; padding:4px 10px; } }
-.asset-name { font-size:0.9rem; font-weight:700; color:var(--white); margin-bottom:6px; }
-@media (min-width: 480px) { .asset-name { font-size:0.95rem; } }
-@media (min-width: 640px) { .asset-name { font-size:1.05rem; margin-bottom:8px; } }
-.asset-desc { font-size:0.7rem; color:var(--t2); line-height:1.6; margin-bottom:16px; }
-@media (min-width: 480px) { .asset-desc { font-size:0.75rem; } }
-@media (min-width: 640px) { .asset-desc { font-size:0.83rem; line-height:1.68; margin-bottom:22px; } }
-.asset-line { border:none; border-top:1px solid var(--border); margin-bottom:14px; }
-@media (min-width: 640px) { .asset-line { margin-bottom:18px; } }
-.asset-meta { display:flex; gap:16px; flex-wrap:wrap; }
-@media (min-width: 480px) { .asset-meta { gap:20px; } }
-.asset-meta-label { font-size:0.55rem; color:var(--t3); text-transform:uppercase; letter-spacing:1px; margin-bottom:2px; }
-@media (min-width: 480px) { .asset-meta-label { font-size:0.6rem; } }
-@media (min-width: 640px) { .asset-meta-label { font-size:0.65rem; margin-bottom:3px; } }
-.asset-meta-val { font-size:0.7rem; font-weight:700; color:var(--white); font-family:var(--mono); }
-@media (min-width: 480px) { .asset-meta-val { font-size:0.75rem; } }
-@media (min-width: 640px) { .asset-meta-val { font-size:0.85rem; } }
+.asset-name { font-size:1.05rem; font-weight:700; color:var(--white); margin-bottom:8px; }
+.asset-desc { font-size:0.83rem; color:var(--t2); line-height:1.68; margin-bottom:22px; }
+.asset-line { border:none; border-top:1px solid var(--border); margin-bottom:18px; }
+.asset-meta { display:flex; gap:20px; }
+.asset-meta-item {}
+.asset-meta-label { font-size:0.65rem; color:var(--t3); text-transform:uppercase; letter-spacing:1px; margin-bottom:3px; }
+.asset-meta-val { font-size:0.85rem; font-weight:700; color:var(--white); font-family:var(--mono); }
 
 /* ═══════════════════════════════════
-   MARKETS TABLE - RESPONSIVE (Horizontal Scroll)
+   MARKETS TABLE
 ═══════════════════════════════════ */
 .market-table-wrap {
   background:var(--card); border:1px solid var(--border);
-  border-radius:var(--radius-lg); overflow-x:auto; margin-top:32px;
-  -webkit-overflow-scrolling:touch;
+  border-radius:var(--radius-lg); overflow:hidden; margin-top:48px;
 }
-@media (min-width: 768px) { .market-table-wrap { margin-top:48px; } }
 .market-table-head {
-  padding:14px 16px; border-bottom:1px solid var(--border);
-  display:flex; flex-direction:column; align-items:flex-start; gap:12px;
+  padding:18px 24px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
 }
-@media (min-width: 640px) {
-  .market-table-head { flex-direction:row; align-items:center; justify-content:space-between; padding:18px 24px; }
-}
-.market-table-head-title { font-size:0.8rem; font-weight:700; color:var(--white); }
-@media (min-width: 480px) { .market-table-head-title { font-size:0.85rem; } }
-@media (min-width: 640px) { .market-table-head-title { font-size:0.9rem; } }
-.market-filters { display:flex; gap:4px; flex-wrap:wrap; }
+.market-table-head-title { font-size:0.9rem; font-weight:700; color:var(--white); }
+.market-filters { display:flex; gap:4px; }
 .mf {
-  padding:5px 12px; border-radius:7px; font-size:0.65rem; font-weight:600;
+  padding:5px 14px; border-radius:7px; font-size:0.75rem; font-weight:600;
   border:1px solid transparent; background:none; color:var(--t2); cursor:pointer; transition:all 0.2s;
 }
-@media (min-width: 480px) { .mf { padding:5px 14px; font-size:0.75rem; } }
 .mf.on, .mf:hover { background:rgba(22,89,255,0.12); color:#7aacff; border-color:rgba(22,89,255,0.22); }
 
-.market-table-wrap table {
-  min-width: 750px;
-  width: 100%;
-  border-collapse:collapse;
-}
+table { width:100%; border-collapse:collapse; }
 thead th {
-  padding:10px 12px; text-align:left;
-  font-size:0.6rem; font-weight:700; color:var(--t3);
+  padding:12px 20px; text-align:left;
+  font-size:0.68rem; font-weight:700; color:var(--t3);
   text-transform:uppercase; letter-spacing:1px;
   border-bottom:1px solid var(--border);
   background:rgba(255,255,255,0.015);
 }
-@media (min-width: 640px) { thead th { padding:12px 20px; font-size:0.68rem; } }
+thead th:last-child { text-align:right; }
 tbody tr { transition:background 0.15s; }
 tbody tr:hover { background:rgba(255,255,255,0.018); }
-tbody td { padding:10px 12px; font-size:0.7rem; border-bottom:1px solid rgba(255,255,255,0.025); vertical-align:middle; }
-@media (min-width: 640px) { tbody td { padding:14px 20px; font-size:0.875rem; } }
-.td-asset { display:flex; align-items:center; gap:8px; }
-@media (min-width: 640px) { .td-asset { gap:13px; } }
-.td-ico { width:28px; height:28px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:0.8rem; flex-shrink:0; }
-@media (min-width: 640px) { .td-ico { width:36px; height:36px; font-size:1rem; } }
-.td-sym { font-weight:700; color:var(--white); font-size:0.75rem; font-family:var(--mono); }
-@media (min-width: 640px) { .td-sym { font-size:0.88rem; } }
-.td-full-name { font-size:0.6rem; color:var(--t3); margin-top:1px; }
-@media (min-width: 640px) { .td-full-name { font-size:0.72rem; } }
-.td-price { font-weight:600; color:var(--white); font-family:var(--mono); font-size:0.7rem; }
-@media (min-width: 640px) { .td-price { font-size:0.875rem; } }
-.td-up { color:var(--green); font-weight:700; font-size:0.65rem; font-family:var(--mono); }
-@media (min-width: 640px) { .td-up { font-size:0.82rem; } }
-.td-dn { color:var(--red); font-weight:700; font-size:0.65rem; font-family:var(--mono); }
-@media (min-width: 640px) { .td-dn { font-size:0.82rem; } }
-.td-muted { color:var(--t2); font-size:0.65rem; font-family:var(--mono); }
-@media (min-width: 640px) { .td-muted { font-size:0.82rem; } }
+tbody td { padding:14px 20px; font-size:0.875rem; border-bottom:1px solid rgba(255,255,255,0.025); vertical-align:middle; }
+tbody tr:last-child td { border-bottom:none; }
+.td-asset { display:flex; align-items:center; gap:13px; }
+.td-ico { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.td-sym { font-weight:700; color:var(--white); font-size:0.88rem; font-family:var(--mono); }
+.td-full-name { font-size:0.72rem; color:var(--t3); margin-top:1px; }
+.td-price { font-weight:600; color:var(--white); font-family:var(--mono); }
+.td-up { color:var(--green); font-weight:700; font-size:0.82rem; font-family:var(--mono); }
+.td-dn { color:var(--red); font-weight:700; font-size:0.82rem; font-family:var(--mono); }
+.td-muted { color:var(--t2); font-size:0.82rem; font-family:var(--mono); }
 .spark-path { fill:none; stroke-width:1.5; }
 .trade-btn {
-  padding:4px 12px; border-radius:7px; font-size:0.65rem; font-weight:700;
+  float:right; padding:6px 18px; border-radius:7px; font-size:0.75rem; font-weight:700;
   background:rgba(22,89,255,0.12); color:#7aacff; border:1px solid rgba(22,89,255,0.22);
   cursor:pointer; transition:all 0.2s;
-  white-space:nowrap;
 }
-@media (min-width: 640px) { .trade-btn { padding:6px 18px; font-size:0.75rem; } }
 .trade-btn:hover { background:rgba(22,89,255,0.25); }
 
 /* ═══════════════════════════════════
-   PRICING TIERS - RESPONSIVE
+   HOW IT WORKS — FULL SECTION
 ═══════════════════════════════════ */
-.tiers-grid { display:grid; grid-template-columns:1fr; gap:20px; margin-top:32px; }
-@media (min-width: 768px) { .tiers-grid { grid-template-columns:repeat(3,1fr); gap:24px; margin-top:48px; } }
+.hiw-bg { background:var(--bg-1); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+
+.hiw-tabs { display:flex; gap:4px; background:var(--bg-2); border:1px solid var(--border); border-radius:12px; padding:5px; width:fit-content; margin:0 auto 56px; }
+.hiw-tab { padding:10px 24px; border-radius:9px; font-size:0.85rem; font-weight:600; color:var(--t2); background:none; border:none; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.hiw-tab.active { background:var(--blue); color:var(--white); box-shadow:0 4px 14px rgba(22,89,255,0.3); }
+
+.hiw-panel { display:none; }
+.hiw-panel.on { display:block; animation:fadein 0.3s ease; }
+
+/* steps shared */
+.steps-wrap { display:flex; flex-direction:column; gap:0; }
+.step-row {
+  display:flex; gap:0; align-items:stretch;
+}
+.step-connector { display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:52px; }
+.step-num {
+  width:40px; height:40px; border-radius:50%; border:2px solid var(--blue);
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.82rem; font-weight:700; color:var(--blue); flex-shrink:0;
+  background:rgba(22,89,255,0.1);
+}
+.step-line { flex:1; width:2px; background:var(--border); margin:6px 0; }
+.step-row:last-child .step-line { display:none; }
+.step-body {
+  flex:1; padding:0 0 40px 28px;
+}
+.step-title { font-size:1rem; font-weight:700; color:var(--white); margin-bottom:10px; padding-top:7px; }
+.step-desc { font-size:0.875rem; color:var(--t2); line-height:1.75; }
+
+/* warning box */
+.warn-box {
+  background:rgba(232,163,24,0.07); border:1px solid rgba(232,163,24,0.2);
+  border-left:3px solid var(--gold); border-radius:10px;
+  padding:16px 18px; margin-top:14px;
+  font-size:0.83rem; color:var(--t2); line-height:1.7;
+}
+.warn-box strong { color:var(--gold); display:block; margin-bottom:6px; font-size:0.85rem; }
+
+/* info box */
+.info-box {
+  background:rgba(22,89,255,0.06); border:1px solid rgba(22,89,255,0.15);
+  border-left:3px solid var(--blue); border-radius:10px;
+  padding:16px 18px; margin-top:14px;
+  font-size:0.83rem; color:var(--t2); line-height:1.7;
+}
+.info-box strong { color:#7aacff; display:block; margin-bottom:6px; font-size:0.85rem; }
+
+/* success box */
+.ok-box {
+  background:rgba(23,201,100,0.05); border:1px solid rgba(23,201,100,0.18);
+  border-left:3px solid var(--green); border-radius:10px;
+  padding:16px 18px; margin-top:14px;
+  font-size:0.83rem; color:var(--t2); line-height:1.7;
+}
+.ok-box strong { color:var(--green); display:block; margin-bottom:6px; font-size:0.85rem; }
+
+/* mock-ui payment address block */
+.addr-block {
+  background:var(--bg-2); border:1px solid var(--border-2);
+  border-radius:10px; padding:18px 20px; margin-top:16px;
+}
+.addr-block-label { font-size:0.68rem; color:var(--t3); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:600; }
+.addr-string {
+  font-family:var(--mono); font-size:0.82rem; color:var(--white);
+  background:var(--bg-3); border:1px solid var(--border);
+  border-radius:8px; padding:12px 14px;
+  word-break:break-all; letter-spacing:0.5px; margin-bottom:10px;
+}
+.addr-amount { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+.addr-amount-label { font-size:0.78rem; color:var(--t3); }
+.addr-amount-val { font-family:var(--mono); font-size:1.05rem; font-weight:700; color:var(--white); }
+
+.confirm-btn-mock {
+  width:100%; margin-top:18px; padding:13px; border-radius:10px; border:none;
+  background:var(--blue); color:var(--white); font-size:0.9rem; font-weight:700;
+  cursor:pointer; transition:all 0.2s;
+}
+.confirm-btn-mock:hover { background:var(--blue-h); }
+
+/* verification timer mock */
+.verify-mock {
+  background:var(--bg-2); border:1px solid var(--border-2);
+  border-radius:10px; padding:20px 22px; margin-top:16px;
+  display:flex; align-items:center; gap:16px;
+}
+.verify-spinner {
+  width:40px; height:40px; border-radius:50%; flex-shrink:0;
+  border:3px solid var(--border-2); border-top-color:var(--blue);
+  animation:spin 1.2s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.verify-text-title { font-size:0.9rem; font-weight:700; color:var(--white); margin-bottom:3px; }
+.verify-text-sub { font-size:0.78rem; color:var(--t2); }
+
+/* two-col layout for how-it-works */
+.hiw-two { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; }
+.hiw-side-note {
+  background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:28px; position:sticky; top:88px;
+}
+.hiw-side-note-title { font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--border); }
+.hiw-note-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.82rem; }
+.hiw-note-row:last-child { border-bottom:none; }
+.hiw-note-key { color:var(--t3); font-weight:500; }
+.hiw-note-val { color:var(--white); font-weight:700; font-family:var(--mono); }
+.hiw-note-val.good { color:var(--green); }
+.hiw-note-val.warn { color:var(--gold); }
+
+/* crypto guide grid */
+.crypto-guide-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:16px; }
+.crypto-guide-card {
+  background:var(--bg-3); border:1px solid var(--border); border-radius:10px; padding:16px;
+}
+.cgc-ico { font-size:1.3rem; margin-bottom:10px; }
+.cgc-name { font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:6px; }
+.cgc-desc { font-size:0.75rem; color:var(--t2); line-height:1.65; }
+
+/* ═══════════════════════════════════
+   INVESTMENT TIERS
+═══════════════════════════════════ */
+.tiers-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px; }
 .tier-card {
   background:var(--card); border:1px solid var(--border);
-  border-radius:var(--radius-lg); padding:24px 20px; position:relative; overflow:hidden; transition:all 0.25s;
+  border-radius:var(--radius-lg); padding:32px 28px; position:relative; overflow:hidden; transition:all 0.25s;
 }
-@media (min-width: 480px) { .tier-card { padding:28px 24px; } }
-@media (min-width: 640px) { .tier-card { padding:32px 28px; } }
 .tier-card:hover { box-shadow:0 20px 50px rgba(0,0,0,0.3); transform:translateY(-3px); }
 .tier-card.featured { border-color:rgba(22,89,255,0.35); background:rgba(22,89,255,0.05); }
 .tier-featured-tag {
-  position:absolute; top:16px; right:16px;
-  background:var(--blue); color:var(--white); padding:3px 10px;
-  border-radius:50px; font-size:0.6rem; font-weight:800; letter-spacing:0.5px; text-transform:uppercase;
+  position:absolute; top:22px; right:22px;
+  background:var(--blue); color:var(--white); padding:4px 12px;
+  border-radius:50px; font-size:0.68rem; font-weight:800; letter-spacing:0.5px; text-transform:uppercase;
 }
-@media (min-width: 480px) { .tier-featured-tag { top:20px; right:20px; padding:4px 10px; font-size:0.65rem; } }
-@media (min-width: 640px) { .tier-featured-tag { top:22px; right:22px; padding:4px 12px; font-size:0.68rem; } }
-.tier-name-label { font-size:0.6rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
-@media (min-width: 640px) { .tier-name-label { font-size:0.7rem; margin-bottom:8px; } }
-.tier-name { font-size:1rem; font-weight:800; color:var(--white); margin-bottom:4px; }
-@media (min-width: 480px) { .tier-name { font-size:1.1rem; } }
-@media (min-width: 640px) { .tier-name { font-size:1.25rem; margin-bottom:6px; } }
-.tier-range { font-size:0.7rem; color:var(--t3); margin-bottom:20px; }
-@media (min-width: 640px) { .tier-range { font-size:0.82rem; margin-bottom:24px; } }
-.tier-fee { font-size:1.8rem; font-weight:800; color:var(--white); font-family:var(--mono); margin-bottom:4px; }
-@media (min-width: 480px) { .tier-fee { font-size:2rem; } }
-@media (min-width: 640px) { .tier-fee { font-size:2.4rem; } }
-.tier-fee-note { font-size:0.7rem; color:var(--t3); margin-bottom:20px; }
-@media (min-width: 640px) { .tier-fee-note { font-size:0.8rem; margin-bottom:24px; } }
-.tier-hr { border:none; border-top:1px solid var(--border); margin-bottom:18px; }
-@media (min-width: 640px) { .tier-hr { margin-bottom:22px; } }
-.tier-perks { list-style:none; display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
-@media (min-width: 640px) { .tier-perks { gap:11px; margin-bottom:28px; } }
-.tier-perk { display:flex; align-items:flex-start; gap:8px; font-size:0.75rem; color:var(--t2); }
-@media (min-width: 640px) { .tier-perk { gap:10px; font-size:0.85rem; } }
-.perk-check { color:var(--green); font-size:0.65rem; font-weight:800; flex-shrink:0; margin-top:1px; }
-.perk-x { color:var(--t4); font-size:0.65rem; font-weight:800; flex-shrink:0; margin-top:1px; }
+.tier-name-label { font-size:0.7rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+.tier-name { font-size:1.25rem; font-weight:800; color:var(--white); margin-bottom:6px; }
+.tier-range { font-size:0.82rem; color:var(--t3); margin-bottom:24px; }
+.tier-fee { font-size:2.4rem; font-weight:800; color:var(--white); font-family:var(--mono); margin-bottom:4px; }
+.tier-fee-note { font-size:0.8rem; color:var(--t3); margin-bottom:24px; }
+.tier-hr { border:none; border-top:1px solid var(--border); margin-bottom:22px; }
+.tier-perks { list-style:none; display:flex; flex-direction:column; gap:11px; margin-bottom:28px; }
+.tier-perk { display:flex; align-items:flex-start; gap:10px; font-size:0.85rem; color:var(--t2); }
+.perk-check { color:var(--green); font-size:0.75rem; font-weight:800; flex-shrink:0; margin-top:1px; }
+.perk-x { color:var(--t4); font-size:0.75rem; font-weight:800; flex-shrink:0; margin-top:1px; }
 .tier-cta-btn {
-  width:100%; padding:10px; border-radius:10px; font-size:0.8rem; font-weight:700;
+  width:100%; padding:12px; border-radius:10px; font-size:0.88rem; font-weight:700;
   cursor:pointer; transition:all 0.2s; border:none;
 }
-@media (min-width: 480px) { .tier-cta-btn { padding:11px; font-size:0.85rem; } }
-@media (min-width: 640px) { .tier-cta-btn { padding:12px; font-size:0.88rem; } }
 .tier-cta-main { background:var(--blue); color:var(--white); }
 .tier-cta-main:hover { background:var(--blue-h); }
 .tier-cta-out { background:transparent; color:var(--t1); border:1px solid var(--border-2); }
 .tier-cta-out:hover { border-color:var(--t3); color:var(--white); }
 
 /* ═══════════════════════════════════
-   SECURITY GRID - RESPONSIVE
+   SECURITY GRID
 ═══════════════════════════════════ */
-.sec-grid { display:grid; grid-template-columns:1fr; gap:16px; margin-top:32px; }
-@media (min-width: 640px) { .sec-grid { grid-template-columns:repeat(2,1fr); gap:20px; margin-top:48px; } }
-@media (min-width: 1024px) { .sec-grid { grid-template-columns:repeat(3,1fr); gap:24px; } }
+.sec-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px; }
 .sec-card {
   background:var(--card); border:1px solid var(--border);
-  border-radius:var(--radius-lg); padding:20px 18px;
+  border-radius:var(--radius-lg); padding:28px 24px;
 }
-@media (min-width: 480px) { .sec-card { padding:24px 20px; } }
-@media (min-width: 640px) { .sec-card { padding:28px 24px; } }
-.sec-ico { font-size:1.2rem; margin-bottom:12px; }
-@media (min-width: 480px) { .sec-ico { font-size:1.3rem; } }
-@media (min-width: 640px) { .sec-ico { font-size:1.5rem; margin-bottom:16px; } }
-.sec-name { font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:8px; }
-@media (min-width: 480px) { .sec-name { font-size:0.9rem; } }
-@media (min-width: 640px) { .sec-name { font-size:0.95rem; margin-bottom:10px; } }
-.sec-text { font-size:0.7rem; color:var(--t2); line-height:1.6; }
-@media (min-width: 480px) { .sec-text { font-size:0.75rem; } }
-@media (min-width: 640px) { .sec-text { font-size:0.83rem; line-height:1.72; } }
-.sec-badges { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
-.sec-badge { padding:3px 8px; border-radius:5px; font-size:0.55rem; font-weight:700; background:rgba(255,255,255,0.04); color:var(--t3); border:1px solid var(--border); }
-@media (min-width: 480px) { .sec-badge { padding:4px 8px; font-size:0.6rem; } }
-@media (min-width: 640px) { .sec-badge { padding:4px 10px; font-size:0.67rem; } }
+.sec-ico { font-size:1.5rem; margin-bottom:16px; }
+.sec-name { font-size:0.95rem; font-weight:700; color:var(--white); margin-bottom:10px; }
+.sec-text { font-size:0.83rem; color:var(--t2); line-height:1.72; }
+.sec-badges { display:flex; flex-wrap:wrap; gap:7px; margin-top:16px; }
+.sec-badge { padding:4px 10px; border-radius:5px; font-size:0.67rem; font-weight:700; background:rgba(255,255,255,0.04); color:var(--t3); border:1px solid var(--border); }
 
 /* ═══════════════════════════════════
-   CTA BANNER - RESPONSIVE
+   VAULT PAGE
 ═══════════════════════════════════ */
-.cta-section { padding:0 20px 50px; }
-@media (min-width: 768px) { .cta-section { padding:0 40px 80px; } }
+.vault-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:48px; }
+.vault-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px 24px; }
+.vault-card h3 { font-size:0.95rem; font-weight:700; color:var(--white); margin-bottom:12px; }
+.vault-card p { font-size:0.83rem; color:var(--t2); line-height:1.72; }
+.vault-card ul { list-style:none; display:flex; flex-direction:column; gap:9px; margin-top:12px; }
+.vault-card li { font-size:0.83rem; color:var(--t2); padding-left:16px; position:relative; }
+.vault-card li::before { content:'—'; position:absolute; left:0; color:var(--t4); }
+.vault-locs { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+.vault-loc { display:flex; justify-content:space-between; align-items:center; background:var(--bg-3); border:1px solid var(--border); border-radius:10px; padding:14px 18px; }
+.vault-loc-l { display:flex; align-items:center; gap:12px; }
+.vault-loc-flag { font-size:1.3rem; }
+.vault-loc-name { font-size:0.88rem; font-weight:700; color:var(--white); }
+.vault-loc-sub { font-size:0.72rem; color:var(--t3); }
+.vault-loc-stat { padding:4px 12px; border-radius:50px; font-size:0.68rem; font-weight:700; }
+.live-stat { background:rgba(23,201,100,0.1); color:var(--green); border:1px solid rgba(23,201,100,0.2); }
+.soon-stat { background:rgba(232,163,24,0.1); color:var(--gold); border:1px solid rgba(232,163,24,0.2); }
+
+/* ═══════════════════════════════════
+   ABOUT PAGE
+═══════════════════════════════════ */
+.about-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:48px; }
+.about-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px 24px; }
+.about-card h3 { font-size:0.95rem; font-weight:700; color:var(--white); margin-bottom:14px; }
+.about-card p { font-size:0.83rem; color:var(--t2); line-height:1.75; }
+.about-card ul { list-style:none; display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.about-card li { font-size:0.83rem; color:var(--t2); padding-left:16px; position:relative; }
+.about-card li::before { content:'→'; position:absolute; left:0; color:var(--blue-h); font-weight:700; }
+.timeline { display:flex; flex-direction:column; gap:0; }
+.tl-item { display:flex; gap:14px; padding-bottom:16px; position:relative; }
+.tl-dot-wrap { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+.tl-dot { width:10px; height:10px; border-radius:50%; background:var(--blue); flex-shrink:0; margin-top:5px; }
+.tl-line { flex:1; width:1px; background:var(--border); margin-top:4px; }
+.tl-item:last-child .tl-line { display:none; }
+.tl-year { font-size:0.72rem; font-weight:700; color:var(--blue-h); margin-bottom:2px; font-family:var(--mono); }
+.tl-text { font-size:0.82rem; color:var(--t2); }
+.team-list { display:flex; flex-direction:column; gap:0; }
+.team-item { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+.team-item:last-child { border-bottom:none; }
+.team-av { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:800; flex-shrink:0; }
+.team-name { font-size:0.88rem; font-weight:700; color:var(--white); }
+.team-role { font-size:0.73rem; color:var(--t3); }
+
+/* ═══════════════════════════════════
+   INNER PAGE HERO
+═══════════════════════════════════ */
+.inner-hero { background:var(--bg-1); border-bottom:1px solid var(--border); padding:56px 0 40px; }
+.inner-hero h1 { font-size:clamp(1.8rem,2.8vw,2.6rem); font-weight:800; color:var(--white); letter-spacing:-0.5px; margin-bottom:12px; }
+.inner-hero p { font-size:1rem; color:var(--t2); max-width:600px; line-height:1.75; }
+
+.stat-row-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin:40px 0; }
+.stat-box { background:var(--bg-1); padding:24px 28px; }
+.stat-box-num { font-size:1.9rem; font-weight:800; color:var(--white); font-family:var(--mono); letter-spacing:-1px; }
+.stat-box-lbl { font-size:0.72rem; color:var(--t3); margin-top:4px; font-weight:500; }
+
+.info-2col { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.info-block { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px 24px; }
+.info-block h3 { font-size:0.95rem; font-weight:700; color:var(--white); margin-bottom:14px; }
+.info-block p { font-size:0.83rem; color:var(--t2); line-height:1.75; }
+.info-block ul { list-style:none; display:flex; flex-direction:column; gap:9px; margin-top:10px; }
+.info-block li { font-size:0.83rem; color:var(--t2); padding-left:16px; position:relative; }
+.info-block li::before { content:'✓'; position:absolute; left:0; color:var(--teal); font-weight:800; font-size:0.72rem; }
+.info-block strong { color:var(--t1); }
+.full-block { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:32px; margin-top:20px; }
+.full-block h3 { font-size:1rem; font-weight:700; color:var(--white); margin-bottom:20px; }
+.full-block-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+.fbg-item { font-size:0.83rem; color:var(--t2); line-height:1.7; }
+.fbg-item strong { color:var(--white); display:block; margin-bottom:6px; }
+
+/* ═══════════════════════════════════
+   CTA BANNER
+═══════════════════════════════════ */
+.cta-section { padding:0 40px 80px; }
 .cta-banner {
   max-width:1280px; margin:0 auto;
   background:linear-gradient(130deg, rgba(22,89,255,0.1), rgba(13,197,168,0.05));
   border:1px solid rgba(22,89,255,0.2); border-radius:var(--radius-lg);
-  padding:35px 20px; text-align:center; position:relative; overflow:hidden;
+  padding:60px; text-align:center; position:relative; overflow:hidden;
 }
-@media (min-width: 480px) { .cta-banner { padding:40px 28px; } }
-@media (min-width: 768px) { .cta-banner { padding:60px; } }
 .cta-banner::before {
   content:''; position:absolute; top:-100px; left:50%; transform:translateX(-50%);
   width:500px; height:300px; border-radius:50%;
   background:radial-gradient(circle,rgba(22,89,255,0.1),transparent);
   pointer-events:none;
 }
-.cta-banner h2 { font-size:clamp(1.4rem, 5vw, 2.6rem); font-weight:800; color:var(--white); margin-bottom:12px; letter-spacing:-0.5px; position:relative; }
-.cta-banner p { font-size:0.85rem; color:var(--t2); margin-bottom:24px; position:relative; max-width:540px; margin-left:auto; margin-right:auto; }
-@media (min-width: 768px) { .cta-banner p { font-size:1rem; margin-bottom:32px; } }
-.cta-btns { display:flex; gap:12px; justify-content:center; position:relative; flex-wrap:wrap; }
+.cta-banner h2 { font-size:clamp(1.8rem,2.8vw,2.6rem); font-weight:800; color:var(--white); margin-bottom:14px; letter-spacing:-0.5px; position:relative; }
+.cta-banner p { font-size:1rem; color:var(--t2); margin-bottom:32px; position:relative; max-width:540px; margin-left:auto; margin-right:auto; }
+.cta-btns { display:flex; gap:14px; justify-content:center; position:relative; flex-wrap:wrap; }
 
 /* ═══════════════════════════════════
-   FOOTER - RESPONSIVE
+   FOOTER
 ═══════════════════════════════════ */
 footer {
   background:var(--bg-1); border-top:1px solid var(--border);
-  padding:40px 20px 24px;
+  padding:56px 40px 32px;
 }
-@media (min-width: 768px) { footer { padding:56px 40px 32px; } }
 .footer-inner { max-width:1280px; margin:0 auto; }
-.footer-top { display:grid; grid-template-columns:1fr; gap:32px; margin-bottom:40px; }
-@media (min-width: 640px) { .footer-top { grid-template-columns:repeat(2,1fr); gap:40px; } }
-@media (min-width: 1024px) { .footer-top { grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:40px; margin-bottom:48px; } }
+.footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:40px; margin-bottom:48px; }
 .footer-brand {}
-.footer-logo { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.footer-logo { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
 .footer-logo-box { width:32px; height:32px; border-radius:8px; background:var(--blue); display:flex; align-items:center; justify-content:center; }
-.footer-logo-name { font-weight:800; color:var(--white); font-size:0.9rem; }
-@media (min-width: 480px) { .footer-logo-name { font-size:1rem; } }
-.footer-tagline { font-size:0.7rem; color:var(--t3); line-height:1.6; max-width:240px; margin-bottom:16px; }
-@media (min-width: 480px) { .footer-tagline { font-size:0.75rem; } }
-@media (min-width: 768px) { .footer-tagline { font-size:0.82rem; margin-bottom:20px; } }
-.footer-certs { display:flex; flex-wrap:wrap; gap:6px; }
-.footer-cert { padding:3px 8px; border-radius:5px; font-size:0.55rem; font-weight:700; background:rgba(255,255,255,0.03); color:var(--t3); border:1px solid var(--border); }
-@media (min-width: 480px) { .footer-cert { font-size:0.6rem; padding:4px 8px; } }
-@media (min-width: 768px) { .footer-cert { font-size:0.65rem; padding:4px 9px; } }
-.footer-col h4 { font-size:0.65rem; font-weight:700; color:var(--white); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:14px; }
-@media (min-width: 768px) { .footer-col h4 { font-size:0.72rem; margin-bottom:16px; } }
-.footer-col ul { list-style:none; display:flex; flex-direction:column; gap:8px; }
-@media (min-width: 768px) { .footer-col ul { gap:11px; } }
-.footer-col li a { font-size:0.7rem; color:var(--t3); transition:color 0.2s; cursor:pointer; }
-@media (min-width: 480px) { .footer-col li a { font-size:0.75rem; } }
-@media (min-width: 768px) { .footer-col li a { font-size:0.82rem; } }
+.footer-logo-name { font-weight:800; color:var(--white); font-size:1rem; }
+.footer-tagline { font-size:0.82rem; color:var(--t3); line-height:1.7; max-width:240px; margin-bottom:20px; }
+.footer-certs { display:flex; flex-wrap:wrap; gap:7px; }
+.footer-cert { padding:4px 9px; border-radius:5px; font-size:0.65rem; font-weight:700; background:rgba(255,255,255,0.03); color:var(--t3); border:1px solid var(--border); }
+.footer-col h4 { font-size:0.72rem; font-weight:700; color:var(--white); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:16px; }
+.footer-col ul { list-style:none; display:flex; flex-direction:column; gap:11px; }
+.footer-col li a { font-size:0.82rem; color:var(--t3); transition:color 0.2s; cursor:pointer; }
 .footer-col li a:hover { color:var(--t1); }
-.footer-bottom { border-top:1px solid var(--border); padding-top:20px; display:flex; flex-direction:column; align-items:center; gap:14px; }
-@media (min-width: 768px) { .footer-bottom { flex-direction:row; justify-content:space-between; align-items:center; padding-top:24px; gap:14px; } }
-.footer-copy { font-size:0.65rem; color:var(--t4); text-align:center; }
-@media (min-width: 480px) { .footer-copy { font-size:0.7rem; } }
-@media (min-width: 768px) { .footer-copy { font-size:0.75rem; } }
-.footer-legal { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
-.footer-legal a { font-size:0.65rem; color:var(--t4); cursor:pointer; transition:color 0.2s; }
-@media (min-width: 480px) { .footer-legal a { font-size:0.7rem; gap:20px; } }
-@media (min-width: 768px) { .footer-legal a { font-size:0.75rem; } }
+.footer-bottom { border-top:1px solid var(--border); padding-top:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; }
+.footer-copy { font-size:0.75rem; color:var(--t4); }
+.footer-legal { display:flex; gap:20px; }
+.footer-legal a { font-size:0.75rem; color:var(--t4); cursor:pointer; transition:color 0.2s; }
 .footer-legal a:hover { color:var(--t2); }
 
 /* ═══════════════════════════════════
-   HOW IT WORKS - RESPONSIVE (Preserved)
+   RESPONSIVE
 ═══════════════════════════════════ */
-.hiw-bg { background:var(--bg-1); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
-.hiw-tabs { display:flex; flex-wrap:wrap; gap:4px; background:var(--bg-2); border:1px solid var(--border); border-radius:12px; padding:5px; width:fit-content; margin:0 auto 32px; }
-@media (min-width: 768px) { .hiw-tabs { margin:0 auto 56px; } }
-.hiw-tab { padding:6px 16px; border-radius:9px; font-size:0.7rem; font-weight:600; color:var(--t2); background:none; border:none; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
-@media (min-width: 480px) { .hiw-tab { padding:8px 20px; font-size:0.8rem; } }
-@media (min-width: 640px) { .hiw-tab { padding:10px 24px; font-size:0.85rem; } }
-.hiw-tab.active { background:var(--blue); color:var(--white); box-shadow:0 4px 14px rgba(22,89,255,0.3); }
-.hiw-panel { display:none; }
-.hiw-panel.on { display:block; animation:fadein 0.3s ease; }
-.hiw-two { display:grid; grid-template-columns:1fr; gap:40px; align-items:start; }
-@media (min-width: 900px) { .hiw-two { grid-template-columns:1fr 1fr; gap:60px; } }
-.hiw-side-note {
-  background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius-lg);
-  padding:20px; position:sticky; top:88px;
+@media (max-width:1100px) {
+  .hero-inner { grid-template-columns:1fr; }
+  .hero-dash { display:none; }
+  .asset-grid { grid-template-columns:repeat(2,1fr); }
+  .tiers-grid { grid-template-columns:1fr; max-width:480px; margin-left:auto; margin-right:auto; }
+  .stats-grid { grid-template-columns:repeat(3,1fr); }
+  .footer-top { grid-template-columns:1fr 1fr; }
+  .hiw-two { grid-template-columns:1fr; }
 }
-@media (min-width: 480px) { .hiw-side-note { padding:24px; } }
-@media (min-width: 768px) { .hiw-side-note { padding:28px; } }
-.hiw-side-note-title { font-size:0.75rem; font-weight:700; color:var(--white); margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border); }
-@media (min-width: 480px) { .hiw-side-note-title { font-size:0.8rem; } }
-@media (min-width: 768px) { .hiw-side-note-title { font-size:0.85rem; margin-bottom:16px; padding-bottom:14px; } }
-.hiw-note-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.7rem; }
-@media (min-width: 480px) { .hiw-note-row { font-size:0.75rem; } }
-@media (min-width: 768px) { .hiw-note-row { padding:10px 0; font-size:0.82rem; } }
-.hiw-note-key { color:var(--t3); font-weight:500; }
-.hiw-note-val { color:var(--white); font-weight:700; font-family:var(--mono); }
-.hiw-note-val.good { color:var(--green); }
-.hiw-note-val.warn { color:var(--gold); }
-
-/* Steps */
-.steps-wrap { display:flex; flex-direction:column; gap:0; }
-.step-row { display:flex; gap:0; align-items:stretch; }
-.step-connector { display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:40px; }
-@media (min-width: 480px) { .step-connector { width:44px; } }
-@media (min-width: 640px) { .step-connector { width:52px; } }
-.step-num {
-  width:28px; height:28px; border-radius:50%; border:2px solid var(--blue);
-  display:flex; align-items:center; justify-content:center;
-  font-size:0.65rem; font-weight:700; color:var(--blue); flex-shrink:0;
-  background:rgba(22,89,255,0.1);
+@media (max-width:768px) {
+  .wrap { padding:0 20px; }
+  .nav-links { display:none; }
+  #nav { padding:0 20px; }
+  .hero-inner { padding:40px 0; }
+  .asset-grid { grid-template-columns:1fr; }
+  .info-2col { grid-template-columns:1fr; }
+  .sec-grid { grid-template-columns:1fr; }
+  .about-grid { grid-template-columns:1fr; }
+  .vault-grid { grid-template-columns:1fr; }
+  .stat-row-4 { grid-template-columns:repeat(2,1fr); }
+  .full-block-grid { grid-template-columns:1fr 1fr; }
+  .footer-top { grid-template-columns:1fr 1fr; }
+  .crypto-guide-grid { grid-template-columns:1fr; }
+  .cta-banner { padding:40px 28px; }
+  footer { padding:40px 20px 24px; }
+  .cta-section { padding:0 20px 60px; }
 }
-@media (min-width: 480px) { .step-num { width:32px; height:32px; font-size:0.7rem; } }
-@media (min-width: 640px) { .step-num { width:40px; height:40px; font-size:0.82rem; } }
-.step-line { flex:1; width:2px; background:var(--border); margin:4px 0; }
-@media (min-width: 640px) { .step-line { margin:6px 0; } }
-.step-row:last-child .step-line { display:none; }
-.step-body { flex:1; padding:0 0 24px 16px; }
-@media (min-width: 480px) { .step-body { padding:0 0 30px 20px; } }
-@media (min-width: 640px) { .step-body { padding:0 0 40px 28px; } }
-.step-title { font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:8px; padding-top:4px; }
-@media (min-width: 480px) { .step-title { font-size:0.9rem; } }
-@media (min-width: 640px) { .step-title { font-size:1rem; margin-bottom:10px; padding-top:7px; } }
-.step-desc { font-size:0.7rem; color:var(--t2); line-height:1.65; }
-@media (min-width: 480px) { .step-desc { font-size:0.75rem; } }
-@media (min-width: 640px) { .step-desc { font-size:0.875rem; line-height:1.75; } }
-
-/* Warning, Info, OK boxes */
-.warn-box, .info-box, .ok-box {
-  padding:12px 14px; margin-top:12px;
-  font-size:0.7rem; line-height:1.65;
-}
-@media (min-width: 480px) { .warn-box, .info-box, .ok-box { padding:14px 16px; font-size:0.75rem; } }
-@media (min-width: 640px) { .warn-box, .info-box, .ok-box { padding:16px 18px; margin-top:14px; font-size:0.83rem; line-height:1.7; } }
-.warn-box { background:rgba(232,163,24,0.07); border:1px solid rgba(232,163,24,0.2); border-left:3px solid var(--gold); border-radius:10px; }
-.info-box { background:rgba(22,89,255,0.06); border:1px solid rgba(22,89,255,0.15); border-left:3px solid var(--blue); border-radius:10px; }
-.ok-box { background:rgba(23,201,100,0.05); border:1px solid rgba(23,201,100,0.18); border-left:3px solid var(--green); border-radius:10px; }
-
-/* Address block */
-.addr-block {
-  background:var(--bg-2); border:1px solid var(--border-2);
-  border-radius:10px; padding:12px 14px; margin-top:12px;
-}
-@media (min-width: 480px) { .addr-block { padding:14px 16px; } }
-@media (min-width: 640px) { .addr-block { padding:18px 20px; margin-top:16px; } }
-.addr-block-label { font-size:0.6rem; color:var(--t3); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; font-weight:600; }
-@media (min-width: 480px) { .addr-block-label { font-size:0.65rem; } }
-@media (min-width: 640px) { .addr-block-label { font-size:0.68rem; margin-bottom:8px; } }
-.addr-string {
-  font-family:var(--mono); font-size:0.7rem; color:var(--white);
-  background:var(--bg-3); border:1px solid var(--border);
-  border-radius:8px; padding:8px 10px;
-  word-break:break-all; letter-spacing:0.5px; margin-bottom:8px;
-}
-@media (min-width: 480px) { .addr-string { font-size:0.75rem; padding:10px 12px; } }
-@media (min-width: 640px) { .addr-string { font-size:0.82rem; padding:12px 14px; margin-bottom:10px; } }
-.addr-amount { display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
-@media (min-width: 640px) { .addr-amount { margin-top:8px; } }
-.addr-amount-label { font-size:0.65rem; color:var(--t3); }
-@media (min-width: 480px) { .addr-amount-label { font-size:0.7rem; } }
-@media (min-width: 640px) { .addr-amount-label { font-size:0.78rem; } }
-.addr-amount-val { font-family:var(--mono); font-size:0.85rem; font-weight:700; color:var(--white); }
-@media (min-width: 480px) { .addr-amount-val { font-size:0.9rem; } }
-@media (min-width: 640px) { .addr-amount-val { font-size:1.05rem; } }
-
-/* Confirm button */
-.confirm-btn-mock {
-  width:100%; margin-top:14px; padding:10px; border-radius:10px; border:none;
-  background:var(--blue); color:var(--white); font-size:0.8rem; font-weight:700;
-  cursor:pointer; transition:all 0.2s;
-}
-@media (min-width: 480px) { .confirm-btn-mock { padding:11px; font-size:0.85rem; } }
-@media (min-width: 640px) { .confirm-btn-mock { margin-top:18px; padding:13px; font-size:0.9rem; } }
-
-/* Verify mock */
-.verify-mock {
-  background:var(--bg-2); border:1px solid var(--border-2);
-  border-radius:10px; padding:14px 16px; margin-top:12px;
-  display:flex; align-items:center; gap:12px;
-}
-@media (min-width: 480px) { .verify-mock { padding:16px 18px; gap:14px; } }
-@media (min-width: 640px) { .verify-mock { padding:20px 22px; margin-top:16px; gap:16px; } }
-.verify-spinner {
-  width:28px; height:28px; border-radius:50%; flex-shrink:0;
-  border:3px solid var(--border-2); border-top-color:var(--blue);
-  animation:spin 1.2s linear infinite;
-}
-@media (min-width: 480px) { .verify-spinner { width:32px; height:32px; } }
-@media (min-width: 640px) { .verify-spinner { width:40px; height:40px; } }
-@keyframes spin { to{transform:rotate(360deg)} }
-.verify-text-title { font-size:0.75rem; font-weight:700; color:var(--white); margin-bottom:2px; }
-@media (min-width: 480px) { .verify-text-title { font-size:0.8rem; } }
-@media (min-width: 640px) { .verify-text-title { font-size:0.9rem; margin-bottom:3px; } }
-.verify-text-sub { font-size:0.65rem; color:var(--t2); }
-@media (min-width: 480px) { .verify-text-sub { font-size:0.7rem; } }
-@media (min-width: 640px) { .verify-text-sub { font-size:0.78rem; } }
-
-/* Crypto guide grid */
-.crypto-guide-grid { display:grid; grid-template-columns:1fr; gap:12px; margin-top:12px; }
-@media (min-width: 640px) { .crypto-guide-grid { grid-template-columns:repeat(2,1fr); gap:16px; margin-top:16px; } }
-@media (min-width: 1024px) { .crypto-guide-grid { grid-template-columns:repeat(3,1fr); } }
-.crypto-guide-card {
-  background:var(--bg-3); border:1px solid var(--border); border-radius:10px; padding:12px;
-}
-@media (min-width: 480px) { .crypto-guide-card { padding:14px; } }
-@media (min-width: 640px) { .crypto-guide-card { padding:16px; } }
-.cgc-ico { font-size:1rem; margin-bottom:8px; }
-@media (min-width: 480px) { .cgc-ico { font-size:1.1rem; } }
-@media (min-width: 640px) { .cgc-ico { font-size:1.3rem; margin-bottom:10px; } }
-.cgc-name { font-size:0.75rem; font-weight:700; color:var(--white); margin-bottom:4px; }
-@media (min-width: 480px) { .cgc-name { font-size:0.8rem; } }
-@media (min-width: 640px) { .cgc-name { font-size:0.85rem; margin-bottom:6px; } }
-.cgc-desc { font-size:0.65rem; color:var(--t2); line-height:1.6; }
-@media (min-width: 480px) { .cgc-desc { font-size:0.7rem; } }
-@media (min-width: 640px) { .cgc-desc { font-size:0.75rem; line-height:1.65; } }
-
-/* Inner pages - responsive */
-.inner-hero { background:var(--bg-1); border-bottom:1px solid var(--border); padding:40px 0 30px; }
-@media (min-width: 768px) { .inner-hero { padding:56px 0 40px; } }
-.inner-hero h1 { font-size:clamp(1.5rem, 4vw, 2.6rem); font-weight:800; color:var(--white); letter-spacing:-0.5px; margin-bottom:10px; }
-.inner-hero p { font-size:0.85rem; color:var(--t2); max-width:600px; line-height:1.7; }
-@media (min-width: 768px) { .inner-hero p { font-size:1rem; line-height:1.75; } }
-
-.stat-row-4 { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin:30px 0; }
-@media (min-width: 640px) { .stat-row-4 { grid-template-columns:repeat(4,1fr); margin:40px 0; } }
-.stat-box { background:var(--bg-1); padding:16px 14px; }
-@media (min-width: 480px) { .stat-box { padding:20px 20px; } }
-@media (min-width: 768px) { .stat-box { padding:24px 28px; } }
-.stat-box-num { font-size:1.2rem; font-weight:800; color:var(--white); font-family:var(--mono); letter-spacing:-1px; }
-@media (min-width: 480px) { .stat-box-num { font-size:1.4rem; } }
-@media (min-width: 768px) { .stat-box-num { font-size:1.9rem; } }
-.stat-box-lbl { font-size:0.6rem; color:var(--t3); margin-top:3px; font-weight:500; }
-@media (min-width: 480px) { .stat-box-lbl { font-size:0.65rem; } }
-@media (min-width: 768px) { .stat-box-lbl { font-size:0.72rem; margin-top:4px; } }
-
-.info-2col { display:grid; grid-template-columns:1fr; gap:16px; margin-top:30px; }
-@media (min-width: 768px) { .info-2col { grid-template-columns:repeat(2,1fr); gap:20px; margin-top:48px; } }
-.info-block { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px 18px; }
-@media (min-width: 480px) { .info-block { padding:24px 20px; } }
-@media (min-width: 768px) { .info-block { padding:28px 24px; } }
-.info-block h3 { font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:12px; }
-@media (min-width: 480px) { .info-block h3 { font-size:0.9rem; } }
-@media (min-width: 768px) { .info-block h3 { font-size:0.95rem; margin-bottom:14px; } }
-.info-block p { font-size:0.7rem; color:var(--t2); line-height:1.65; }
-@media (min-width: 480px) { .info-block p { font-size:0.75rem; } }
-@media (min-width: 768px) { .info-block p { font-size:0.83rem; line-height:1.75; } }
-.info-block ul { gap:8px; margin-top:8px; }
-@media (min-width: 768px) { .info-block ul { gap:9px; margin-top:10px; } }
-.info-block li { font-size:0.7rem; }
-@media (min-width: 480px) { .info-block li { font-size:0.75rem; } }
-@media (min-width: 768px) { .info-block li { font-size:0.83rem; } }
-
-.full-block { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; margin-top:16px; }
-@media (min-width: 480px) { .full-block { padding:24px; } }
-@media (min-width: 768px) { .full-block { padding:32px; margin-top:20px; } }
-.full-block h3 { font-size:0.9rem; font-weight:700; color:var(--white); margin-bottom:16px; }
-@media (min-width: 768px) { .full-block h3 { font-size:1rem; margin-bottom:20px; } }
-.full-block-grid { display:grid; grid-template-columns:1fr; gap:20px; }
-@media (min-width: 640px) { .full-block-grid { grid-template-columns:repeat(2,1fr); gap:24px; } }
-@media (min-width: 1024px) { .full-block-grid { grid-template-columns:repeat(3,1fr); gap:28px; } }
-.fbg-item { font-size:0.7rem; color:var(--t2); line-height:1.65; }
-@media (min-width: 480px) { .fbg-item { font-size:0.75rem; } }
-@media (min-width: 768px) { .fbg-item { font-size:0.83rem; line-height:1.7; } }
-.fbg-item strong { color:var(--white); display:block; margin-bottom:6px; }
-
-/* Vault page - responsive */
-.vault-grid { display:grid; grid-template-columns:1fr; gap:16px; margin-top:32px; }
-@media (min-width: 768px) { .vault-grid { grid-template-columns:repeat(2,1fr); gap:20px; margin-top:48px; } }
-.vault-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px 18px; }
-@media (min-width: 480px) { .vault-card { padding:24px 20px; } }
-@media (min-width: 768px) { .vault-card { padding:28px 24px; } }
-.vault-card h3 { font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:10px; }
-@media (min-width: 480px) { .vault-card h3 { font-size:0.9rem; } }
-@media (min-width: 768px) { .vault-card h3 { font-size:0.95rem; margin-bottom:12px; } }
-.vault-card p, .vault-card li { font-size:0.7rem; }
-@media (min-width: 480px) { .vault-card p, .vault-card li { font-size:0.75rem; } }
-@media (min-width: 768px) { .vault-card p, .vault-card li { font-size:0.83rem; } }
-.vault-locs { gap:8px; margin-top:16px; }
-@media (min-width: 768px) { .vault-locs { gap:10px; margin-top:20px; } }
-.vault-loc { padding:10px 14px; flex-wrap:wrap; gap:10px; }
-@media (min-width: 480px) { .vault-loc { padding:12px 16px; } }
-@media (min-width: 768px) { .vault-loc { padding:14px 18px; } }
-.vault-loc-name { font-size:0.8rem; }
-@media (min-width: 768px) { .vault-loc-name { font-size:0.88rem; } }
-.vault-loc-sub { font-size:0.65rem; }
-@media (min-width: 768px) { .vault-loc-sub { font-size:0.72rem; } }
-
-/* About page - responsive */
-.about-grid { display:grid; grid-template-columns:1fr; gap:16px; margin-top:32px; }
-@media (min-width: 768px) { .about-grid { grid-template-columns:repeat(2,1fr); gap:20px; margin-top:48px; } }
-.about-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px 18px; }
-@media (min-width: 480px) { .about-card { padding:24px 20px; } }
-@media (min-width: 768px) { .about-card { padding:28px 24px; } }
-.about-card h3 { font-size:0.85rem; font-weight:700; color:var(--white); margin-bottom:12px; }
-@media (min-width: 480px) { .about-card h3 { font-size:0.9rem; } }
-@media (min-width: 768px) { .about-card h3 { font-size:0.95rem; margin-bottom:14px; } }
-.about-card p, .about-card li { font-size:0.7rem; }
-@media (min-width: 480px) { .about-card p, .about-card li { font-size:0.75rem; } }
-@media (min-width: 768px) { .about-card p, .about-card li { font-size:0.83rem; } }
-.tl-item { gap:10px; padding-bottom:12px; }
-@media (min-width: 480px) { .tl-item { gap:12px; } }
-@media (min-width: 768px) { .tl-item { gap:14px; padding-bottom:16px; } }
-.tl-year { font-size:0.65rem; }
-@media (min-width: 768px) { .tl-year { font-size:0.72rem; } }
-.tl-text { font-size:0.7rem; }
-@media (min-width: 768px) { .tl-text { font-size:0.82rem; } }
-.team-item { gap:10px; padding:8px 0; }
-@media (min-width: 480px) { .team-item { gap:12px; padding:10px 0; } }
-@media (min-width: 768px) { .team-item { gap:12px; padding:12px 0; } }
-.team-av { width:28px; height:28px; font-size:0.65rem; }
-@media (min-width: 480px) { .team-av { width:30px; height:30px; } }
-@media (min-width: 768px) { .team-av { width:36px; height:36px; font-size:0.78rem; } }
-.team-name { font-size:0.8rem; }
-@media (min-width: 768px) { .team-name { font-size:0.88rem; } }
-.team-role { font-size:0.65rem; }
-@media (min-width: 768px) { .team-role { font-size:0.73rem; } }
 </style>
 </head>
 <body>
 
-<!-- ========== NAVIGATION ========== -->
+<!-- ════════════════════════════════
+     NAVIGATION
+════════════════════════════════ -->
 <nav id="nav">
   <div class="nav-logo">
     <div class="nav-logo-box">
@@ -900,36 +674,22 @@ footer {
   <div class="nav-actions">
     <a href="/login" class="btn-ghost">Log In</a>
     <a href="/register" class="btn-solid">Open Account</a>
-    <div class="mobile-menu-btn" id="menuBtn">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </div>
   </div>
 </nav>
 
-<!-- Mobile Navigation Menu -->
-<div class="mobile-nav" id="mobileNav">
-  <a data-page="home">Home</a>
-  <a data-page="how">How It Works</a>
-  <a data-page="investments">Investments</a>
-  <a data-page="markets">Markets</a>
-  <a data-page="vault">Vault</a>
-  <a data-page="about">About</a>
-  <hr style="margin:6px 0; border-color:var(--border);">
-  <a href="/login">Log In</a>
-  <a href="/register">Open Account</a>
-</div>
-
-<!-- ========== TICKER BAR ========== -->
+<!-- ════════════════════════════════
+     TICKER BAR
+════════════════════════════════ -->
 <div class="ticker-bar">
   <div class="ticker-track" id="ticker"></div>
 </div>
 
-<!-- ========== HOME PAGE ========== -->
+<!-- ════════════════════════════════
+     HOME PAGE
+════════════════════════════════ -->
 <div id="home-page" class="page active">
+
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-grid"></div>
     <div class="wrap" style="width:100%;">
@@ -939,23 +699,49 @@ footer {
             <div class="hero-eyebrow-dot"></div>
             Trusted by 150,000+ investors in 150+ countries
           </div>
-          <h1 class="hero-title">One platform.<br>Every asset class.<br>Institutional grade.</h1>
-          <p class="hero-desc">Invest in global stocks, precious metals, real estate, and commodities through a fully regulated, insured, and audited platform. Built for investors who are serious about their portfolio.</p>
+          <h1 class="hero-title">
+            One platform.<br>
+            Every asset class.<br>
+            Institutional grade.
+          </h1>
+          <p class="hero-desc">
+            Invest in global stocks, precious metals, real estate, and commodities through a fully regulated, insured, and audited platform. Built for investors who are serious about their portfolio.
+          </p>
           <div class="hero-ctas">
-            <a href="/register" class="btn-primary">Open Free Account <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+            <a href="/register" class="btn-primary">
+              Open Free Account
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
             <button class="btn-secondary" data-page="how">How It Works</button>
           </div>
           <div class="hero-trust">
-            <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> FINTRAC Regulated</div>
-            <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> SOC 2 Type II Certified</div>
-            <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Lloyd's of London Insured</div>
-            <div class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> PwC Audited</div>
+            <div class="trust-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              FINTRAC Regulated
+            </div>
+            <div class="trust-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              SOC 2 Type II Certified
+            </div>
+            <div class="trust-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Lloyd's of London Insured
+            </div>
+            <div class="trust-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              PwC Audited
+            </div>
           </div>
         </div>
 
+        <!-- DASHBOARD MOCKUP -->
         <div class="hero-dash">
           <div class="dash-bar">
-            <div class="dash-dots"><div class="dash-dot" style="background:#ff5f57"></div><div class="dash-dot" style="background:#febc2e"></div><div class="dash-dot" style="background:#28c840"></div></div>
+            <div class="dash-dots">
+              <div class="dash-dot" style="background:#ff5f57"></div>
+              <div class="dash-dot" style="background:#febc2e"></div>
+              <div class="dash-dot" style="background:#28c840"></div>
+            </div>
             <div class="dash-title">My Portfolio — Qubix Dashboard</div>
             <div class="dash-live">Live</div>
           </div>
@@ -963,131 +749,1337 @@ footer {
             <div class="dash-total-label">Total Portfolio Value</div>
             <div class="dash-total-val">$248,912.40</div>
             <div class="dash-total-chg">+$4,218.62 &nbsp;(+1.72%) today</div>
-            <div class="dash-chart"><svg viewBox="0 0 380 72" preserveAspectRatio="none"><defs><linearGradient id="dg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1659ff" stop-opacity="0.22"/><stop offset="100%" stop-color="#1659ff" stop-opacity="0"/></linearGradient></defs><path d="M0 65 C30 62,60 52,90 46 S140 35,180 28 S240 18,290 13 S340 6,380 4 L380 72 L0 72Z" fill="url(#dg)"/><path d="M0 65 C30 62,60 52,90 46 S140 35,180 28 S240 18,290 13 S340 6,380 4" fill="none" stroke="#1659ff" stroke-width="2"/><circle cx="380" cy="4" r="3.5" fill="#1659ff"/></svg></div>
-            <div class="dash-rows">
-              <div class="dash-row"><div class="dash-row-l"><div class="dash-row-ico" style="background:rgba(23,201,100,0.1)">📈</div><div><div class="dash-row-name">US Equities</div><div class="dash-row-sub">AAPL · NVDA · MSFT</div></div></div><div style="text-align:right"><div class="dash-row-val">$124,400</div><div class="dash-row-pct" style="color:var(--green)">+2.14%</div></div></div>
-              <div class="dash-row"><div class="dash-row-l"><div class="dash-row-ico" style="background:rgba(232,163,24,0.1)">🥇</div><div><div class="dash-row-name">Gold (XAU/USD)</div><div class="dash-row-sub">Physical · Allocated</div></div></div><div style="text-align:right"><div class="dash-row-val">$84,250</div><div class="dash-row-pct" style="color:var(--green)">+1.13%</div></div></div>
-              <div class="dash-row"><div class="dash-row-l"><div class="dash-row-ico" style="background:rgba(22,89,255,0.1)">🏠</div><div><div class="dash-row-name">Real Estate</div><div class="dash-row-sub">3 Properties · Fractional</div></div></div><div style="text-align:right"><div class="dash-row-val">$40,262</div><div class="dash-row-pct" style="color:var(--green)">+0.89%</div></div></div>
+
+            <div class="dash-chart">
+              <svg viewBox="0 0 380 72" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="dg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#1659ff" stop-opacity="0.22"/>
+                    <stop offset="100%" stop-color="#1659ff" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0 65 C30 62,60 52,90 46 S140 35,180 28 S240 18,290 13 S340 6,380 4 L380 72 L0 72Z" fill="url(#dg)"/>
+                <path d="M0 65 C30 62,60 52,90 46 S140 35,180 28 S240 18,290 13 S340 6,380 4" fill="none" stroke="#1659ff" stroke-width="2"/>
+                <circle cx="380" cy="4" r="3.5" fill="#1659ff"/>
+              </svg>
             </div>
-            <div class="dash-btns"><button class="dash-btn dash-btn-d">+ Deposit</button><button class="dash-btn dash-btn-w">Withdraw</button></div>
+
+            <div class="dash-rows">
+              <div class="dash-row">
+                <div class="dash-row-l">
+                  <div class="dash-row-ico" style="background:rgba(23,201,100,0.1)">📈</div>
+                  <div>
+                    <div class="dash-row-name">US Equities</div>
+                    <div class="dash-row-sub">AAPL · NVDA · MSFT</div>
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <div class="dash-row-val">$124,400</div>
+                  <div class="dash-row-pct" style="color:var(--green)">+2.14%</div>
+                </div>
+              </div>
+              <div class="dash-row">
+                <div class="dash-row-l">
+                  <div class="dash-row-ico" style="background:rgba(232,163,24,0.1)">🥇</div>
+                  <div>
+                    <div class="dash-row-name">Gold (XAU/USD)</div>
+                    <div class="dash-row-sub">Physical · Allocated</div>
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <div class="dash-row-val">$84,250</div>
+                  <div class="dash-row-pct" style="color:var(--green)">+1.13%</div>
+                </div>
+              </div>
+              <div class="dash-row">
+                <div class="dash-row-l">
+                  <div class="dash-row-ico" style="background:rgba(22,89,255,0.1)">🏠</div>
+                  <div>
+                    <div class="dash-row-name">Real Estate</div>
+                    <div class="dash-row-sub">3 Properties · Fractional</div>
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <div class="dash-row-val">$40,262</div>
+                  <div class="dash-row-pct" style="color:var(--green)">+0.89%</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-btns">
+              <button class="dash-btn dash-btn-d">+ Deposit</button>
+              <button class="dash-btn dash-btn-w">Withdraw</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- STATS STRIP -->
   <div class="stats-strip">
-    <div class="wrap"><div class="stats-grid">
-      <div class="stat-cell"><div class="stat-cell-num">$<span>2.1</span>B+</div><div class="stat-cell-lbl">Assets Under Management</div></div>
-      <div class="stat-cell"><div class="stat-cell-num"><span>150</span>K+</div><div class="stat-cell-lbl">Active Investors</div></div>
-      <div class="stat-cell"><div class="stat-cell-num"><span>68</span>+</div><div class="stat-cell-lbl">Tradeable Asset Classes</div></div>
-      <div class="stat-cell"><div class="stat-cell-num"><span>150</span>+</div><div class="stat-cell-lbl">Countries Supported</div></div>
-      <div class="stat-cell"><div class="stat-cell-num">$<span>500</span>M</div><div class="stat-cell-lbl">Insured Vault Capacity</div></div>
-    </div></div>
+    <div class="wrap">
+      <div class="stats-grid">
+        <div class="stat-cell"><div class="stat-cell-num">$<span>2.1</span>B+</div><div class="stat-cell-lbl">Assets Under Management</div></div>
+        <div class="stat-cell"><div class="stat-cell-num"><span>150</span>K+</div><div class="stat-cell-lbl">Active Investors</div></div>
+        <div class="stat-cell"><div class="stat-cell-num"><span>68</span>+</div><div class="stat-cell-lbl">Tradeable Asset Classes</div></div>
+        <div class="stat-cell"><div class="stat-cell-num"><span>150</span>+</div><div class="stat-cell-lbl">Countries Supported</div></div>
+        <div class="stat-cell"><div class="stat-cell-num">$<span>500</span>M</div><div class="stat-cell-lbl">Insured Vault Capacity</div></div>
+      </div>
+    </div>
   </div>
 
+  <!-- ASSET CLASSES -->
   <section class="section">
     <div class="wrap">
       <div class="label-tag">What You Can Invest In</div>
       <h2 class="section-heading">Every major asset class in one platform.</h2>
       <p class="section-sub">Access markets previously reserved for institutional investors. Trade, hold, and earn across stocks, metals, real estate, and digital assets.</p>
+
       <div class="asset-grid">
-        <div class="asset-card"><div class="asset-card-top"><div class="asset-ico">📈</div><div class="asset-ret">+18.2% (2024)</div></div><div class="asset-name">Global Stocks</div><div class="asset-desc">Trade NYSE, NASDAQ, LSE, and TSX-listed equities in real time. Access over 4,500 symbols including Apple, Nvidia, Microsoft, Google, and more.</div><hr class="asset-line"><div class="asset-meta"><div class="asset-meta-item"><div class="asset-meta-label">Symbols</div><div class="asset-meta-val">4,500+</div></div><div class="asset-meta-item"><div class="asset-meta-label">Min. Investment</div><div class="asset-meta-val">$10</div></div><div class="asset-meta-item"><div class="asset-meta-label">Settlement</div><div class="asset-meta-val">Instant</div></div></div></div>
-        <div class="asset-card"><div class="asset-card-top"><div class="asset-ico">🥇</div><div class="asset-ret">+12.5% (2024)</div></div><div class="asset-name">Precious Metals</div><div class="asset-desc">Invest in gold, silver, platinum, and palladium. Assets are physically allocated and stored in insured vaults. You own the actual metal, not a paper contract.</div><hr class="asset-line"><div class="asset-meta"><div class="asset-meta-item"><div class="asset-meta-label">Metals</div><div class="asset-meta-val">5 Types</div></div><div class="asset-meta-item"><div class="asset-meta-label">Storage</div><div class="asset-meta-val">Insured</div></div><div class="asset-meta-item"><div class="asset-meta-label">Delivery</div><div class="asset-meta-val">Available</div></div></div></div>
-        <div class="asset-card"><div class="asset-card-top"><div class="asset-ico">🏠</div><div class="asset-ret">+9.8% (2024)</div></div><div class="asset-name">Real Estate</div><div class="asset-desc">Own fractional shares in residential, commercial, and industrial properties across the US, UK, Europe, and Asia. Earn monthly dividend payouts automatically.</div><hr class="asset-line"><div class="asset-meta"><div class="asset-meta-item"><div class="asset-meta-label">Properties</div><div class="asset-meta-val">15+</div></div><div class="asset-meta-item"><div class="asset-meta-label">Dividends</div><div class="asset-meta-val">Monthly</div></div><div class="asset-meta-item"><div class="asset-meta-label">Min. Share</div><div class="asset-meta-val">$100</div></div></div></div>
-        <div class="asset-card"><div class="asset-card-top"><div class="asset-ico">₿</div><div class="asset-ret">24/7 Access</div></div><div class="asset-name">Crypto Deposits</div><div class="asset-desc">Fund your account using Bitcoin, Ethereum, USDT, and 17 other cryptocurrencies. Instant settlement with no hidden FX markups. Use your crypto to invest in any asset class.</div><hr class="asset-line"><div class="asset-meta"><div class="asset-meta-item"><div class="asset-meta-label">Supported</div><div class="asset-meta-val">20+ Coins</div></div><div class="asset-meta-item"><div class="asset-meta-label">Fees</div><div class="asset-meta-val">0%</div></div><div class="asset-meta-item"><div class="asset-meta-label">Confirm</div><div class="asset-meta-val">30–60 min</div></div></div></div>
+        <div class="asset-card">
+          <div class="asset-card-top">
+            <div class="asset-ico">📈</div>
+            <div class="asset-ret">+18.2% (2024)</div>
+          </div>
+          <div class="asset-name">Global Stocks</div>
+          <div class="asset-desc">Trade NYSE, NASDAQ, LSE, and TSX-listed equities in real time. Access over 4,500 symbols including Apple, Nvidia, Microsoft, Google, and more.</div>
+          <hr class="asset-line">
+          <div class="asset-meta">
+            <div class="asset-meta-item"><div class="asset-meta-label">Symbols</div><div class="asset-meta-val">4,500+</div></div>
+            <div class="asset-meta-item"><div class="asset-meta-label">Min. Investment</div><div class="asset-meta-val">$10</div></div>
+            <div class="asset-meta-item"><div class="asset-meta-label">Settlement</div><div class="asset-meta-val">Instant</div></div>
+          </div>
+        </div>
+        <div class="asset-card">
+          <div class="asset-card-top">
+            <div class="asset-ico">🥇</div>
+            <div class="asset-ret">+12.5% (2024)</div>
+          </div>
+          <div class="asset-name">Precious Metals</div>
+          <div class="asset-desc">Invest in gold, silver, platinum, and palladium. Assets are physically allocated and stored in insured vaults. You own the actual metal, not a paper contract.</div>
+          <hr class="asset-line">
+          <div class="asset-meta">
+            <div class="asset-meta-item"><div class="asset-meta-label">Metals</div><div class="asset-meta-val">5 Types</div></div>
+            <div class="asset-meta-item"><div class="asset-meta-label">Storage</div><div class="asset-meta-val">Insured</div></div>
+            <div class="asset-meta-item"><div class="asset-meta-label">Delivery</div><div class="asset-meta-val">Available</div></div>
+          </div>
+        </div>
+        <div class="asset-card">
+          <div class="asset-card-top">
+            <div class="asset-ico">🏠</div>
+            <div class="asset-ret">+9.8% (2024)</div>
+          </div>
+          <div class="asset-name">Real Estate</div>
+          <div class="asset-desc">Own fractional shares in residential, commercial, and industrial properties across the US, UK, Europe, and Asia. Earn monthly dividend payouts automatically.</div>
+          <hr class="asset-line">
+          <div class="asset-meta">
+            <div class="asset-meta-item"><div class="asset-meta-label">Properties</div><div class="asset-meta-val">15+</div></div>
+            <div class="asset-meta-item"><div class="asset-meta-label">Dividends</div><div class="asset-meta-val">Monthly</div></div>
+            <div class="asset-meta-item"><div class="asset-meta-label">Min. Share</div><div class="asset-meta-val">$100</div></div>
+          </div>
+        </div>
+        <div class="asset-card">
+          <div class="asset-card-top">
+            <div class="asset-ico">₿</div>
+            <div class="asset-ret">24/7 Access</div>
+          </div>
+          <div class="asset-name">Crypto Deposits</div>
+          <div class="asset-desc">Fund your account using Bitcoin, Ethereum, USDT, and 17 other cryptocurrencies. Instant settlement with no hidden FX markups. Use your crypto to invest in any asset class.</div>
+          <hr class="asset-line">
+          <div class="asset-meta">
+            <div class="asset-meta-item"><div class="asset-meta-label">Supported</div><div class="asset-meta-val">20+ Coins</div></div>
+            <div class="asset-meta-item"><div class="asset-meta-label">Fees</div><div class="asset-meta-val">0%</div></div>
+            <div class="asset-meta-item"><div class="asset-meta-label">Confirm</div><div class="asset-meta-val">30–60 min</div></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- LIVE MARKETS TABLE -->
   <section class="section" style="padding-top:0;">
     <div class="wrap">
       <div class="label-tag">Live Prices</div>
       <h2 class="section-heading">Real-time market data.</h2>
+
       <div class="market-table-wrap">
         <div class="market-table-head">
           <div class="market-table-head-title">Market Overview</div>
-          <div class="market-filters"><button class="mf on">All</button><button class="mf">Stocks</button><button class="mf">Metals</button><button class="mf">Crypto</button><button class="mf">Real Estate</button></div>
+          <div class="market-filters">
+            <button class="mf on">All</button>
+            <button class="mf">Stocks</button>
+            <button class="mf">Metals</button>
+            <button class="mf">Crypto</button>
+            <button class="mf">Real Estate</button>
+          </div>
         </div>
         <table>
           <thead>
-            <tr><th>Asset</th><th>Last Price</th><th>24h Change</th><th>Market Cap</th><th>Volume</th><th>7D Trend</th><th style="text-align:right">Action</th></tr>
+            <tr>
+              <th>Asset</th>
+              <th>Last Price</th>
+              <th>24h Change</th>
+              <th>Market Cap</th>
+              <th>Volume</th>
+              <th>7D Trend</th>
+              <th style="text-align:right">Action</th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td><div class="td-asset"><div class="td-ico" style="background:rgba(23,201,100,0.08)">📱</div><div><div class="td-sym">AAPL</div><div class="td-full-name">Apple Inc.</div></div></div></td><td class="td-price">$213.42</td><td class="td-up">+1.84%</td><td class="td-muted">$3.27T</td><td class="td-muted">$84.2B</td><td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 18 C12 15,24 11,36 8 S50 4,60 2" stroke="#17c964"/></svg></td><td style="text-align:right"><button class="trade-btn">Trade</button></td></tr>
-            <tr><td><div class="td-asset"><div class="td-ico" style="background:rgba(232,163,24,0.08)">🥇</div><div><div class="td-sym">XAU/USD</div><div class="td-full-name">Gold Spot</div></div></div></td><td class="td-price">$3,234.70</td><td class="td-up">+1.13%</td><td class="td-muted">$14.6T</td><td class="td-muted">$218B</td><td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 18 C15 15,28 12,40 8 S52 5,60 3" stroke="#17c964"/></svg></td><td style="text-align:right"><button class="trade-btn">Trade</button></td></tr>
-            <tr><td><div class="td-asset"><div class="td-ico" style="background:rgba(247,147,26,0.08)">₿</div><div><div class="td-sym">BTC/USD</div><div class="td-full-name">Bitcoin</div></div></div></td><td class="td-price">$86,135</td><td class="td-up">+2.40%</td><td class="td-muted">$1.70T</td><td class="td-muted">$46.3B</td><td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 20 C10 15,22 12,34 9 S48 4,60 2" stroke="#17c964"/></svg></td><td style="text-align:right"><button class="trade-btn">Trade</button></td></tr>
-            <tr><td><div class="td-asset"><div class="td-ico" style="background:rgba(22,89,255,0.08)">💻</div><div><div class="td-sym">MSFT</div><div class="td-full-name">Microsoft Corp.</div></div></div></td><td class="td-price">$421.88</td><td class="td-dn">-0.62%</td><td class="td-muted">$3.13T</td><td class="td-muted">$28.4B</td><td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 6 C12 9,26 12,38 14 S52 17,60 18" stroke="#f31260"/></svg></td><td style="text-align:right"><button class="trade-btn">Trade</button></td></tr>
-            <tr><td><div class="td-asset"><div class="td-ico" style="background:rgba(200,200,200,0.06)">⚪</div><div><div class="td-sym">XAG/USD</div><div class="td-full-name">Silver Spot</div></div></div></td><td class="td-price">$32.18</td><td class="td-up">+0.88%</td><td class="td-muted">$1.74T</td><td class="td-muted">$7.2B</td><td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 16 C18 13,32 10,44 8 S54 5,60 4" stroke="#17c964"/></svg></td><td style="text-align:right"><button class="trade-btn">Trade</button></td></tr>
-            <tr><td><div class="td-asset"><div class="td-ico" style="background:rgba(13,197,168,0.08)">🏠</div><div><div class="td-sym">QBX-RE01</div><div class="td-full-name">Manhattan Residential</div></div></div></td><td class="td-price">$342.80</td><td class="td-up">+0.44%</td><td class="td-muted">$84.2M</td><td class="td-muted">$1.1M</td><td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 14 C20 12,38 9,60 7" stroke="#17c964"/></svg></td><td style="text-align:right"><button class="trade-btn">Trade</button></td></tr>
+            <tr>
+              <td><div class="td-asset"><div class="td-ico" style="background:rgba(23,201,100,0.08)">📱</div><div><div class="td-sym">AAPL</div><div class="td-full-name">Apple Inc.</div></div></div></td>
+              <td class="td-price">$213.42</td>
+              <td class="td-up">+1.84%</td>
+              <td class="td-muted">$3.27T</td>
+              <td class="td-muted">$84.2B</td>
+              <td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 18 C12 15,24 11,36 8 S50 4,60 2" stroke="#17c964"/></svg></td>
+              <td><button class="trade-btn">Trade</button></td>
+            </tr>
+            <tr>
+              <td><div class="td-asset"><div class="td-ico" style="background:rgba(232,163,24,0.08)">🥇</div><div><div class="td-sym">XAU/USD</div><div class="td-full-name">Gold Spot</div></div></div></td>
+              <td class="td-price">$3,234.70</td>
+              <td class="td-up">+1.13%</td>
+              <td class="td-muted">$14.6T</td>
+              <td class="td-muted">$218B</td>
+              <td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 18 C15 15,28 12,40 8 S52 5,60 3" stroke="#17c964"/></svg></td>
+              <td><button class="trade-btn">Trade</button></td>
+            </tr>
+            <tr>
+              <td><div class="td-asset"><div class="td-ico" style="background:rgba(247,147,26,0.08)">₿</div><div><div class="td-sym">BTC/USD</div><div class="td-full-name">Bitcoin</div></div></div></td>
+              <td class="td-price">$86,135</td>
+              <td class="td-up">+2.40%</td>
+              <td class="td-muted">$1.70T</td>
+              <td class="td-muted">$46.3B</td>
+              <td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 20 C10 15,22 12,34 9 S48 4,60 2" stroke="#17c964"/></svg></td>
+              <td><button class="trade-btn">Trade</button></td>
+            </tr>
+            <tr>
+              <td><div class="td-asset"><div class="td-ico" style="background:rgba(22,89,255,0.08)">💻</div><div><div class="td-sym">MSFT</div><div class="td-full-name">Microsoft Corp.</div></div></div></td>
+              <td class="td-price">$421.88</td>
+              <td class="td-dn">-0.62%</td>
+              <td class="td-muted">$3.13T</td>
+              <td class="td-muted">$28.4B</td>
+              <td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 6 C12 9,26 12,38 14 S52 17,60 18" stroke="#f31260"/></svg></td>
+              <td><button class="trade-btn">Trade</button></td>
+            </tr>
+            <tr>
+              <td><div class="td-asset"><div class="td-ico" style="background:rgba(200,200,200,0.06)">⚪</div><div><div class="td-sym">XAG/USD</div><div class="td-full-name">Silver Spot</div></div></div></td>
+              <td class="td-price">$32.18</td>
+              <td class="td-up">+0.88%</td>
+              <td class="td-muted">$1.74T</td>
+              <td class="td-muted">$7.2B</td>
+              <td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 16 C18 13,32 10,44 8 S54 5,60 4" stroke="#17c964"/></svg></td>
+              <td><button class="trade-btn">Trade</button></td>
+            </tr>
+            <tr>
+              <td><div class="td-asset"><div class="td-ico" style="background:rgba(13,197,168,0.08)">🏠</div><div><div class="td-sym">QBX-RE01</div><div class="td-full-name">Manhattan Residential</div></div></div></td>
+              <td class="td-price">$342.80</td>
+              <td class="td-up">+0.44%</td>
+              <td class="td-muted">$84.2M</td>
+              <td class="td-muted">$1.1M</td>
+              <td><svg width="60" height="22" viewBox="0 0 60 22"><path class="spark-path" d="M0 14 C20 12,38 9,60 7" stroke="#17c964"/></svg></td>
+              <td><button class="trade-btn">Trade</button></td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
   </section>
 
+  <!-- PRICING TIERS -->
   <section class="section" style="background:var(--bg-1); border-top:1px solid var(--border);">
     <div class="wrap">
-      <div style="text-align:center; margin-bottom:0;"><div class="label-tag" style="justify-content:center;">Transparent Pricing</div><h2 class="section-heading" style="text-align:center;">No hidden fees. Pay less as you grow.</h2><p class="section-sub" style="margin:0 auto;">Three straightforward tiers. All-in management fee per year. No commissions on trades.</p></div>
+      <div style="text-align:center; margin-bottom:0;">
+        <div class="label-tag" style="justify-content:center;">Transparent Pricing</div>
+        <h2 class="section-heading" style="text-align:center;">No hidden fees. Pay less as you grow.</h2>
+        <p class="section-sub" style="margin:0 auto;">Three straightforward tiers. All-in management fee per year. No commissions on trades.</p>
+      </div>
+
       <div class="tiers-grid">
-        <div class="tier-card"><div class="tier-name-label" style="color:var(--teal);">Starter</div><div class="tier-name">Essential</div><div class="tier-range">$100 – $999 account balance</div><div class="tier-fee">0.50%</div><div class="tier-fee-note">per year, all-inclusive</div><hr class="tier-hr"><ul class="tier-perks"><li class="tier-perk"><span class="perk-check">✓</span> Access to all 68+ asset classes</li><li class="tier-perk"><span class="perk-check">✓</span> Real-time portfolio tracking</li><li class="tier-perk"><span class="perk-check">✓</span> Crypto and bank deposits</li><li class="tier-perk"><span class="perk-check">✓</span> Monthly account statements</li><li class="tier-perk"><span class="perk-check">✓</span> Email support (48hr response)</li><li class="tier-perk"><span class="perk-x">✗</span> <span style="color:var(--t4);">Priority order execution</span></li><li class="tier-perk"><span class="perk-x">✗</span> <span style="color:var(--t4);">Dedicated advisor</span></li></ul><button class="tier-cta-btn tier-cta-out" onclick="location.href='/register'">Get Started</button></div>
-        <div class="tier-card featured"><div class="tier-featured-tag">Most Popular</div><div class="tier-name-label" style="color:var(--blue-h);">Growth</div><div class="tier-name">Professional</div><div class="tier-range">$1,000 – $9,999 account balance</div><div class="tier-fee">0.40%</div><div class="tier-fee-note">per year, all-inclusive</div><hr class="tier-hr"><ul class="tier-perks"><li class="tier-perk"><span class="perk-check">✓</span> Everything in Essential</li><li class="tier-perk"><span class="perk-check">✓</span> Priority order execution</li><li class="tier-perk"><span class="perk-check">✓</span> Advanced analytics dashboard</li><li class="tier-perk"><span class="perk-check">✓</span> Quarterly performance review</li><li class="tier-perk"><span class="perk-check">✓</span> Priority support (4hr response)</li><li class="tier-perk"><span class="perk-check">✓</span> Automatic tax reporting</li><li class="tier-perk"><span class="perk-x">✗</span> <span style="color:var(--t4);">Dedicated advisor</span></li></ul><button class="tier-cta-btn tier-cta-main" onclick="location.href='/register'">Open Account</button></div>
-        <div class="tier-card"><div class="tier-name-label" style="color:var(--gold);">Premium</div><div class="tier-name">Institutional</div><div class="tier-range">$10,000+ account balance</div><div class="tier-fee">0.30%</div><div class="tier-fee-note">per year, all-inclusive</div><hr class="tier-hr"><ul class="tier-perks"><li class="tier-perk"><span class="perk-check">✓</span> Everything in Professional</li><li class="tier-perk"><span class="perk-check">✓</span> Dedicated investment advisor</li><li class="tier-perk"><span class="perk-check">✓</span> Custom portfolio construction</li><li class="tier-perk"><span class="perk-check">✓</span> Physical vault inspection rights</li><li class="tier-perk"><span class="perk-check">✓</span> API access for algorithmic trading</li><li class="tier-perk"><span class="perk-check">✓</span> 24/7 phone support</li><li class="tier-perk"><span class="perk-check">✓</span> Monthly strategy consultation calls</li></ul><button class="tier-cta-btn tier-cta-out" onclick="location.href='/register'">Contact Us</button></div>
+        <div class="tier-card">
+          <div class="tier-name-label" style="color:var(--teal);">Starter</div>
+          <div class="tier-name">Essential</div>
+          <div class="tier-range">$100 – $999 account balance</div>
+          <div class="tier-fee">0.50%</div>
+          <div class="tier-fee-note">per year, all-inclusive</div>
+          <hr class="tier-hr">
+          <ul class="tier-perks">
+            <li class="tier-perk"><span class="perk-check">✓</span> Access to all 68+ asset classes</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Real-time portfolio tracking</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Crypto and bank deposits</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Monthly account statements</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Email support (48hr response)</li>
+            <li class="tier-perk"><span class="perk-x">✗</span> <span style="color:var(--t4);">Priority order execution</span></li>
+            <li class="tier-perk"><span class="perk-x">✗</span> <span style="color:var(--t4);">Dedicated advisor</span></li>
+          </ul>
+          <button class="tier-cta-btn tier-cta-out" onclick="location.href='/register'">Get Started</button>
+        </div>
+
+        <div class="tier-card featured">
+          <div class="tier-featured-tag">Most Popular</div>
+          <div class="tier-name-label" style="color:var(--blue-h);">Growth</div>
+          <div class="tier-name">Professional</div>
+          <div class="tier-range">$1,000 – $9,999 account balance</div>
+          <div class="tier-fee">0.40%</div>
+          <div class="tier-fee-note">per year, all-inclusive</div>
+          <hr class="tier-hr">
+          <ul class="tier-perks">
+            <li class="tier-perk"><span class="perk-check">✓</span> Everything in Essential</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Priority order execution</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Advanced analytics dashboard</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Quarterly performance review</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Priority support (4hr response)</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Automatic tax reporting</li>
+            <li class="tier-perk"><span class="perk-x">✗</span> <span style="color:var(--t4);">Dedicated advisor</span></li>
+          </ul>
+          <button class="tier-cta-btn tier-cta-main" onclick="location.href='/register'">Open Account</button>
+        </div>
+
+        <div class="tier-card">
+          <div class="tier-name-label" style="color:var(--gold);">Premium</div>
+          <div class="tier-name">Institutional</div>
+          <div class="tier-range">$10,000+ account balance</div>
+          <div class="tier-fee">0.30%</div>
+          <div class="tier-fee-note">per year, all-inclusive</div>
+          <hr class="tier-hr">
+          <ul class="tier-perks">
+            <li class="tier-perk"><span class="perk-check">✓</span> Everything in Professional</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Dedicated investment advisor</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Custom portfolio construction</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Physical vault inspection rights</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> API access for algorithmic trading</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> 24/7 phone support</li>
+            <li class="tier-perk"><span class="perk-check">✓</span> Monthly strategy consultation calls</li>
+          </ul>
+          <button class="tier-cta-btn tier-cta-out" onclick="location.href='/register'">Contact Us</button>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- SECURITY -->
   <section class="section">
     <div class="wrap">
       <div class="label-tag">Security & Compliance</div>
       <h2 class="section-heading">Built on institutional-grade infrastructure.</h2>
       <p class="section-sub">Your assets are protected by the same security standards used by major banks and custodians worldwide.</p>
+
       <div class="sec-grid">
-        <div class="sec-card"><div class="sec-ico">⚖️</div><div class="sec-name">Regulatory Compliance</div><div class="sec-text">Qubix operates under MSB registration with FINTRAC (Registration #M123456). Fully compliant with international AML and KYC regulations. Custodial partners are regulated in Switzerland, Singapore, and the United States.</div><div class="sec-badges"><span class="sec-badge">FINTRAC Registered</span><span class="sec-badge">AML Compliant</span><span class="sec-badge">KYC Verified</span></div></div>
-        <div class="sec-card"><div class="sec-ico">🔒</div><div class="sec-name">Asset Security</div><div class="sec-text">98% of digital assets held in multi-signature cold wallets. Physical metals stored in allocated vaults with armed security and biometric access. Regular penetration testing by independent cybersecurity firms.</div><div class="sec-badges"><span class="sec-badge">Cold Storage 98%</span><span class="sec-badge">Multi-Sig Wallets</span><span class="sec-badge">Biometric Vaults</span></div></div>
-        <div class="sec-card"><div class="sec-ico">🛡️</div><div class="sec-name">Insurance Coverage</div><div class="sec-text">$500 million insurance policy underwritten by Lloyd's of London covering full replacement value of all vaulted physical assets. Zurich Insurance provides additional digital asset coverage. All policies verified quarterly.</div><div class="sec-badges"><span class="sec-badge">Lloyd's of London</span><span class="sec-badge">$500M Coverage</span><span class="sec-badge">Quarterly Verified</span></div></div>
-        <div class="sec-card"><div class="sec-ico">📋</div><div class="sec-name">Independent Audits</div><div class="sec-text">Annual independent audits conducted by PwC. Quarterly audits by Deloitte. All audit reports are publicly available in our Transparency Hub. Every transaction is recorded on an immutable audit ledger.</div><div class="sec-badges"><span class="sec-badge">PwC Annual Audit</span><span class="sec-badge">Deloitte Quarterly</span><span class="sec-badge">Public Reports</span></div></div>
-        <div class="sec-card"><div class="sec-ico">🔏</div><div class="sec-name">Data Protection</div><div class="sec-text">SOC 2 Type II certified. ISO 27001 compliant information security management. Full GDPR compliance for EU users. All personal data encrypted at rest and in transit using AES-256 and TLS 1.3.</div><div class="sec-badges"><span class="sec-badge">SOC 2 Type II</span><span class="sec-badge">ISO 27001</span><span class="sec-badge">GDPR Compliant</span></div></div>
-        <div class="sec-card"><div class="sec-ico">📡</div><div class="sec-name">Market Data Integrity</div><div class="sec-text">Real-time prices sourced directly from NYSE/NASDAQ, LBMA (gold/silver), CME Group (futures), and CoinGecko (crypto). No hidden spreads. Prices update every 3 seconds. Full data source transparency.</div><div class="sec-badges"><span class="sec-badge">NYSE Direct</span><span class="sec-badge">LBMA Gold</span><span class="sec-badge">No Hidden Spreads</span></div></div>
+        <div class="sec-card">
+          <div class="sec-ico">⚖️</div>
+          <div class="sec-name">Regulatory Compliance</div>
+          <div class="sec-text">Qubix operates under MSB registration with FINTRAC (Registration #M123456). Fully compliant with international AML and KYC regulations. Custodial partners are regulated in Switzerland, Singapore, and the United States.</div>
+          <div class="sec-badges"><span class="sec-badge">FINTRAC Registered</span><span class="sec-badge">AML Compliant</span><span class="sec-badge">KYC Verified</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">🔒</div>
+          <div class="sec-name">Asset Security</div>
+          <div class="sec-text">98% of digital assets held in multi-signature cold wallets. Physical metals stored in allocated vaults with armed security and biometric access. Regular penetration testing by independent cybersecurity firms.</div>
+          <div class="sec-badges"><span class="sec-badge">Cold Storage 98%</span><span class="sec-badge">Multi-Sig Wallets</span><span class="sec-badge">Biometric Vaults</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">🛡️</div>
+          <div class="sec-name">Insurance Coverage</div>
+          <div class="sec-text">$500 million insurance policy underwritten by Lloyd's of London covering full replacement value of all vaulted physical assets. Zurich Insurance provides additional digital asset coverage. All policies verified quarterly.</div>
+          <div class="sec-badges"><span class="sec-badge">Lloyd's of London</span><span class="sec-badge">$500M Coverage</span><span class="sec-badge">Quarterly Verified</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">📋</div>
+          <div class="sec-name">Independent Audits</div>
+          <div class="sec-text">Annual independent audits conducted by PwC. Quarterly audits by Deloitte. All audit reports are publicly available in our Transparency Hub. Every transaction is recorded on an immutable audit ledger.</div>
+          <div class="sec-badges"><span class="sec-badge">PwC Annual Audit</span><span class="sec-badge">Deloitte Quarterly</span><span class="sec-badge">Public Reports</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">🔏</div>
+          <div class="sec-name">Data Protection</div>
+          <div class="sec-text">SOC 2 Type II certified. ISO 27001 compliant information security management. Full GDPR compliance for EU users. All personal data encrypted at rest and in transit using AES-256 and TLS 1.3.</div>
+          <div class="sec-badges"><span class="sec-badge">SOC 2 Type II</span><span class="sec-badge">ISO 27001</span><span class="sec-badge">GDPR Compliant</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">📡</div>
+          <div class="sec-name">Market Data Integrity</div>
+          <div class="sec-text">Real-time prices sourced directly from NYSE/NASDAQ, LBMA (gold/silver), CME Group (futures), and CoinGecko (crypto). No hidden spreads. Prices update every 3 seconds. Full data source transparency.</div>
+          <div class="sec-badges"><span class="sec-badge">NYSE Direct</span><span class="sec-badge">LBMA Gold</span><span class="sec-badge">No Hidden Spreads</span></div>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- CTA BANNER -->
   <div class="cta-section">
-    <div class="cta-banner"><h2>Ready to start investing?</h2><p>Join 150,000+ investors building wealth on Qubix. Open your account in 2 minutes with no minimum balance required.</p><div class="cta-btns"><a href="/register" class="btn-primary">Open Free Account</a><button class="btn-secondary" data-page="how">Learn How It Works</button></div></div>
+    <div class="cta-banner">
+      <h2>Ready to start investing?</h2>
+      <p>Join 150,000+ investors building wealth on Qubix. Open your account in 2 minutes with no minimum balance required.</p>
+      <div class="cta-btns">
+        <a href="/register" class="btn-primary">Open Free Account</a>
+        <button class="btn-secondary" data-page="how">Learn How It Works</button>
+      </div>
+    </div>
   </div>
+
+</div>
+<!-- END HOME PAGE -->
+
+
+<!-- ════════════════════════════════
+     HOW IT WORKS PAGE
+════════════════════════════════ -->
+<div id="how-page" class="page">
+  <div class="inner-hero">
+    <div class="wrap">
+      <div class="label-tag">Platform Guide</div>
+      <h1>How Qubix Works</h1>
+      <p>A complete step-by-step guide to getting crypto, depositing funds, investing in assets, buying physical gold, and withdrawing your money.</p>
+    </div>
+  </div>
+
+  <section class="section hiw-bg">
+    <div class="wrap">
+
+      <div class="hiw-tabs">
+        <button class="hiw-tab active" data-panel="crypto">Getting Crypto</button>
+        <button class="hiw-tab" data-panel="deposit">Depositing Funds</button>
+        <button class="hiw-tab" data-panel="invest">Investing</button>
+        <button class="hiw-tab" data-panel="physgold">Physical Gold Shop</button>
+        <button class="hiw-tab" data-panel="withdraw">Withdrawing</button>
+      </div>
+
+      <!-- ── PANEL: GETTING CRYPTO ── -->
+      <div class="hiw-panel on" id="panel-crypto">
+        <div class="hiw-two">
+          <div>
+            <h3 style="font-size:1.2rem;font-weight:700;color:var(--white);margin-bottom:8px;">How to Get Cryptocurrency</h3>
+            <p style="font-size:0.875rem;color:var(--t2);margin-bottom:32px;line-height:1.75;">Qubix accepts deposits in cryptocurrency only. If you do not already own crypto, here is how to acquire it before depositing into your Qubix account.</p>
+
+            <div class="steps-wrap">
+              <div class="step-row">
+                <div class="step-connector">
+                  <div class="step-num">1</div>
+                  <div class="step-line"></div>
+                </div>
+                <div class="step-body">
+                  <div class="step-title">Choose a Cryptocurrency Exchange</div>
+                  <div class="step-desc">Sign up on a reputable cryptocurrency exchange in your country. Popular options include Coinbase, Binance, Kraken, and Bybit. The exchange will allow you to purchase crypto using your bank account, debit card, or credit card.</div>
+                  <div class="crypto-guide-grid">
+                    <div class="crypto-guide-card">
+                      <div class="cgc-ico">🟠</div>
+                      <div class="cgc-name">Bitcoin (BTC)</div>
+                      <div class="cgc-desc">The most widely accepted and liquid cryptocurrency. Accepted on all major exchanges worldwide.</div>
+                    </div>
+                    <div class="crypto-guide-card">
+                      <div class="cgc-ico">🔵</div>
+                      <div class="cgc-name">Ethereum (ETH)</div>
+                      <div class="cgc-desc">Second largest by market cap. Fast and widely available on all exchanges.</div>
+                    </div>
+                    <div class="crypto-guide-card">
+                      <div class="cgc-ico">🟢</div>
+                      <div class="cgc-name">USDT (Tether)</div>
+                      <div class="cgc-desc">A stablecoin pegged to the US Dollar. No price volatility. Recommended for first-time depositors.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector">
+                  <div class="step-num">2</div>
+                  <div class="step-line"></div>
+                </div>
+                <div class="step-body">
+                  <div class="step-title">Complete Identity Verification on the Exchange</div>
+                  <div class="step-desc">Most exchanges require you to verify your identity (KYC) before you can buy cryptocurrency. This typically involves uploading a government-issued ID and taking a selfie. The process takes 5–30 minutes depending on the exchange.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector">
+                  <div class="step-num">3</div>
+                  <div class="step-line"></div>
+                </div>
+                <div class="step-body">
+                  <div class="step-title">Purchase Your Cryptocurrency</div>
+                  <div class="step-desc">Once verified, use your bank account, debit card, or credit card to purchase the cryptocurrency of your choice. We recommend buying the exact amount you intend to deposit into Qubix, plus a small buffer to cover network transaction fees (typically $1–$5 worth of extra crypto).</div>
+                  <div class="info-box">
+                    <strong>Tip: Use USDT for simplicity</strong>
+                    If you are new to crypto, USDT (Tether) is the easiest option. Its value stays equal to $1.00 USD, so there is no risk of the price changing between when you buy it and when you deposit it into Qubix. You will always know exactly how much you are depositing.
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector">
+                  <div class="step-num">4</div>
+                  <div class="step-line"></div>
+                </div>
+                <div class="step-body">
+                  <div class="step-title">You Are Ready to Deposit</div>
+                  <div class="step-desc">Once you have cryptocurrency in your exchange wallet, you are ready to deposit it into your Qubix account. Follow the Deposit guide in the next tab to complete the process.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hiw-side-note">
+            <div class="hiw-side-note-title">Supported Cryptocurrencies</div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Bitcoin (BTC)</span><span class="hiw-note-val good">Supported</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Ethereum (ETH)</span><span class="hiw-note-val good">Supported</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">USDT (TRC-20)</span><span class="hiw-note-val good">Supported</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">USDT (ERC-20)</span><span class="hiw-note-val good">Supported</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">BNB</span><span class="hiw-note-val good">Supported</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">USDC</span><span class="hiw-note-val good">Supported</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Litecoin (LTC)</span><span class="hiw-note-val good">Supported</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Ripple (XRP)</span><span class="hiw-note-val good">Supported</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Solana (SOL)</span><span class="hiw-note-val good">Supported</span></div>
+            <div class="hiw-note-row" style="border-bottom:none;"><span class="hiw-note-key">+ 11 more coins</span><span class="hiw-note-val" style="color:var(--t3);">See full list</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANEL: DEPOSITING ── -->
+      <div class="hiw-panel" id="panel-deposit">
+        <div class="hiw-two">
+          <div>
+            <h3 style="font-size:1.2rem;font-weight:700;color:var(--white);margin-bottom:8px;">How to Deposit Funds</h3>
+            <p style="font-size:0.875rem;color:var(--t2);margin-bottom:32px;line-height:1.75;">Deposits are made exclusively through cryptocurrency. Once your deposit is confirmed by the blockchain, funds are reflected in your available cash balance and can be used immediately to invest.</p>
+
+            <div class="steps-wrap">
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">1</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Log In and Click "Deposit" on Your Dashboard</div>
+                  <div class="step-desc">Once logged into your Qubix account, click the Deposit button on your main dashboard. You will be taken to the deposit flow immediately.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">2</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Select Your Cryptocurrency and Enter the Amount</div>
+                  <div class="step-desc">Choose which cryptocurrency you will be sending (e.g. Bitcoin, USDT, Ethereum) and enter the amount you wish to deposit in USD. The system will automatically calculate the equivalent amount in your chosen cryptocurrency at the current market rate.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">3</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">You Will Receive a Unique Wallet Address and Exact Amount</div>
+                  <div class="step-desc">The system generates a unique deposit wallet address for your transaction. You will see the exact amount to send and the exact address to send it to.</div>
+                  <div class="addr-block">
+                    <div class="addr-block-label">Send To This Address</div>
+                    <div class="addr-string">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+                    <div class="addr-block-label" style="margin-top:14px;">Send Exactly This Amount</div>
+                    <div class="addr-amount">
+                      <span class="addr-amount-label">Amount to send:</span>
+                      <span class="addr-amount-val">0.01182490 BTC</span>
+                    </div>
+                    <div class="addr-amount" style="margin-top:6px;">
+                      <span class="addr-amount-label">Equivalent to:</span>
+                      <span class="addr-amount-val" style="color:var(--t2);font-size:0.85rem;">$1,000.00 USD</span>
+                    </div>
+                  </div>
+                  <div class="warn-box">
+                    <strong>Important — Read Before Sending</strong>
+                    You must send the EXACT amount shown to the EXACT address shown. Do not round up or down. Do not send to any other address. If you send the wrong amount, your deposit may not be credited automatically. If you send to the wrong address, the funds cannot be recovered. Always copy the address using the copy button — do not type it manually.
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">4</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Send the Payment from Your External Wallet or Exchange</div>
+                  <div class="step-desc">Open your cryptocurrency exchange or wallet app (Coinbase, Binance, Trust Wallet, etc.), paste the address, enter the exact amount, and confirm the transaction. Do not close the Qubix page until you have successfully sent the payment.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">5</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Click "I Have Sent the Payment" to Notify Our System</div>
+                  <div class="step-desc">Once you have completed the transfer from your external wallet, return to Qubix and click the confirmation button. This notifies our verification system to begin monitoring the blockchain for your transaction.</div>
+                  <button class="confirm-btn-mock" onclick="void(0)">I Have Sent the Payment</button>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">6</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Wait for Verification — 30 Minutes to 1 Hour</div>
+                  <div class="step-desc">Our system monitors the blockchain and verifies your transaction automatically. This process takes between 30 minutes and 1 hour depending on network congestion. You do not need to stay on the page — you will receive an email notification when your deposit is confirmed.</div>
+                  <div class="verify-mock">
+                    <div class="verify-spinner"></div>
+                    <div>
+                      <div class="verify-text-title">Verifying Your Deposit</div>
+                      <div class="verify-text-sub">Monitoring blockchain for transaction confirmation. Estimated time: 30–60 minutes.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">7</div></div>
+                <div class="step-body">
+                  <div class="step-title">Funds Appear in Your Available Cash Balance</div>
+                  <div class="step-desc">Once confirmed, the equivalent USD value of your deposit will appear in your Available Cash Balance on the dashboard. You can immediately use this balance to buy stocks, invest in real estate, purchase minerals, or hold it as cash.</div>
+                  <div class="ok-box">
+                    <strong>Deposit Confirmed</strong>
+                    Your cash balance has been credited with $1,000.00 USD. You can now use this balance to invest in any available asset class on the platform. Go to the Markets tab to start investing.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hiw-side-note">
+            <div class="hiw-side-note-title">Deposit Summary</div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Minimum Deposit</span><span class="hiw-note-val">$100 USD</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Maximum Deposit</span><span class="hiw-note-val">Unlimited</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Deposit Fee</span><span class="hiw-note-val good">0%</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Network Fee</span><span class="hiw-note-val warn">Paid by sender</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Confirmation Time</span><span class="hiw-note-val">30 min – 1 hr</span></div>
+            <div class="hiw-note-row" style="border-bottom:none;"><span class="hiw-note-key">Balance Credited</span><span class="hiw-note-val good">USD Equivalent</span></div>
+
+            <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border);">
+              <div class="hiw-side-note-title">What Happens After Deposit</div>
+              <div style="font-size:0.82rem; color:var(--t2); line-height:1.75;">Your available cash balance is credited in USD. You can use it to:<br><br>
+              — Buy stocks and equities<br>
+              — Invest in real estate shares<br>
+              — Purchase commodity positions<br>
+              — Hold as cash on the platform<br><br>
+              Note: The cash balance cannot be used for the Physical Gold Shop. That service requires a separate payment.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANEL: INVESTING ── -->
+      <div class="hiw-panel" id="panel-invest">
+        <div class="hiw-two">
+          <div>
+            <h3 style="font-size:1.2rem;font-weight:700;color:var(--white);margin-bottom:8px;">How to Invest in Assets</h3>
+            <p style="font-size:0.875rem;color:var(--t2);margin-bottom:32px;line-height:1.75;">Once your deposit is confirmed and your cash balance is funded, you can invest in stocks, real estate, precious metals, and commodities. Here is how the investment process works.</p>
+
+            <div class="steps-wrap">
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">1</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Go to the Markets or Investments Section</div>
+                  <div class="step-desc">Navigate to the Markets tab in your dashboard. You can browse all available assets by category: Stocks, Precious Metals, Real Estate, and Commodities. Use the search bar to find a specific asset by name or ticker symbol.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">2</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Select an Asset and Review the Details</div>
+                  <div class="step-desc">Click on any asset to view its live price, historical performance chart, asset description, risk rating, and any dividend or payout information. Take time to review this information before investing.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">3</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Enter Your Investment Amount and Confirm</div>
+                  <div class="step-desc">Enter the amount you want to invest in USD. The system will show you how many units or shares you will receive at the current price. Review the order summary and click Confirm Investment to execute.</div>
+                  <div class="info-box">
+                    <strong>Fractional Investing Available</strong>
+                    You do not need to buy a whole share. All assets on Qubix support fractional investing. You can invest any amount from $10 upward, and the system will allocate the proportional fraction of the asset to your portfolio.
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">4</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Your Investment Appears in Your Portfolio</div>
+                  <div class="step-desc">The invested amount is deducted from your available cash balance and the asset position is added to your portfolio immediately. You can track its performance in real time from the Portfolio section of your dashboard.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">5</div></div>
+                <div class="step-body">
+                  <div class="step-title">Dividends and Returns</div>
+                  <div class="step-desc">Real estate investments pay monthly dividends automatically credited to your cash balance on the 15th of each month. Stock dividends are paid quarterly. You can reinvest dividends or withdraw them at any time.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hiw-side-note">
+            <div class="hiw-side-note-title">Investment Details</div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Minimum Investment</span><span class="hiw-note-val">$10 USD</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Commission</span><span class="hiw-note-val good">$0</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Execution Speed</span><span class="hiw-note-val good">Instant</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Price Updates</span><span class="hiw-note-val">Every 3 seconds</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">RE Dividends</span><span class="hiw-note-val">Monthly (15th)</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Stock Dividends</span><span class="hiw-note-val">Quarterly</span></div>
+            <div class="hiw-note-row" style="border-bottom:none;"><span class="hiw-note-key">Management Fee</span><span class="hiw-note-val warn">0.30–0.50% / yr</span></div>
+
+            <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border);">
+              <div class="hiw-side-note-title">Investable Asset Classes</div>
+              <div style="font-size:0.82rem; color:var(--t2); line-height:1.85;">
+                — Global Stocks (4,500+ symbols)<br>
+                — Precious Metals (Gold, Silver, Platinum, Palladium, Copper)<br>
+                — Real Estate (15+ properties, fractional)<br>
+                — Commodities (Oil, Natural Gas, Agricultural)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANEL: PHYSICAL GOLD ── -->
+      <div class="hiw-panel" id="panel-physgold">
+        <div class="hiw-two">
+          <div>
+            <h3 style="font-size:1.2rem;font-weight:700;color:var(--white);margin-bottom:8px;">Physical Gold Shop</h3>
+            <p style="font-size:0.875rem;color:var(--t2);margin-bottom:16px;line-height:1.75;">The Physical Gold Shop is a separate service from regular investing. You can purchase physical gold bars, silver bars, or platinum bars and choose to have them stored in our insured vaults or shipped directly to your address.</p>
+            <div class="warn-box" style="margin-bottom:28px;">
+              <strong>Important: Separate Payment System</strong>
+              The Physical Gold Shop operates independently from your Qubix cash balance. You cannot use your available cash balance to pay for physical gold orders. Each purchase requires a separate crypto payment made at the time of order. This is by design to maintain clear separation between investment accounts and physical commodity purchases.
+            </div>
+
+            <div class="steps-wrap">
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">1</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Navigate to the Physical Gold Shop</div>
+                  <div class="step-desc">Access the Vault section from the main navigation and click on Physical Gold Shop. You will see a catalog of available gold bars, silver bars, and platinum bars in various sizes (1oz, 10oz, 1kg, and larger).</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">2</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Select Your Product and Choose a Storage or Delivery Option</div>
+                  <div class="step-desc">Select the metal type and size you want to purchase. You must then choose one of two options:<br><br>
+                  <strong style="color:var(--t1);">Option A — Vault Storage:</strong> Your physical metal is stored in our Zurich vault in your name. You receive full documentation including a vault certificate and proof of ownership. First year of storage is free, then 0.5% per year.<br><br>
+                  <strong style="color:var(--t1);">Option B — Physical Delivery:</strong> Your metal bar is shipped to your address via insured courier within 5–10 business days. Shipping fee of $25–$50 applies based on weight and destination.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">3</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Complete Payment — Separate from Your Cash Balance</div>
+                  <div class="step-desc">After selecting your product and delivery option, you will be taken to a separate payment page. The system will generate a unique wallet address and exact amount to send in your chosen cryptocurrency. This payment is completely separate from your Qubix investment account.</div>
+                  <div class="addr-block">
+                    <div class="addr-block-label">Physical Gold Order Payment — Send To This Address</div>
+                    <div class="addr-string">TQv8JpFzfJGYs2Y7B5Lj9DRrx81TjQr4M</div>
+                    <div class="addr-block-label" style="margin-top:14px;">Order Total — Send Exactly This Amount</div>
+                    <div class="addr-amount">
+                      <span class="addr-amount-label">1oz Gold Bar + Vault Storage</span>
+                      <span class="addr-amount-val">78.42 USDT</span>
+                    </div>
+                    <div class="addr-amount" style="margin-top:6px;">
+                      <span class="addr-amount-label">USD Equivalent:</span>
+                      <span class="addr-amount-val" style="color:var(--t2);font-size:0.85rem;">$78.42 USD</span>
+                    </div>
+                  </div>
+                  <div class="warn-box">
+                    <strong>Send Exact Amount to Exact Address</strong>
+                    Same rules apply as with all crypto payments on Qubix. Send the exact amount shown. Do not round the figure. Copy the wallet address — do not type it manually. Incorrect amounts will delay or prevent order processing.
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">4</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Confirm Payment and Wait for Order Verification</div>
+                  <div class="step-desc">After sending the payment, click the confirmation button on the Qubix page. Our team will verify the blockchain transaction within 30 minutes to 1 hour. You will receive an order confirmation email once payment is verified.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">5</div></div>
+                <div class="step-body">
+                  <div class="step-title">Order Fulfilled — Vault Certificate or Shipment Tracking</div>
+                  <div class="step-desc">If you chose vault storage, your vault certificate and proof of ownership documents will be available to download from your account within 24–48 hours. If you chose delivery, you will receive a tracking number for your insured shipment within 2 business days.</div>
+                  <div class="ok-box">
+                    <strong>Order Confirmed</strong>
+                    Your physical gold purchase has been verified and your vault certificate is ready to download from your account documents section. Your allocated gold bar serial number is #XAU-2024-018472.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hiw-side-note">
+            <div class="hiw-side-note-title">Physical Gold Shop Info</div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Payment Method</span><span class="hiw-note-val warn">Crypto only</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Uses Cash Balance?</span><span class="hiw-note-val" style="color:var(--red);">No — Separate</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Verification Time</span><span class="hiw-note-val">30 min – 1 hr</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Vault Storage Fee</span><span class="hiw-note-val">0.5% / yr (yr 1 free)</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Delivery Time</span><span class="hiw-note-val">5–10 business days</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Shipping Fee</span><span class="hiw-note-val">$25–$50</span></div>
+            <div class="hiw-note-row" style="border-bottom:none;"><span class="hiw-note-key">Insurance</span><span class="hiw-note-val good">Full coverage</span></div>
+
+            <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border);">
+              <div class="hiw-side-note-title">Available Products</div>
+              <div style="font-size:0.82rem; color:var(--t2); line-height:1.85;">
+                — Gold bars: 1oz, 10oz, 1kg, 400oz<br>
+                — Silver bars: 1oz, 10oz, 1kg, 1000oz<br>
+                — Platinum bars: 1oz, 10oz<br>
+                — Palladium bars: 1oz<br><br>
+                All bars are LBMA certified with serial numbers.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PANEL: WITHDRAWAL ── -->
+      <div class="hiw-panel" id="panel-withdraw">
+        <div class="hiw-two">
+          <div>
+            <h3 style="font-size:1.2rem;font-weight:700;color:var(--white);margin-bottom:8px;">How to Withdraw Funds</h3>
+            <p style="font-size:0.875rem;color:var(--t2);margin-bottom:32px;line-height:1.75;">You can withdraw your available cash balance at any time. Withdrawals are sent in cryptocurrency to a wallet address you provide. The process is straightforward and our team processes all withdrawal requests within 30 minutes to 1 hour.</p>
+
+            <div class="steps-wrap">
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">1</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Click "Withdraw" on Your Dashboard</div>
+                  <div class="step-desc">Log into your account and click the Withdraw button on your main dashboard. You can only withdraw funds that are in your Available Cash Balance. You cannot withdraw funds that are currently invested in assets — you must sell the asset position first to return it to your cash balance.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">2</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Select Your Cryptocurrency and Enter the Withdrawal Amount</div>
+                  <div class="step-desc">Choose which cryptocurrency you want to receive (e.g. Bitcoin, USDT, Ethereum). Enter the amount in USD you wish to withdraw. The system will display the equivalent amount in your chosen cryptocurrency at the current market rate.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">3</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Enter Your Wallet Address</div>
+                  <div class="step-desc">Paste the wallet address from your external cryptocurrency wallet or exchange where you want to receive the funds. Double-check the address carefully before submitting. Always paste — do not type manually.</div>
+                  <div class="warn-box">
+                    <strong>Verify Your Wallet Address Before Submitting</strong>
+                    Once a withdrawal is submitted and processed, it cannot be reversed. Funds sent to an incorrect address are permanently lost. Always confirm your wallet address is correct and that it matches the selected cryptocurrency network (e.g. do not send USDT TRC-20 to an ERC-20 address).
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">4</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Submit Your Withdrawal Request</div>
+                  <div class="step-desc">Review the withdrawal summary — amount, currency, and destination address — then click Submit Withdrawal Request. The funds will be deducted from your available cash balance immediately and your request will be queued for processing.</div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">5</div><div class="step-line"></div></div>
+                <div class="step-body">
+                  <div class="step-title">Our Team Verifies and Processes the Request</div>
+                  <div class="step-desc">Our compliance and operations team reviews your withdrawal request to verify account security and regulatory compliance. This typically takes 30 minutes to 1 hour. You will receive an email notification once the withdrawal has been sent to the blockchain.</div>
+                  <div class="verify-mock">
+                    <div class="verify-spinner"></div>
+                    <div>
+                      <div class="verify-text-title">Processing Withdrawal</div>
+                      <div class="verify-text-sub">Your request is being reviewed by our team. Estimated processing time: 30–60 minutes.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-row">
+                <div class="step-connector"><div class="step-num">6</div></div>
+                <div class="step-body">
+                  <div class="step-title">Cryptocurrency Arrives in Your Wallet</div>
+                  <div class="step-desc">Once processed, the cryptocurrency will be sent to the wallet address you provided. You will receive an email with the transaction ID (TXID) so you can verify the transfer on the blockchain explorer. Blockchain confirmation takes an additional 10–30 minutes depending on network conditions.</div>
+                  <div class="ok-box">
+                    <strong>Withdrawal Sent</strong>
+                    Your withdrawal of 312.80 USDT ($312.80 USD) has been sent to your wallet. Transaction ID: 0xa3f7b2...d891cc. You can track this on BscScan or Etherscan.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hiw-side-note">
+            <div class="hiw-side-note-title">Withdrawal Summary</div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Minimum Withdrawal</span><span class="hiw-note-val">$10 USD</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Maximum Withdrawal</span><span class="hiw-note-val">Full balance</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Withdrawal Fee</span><span class="hiw-note-val warn">5%</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Network Fee</span><span class="hiw-note-val warn">Deducted from total</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Processing Time</span><span class="hiw-note-val">30 min – 1 hr</span></div>
+            <div class="hiw-note-row"><span class="hiw-note-key">Blockchain Confirm</span><span class="hiw-note-val">10–30 min</span></div>
+            <div class="hiw-note-row" style="border-bottom:none;"><span class="hiw-note-key">Reversible?</span><span class="hiw-note-val" style="color:var(--red);">No — Final</span></div>
+
+            <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border);">
+              <div class="hiw-side-note-title">Before You Withdraw</div>
+              <div style="font-size:0.82rem; color:var(--t2); line-height:1.85;">
+                — Only available cash balance can be withdrawn<br>
+                — Sell investments first to free up balance<br>
+                — Ensure your wallet address is correct<br>
+                — Ensure the crypto network matches your wallet<br>
+                — Withdrawals are irreversible once sent<br>
+                — You will receive a TXID for tracking
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+<!-- END HOW IT WORKS -->
+
+
+<!-- ════════════════════════════════
+     INVESTMENTS PAGE
+════════════════════════════════ -->
+<div id="investments-page" class="page">
+  <div class="inner-hero">
+    <div class="wrap">
+      <div class="label-tag">Investments</div>
+      <h1>Complete Investment Guide</h1>
+      <p>Everything you need to know about investing on Qubix — asset classes, processes, fees, and performance reporting.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="wrap">
+      <div class="stat-row-4">
+        <div class="stat-box"><div class="stat-box-num">68+</div><div class="stat-box-lbl">Available Assets</div></div>
+        <div class="stat-box"><div class="stat-box-num">$2.1B</div><div class="stat-box-lbl">Total Volume Processed</div></div>
+        <div class="stat-box"><div class="stat-box-num">12,400+</div><div class="stat-box-lbl">Active Investors This Month</div></div>
+        <div class="stat-box"><div class="stat-box-num">0.5%</div><div class="stat-box-lbl">Starting Management Fee</div></div>
+      </div>
+
+      <div class="info-2col">
+        <div class="info-block">
+          <h3>How to Invest on Qubix</h3>
+          <p><strong>Step 1:</strong> Create your free account — takes under 2 minutes.<br><br>
+          <strong>Step 2:</strong> Deposit using cryptocurrency. Minimum $100.<br><br>
+          <strong>Step 3:</strong> Browse the asset library — stocks, minerals, real estate, precious metals.<br><br>
+          <strong>Step 4:</strong> Enter your investment amount and confirm.<br><br>
+          <strong>Step 5:</strong> Monitor your portfolio in real time from your dashboard.</p>
+          <ul style="margin-top:16px;">
+            <li>Instant order execution with no commissions</li>
+            <li>Fractional investing from $10</li>
+            <li>Full ownership rights on all assets</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h3>Withdrawals and Payouts</h3>
+          <p><strong>Processing time:</strong> 30 minutes to 1 hour after submission<br><br>
+          <strong>Minimum withdrawal:</strong> $10 USD equivalent<br><br>
+          <strong>Withdrawal fee:</strong> 5% of the withdrawal amount<br><br>
+          <strong>Payment methods:</strong> BTC, ETH, USDT, and 17+ supported cryptocurrencies<br><br>
+          <strong>Real estate dividends:</strong> Credited to cash balance monthly on the 15th<br><br>
+          <strong>Stock dividends:</strong> Credited quarterly and available for reinvestment or withdrawal</p>
+        </div>
+        <div class="info-block">
+          <h3>Asset Classes Available</h3>
+          <ul>
+            <li>Stocks: Apple, Microsoft, Nvidia, Google, Amazon, Tesla + 40 more</li>
+            <li>Minerals: Gold, Silver, Platinum, Palladium, Copper</li>
+            <li>Real Estate: Residential, Commercial, and Industrial properties (fractional)</li>
+            <li>Physical Metals: Gold bars (1oz, 10oz, 1kg), Silver bars, Platinum bars</li>
+            <li>Crypto: BTC, ETH, USDT and 17 additional coins</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h3>Performance and Reporting</h3>
+          <p>Portfolio value updates every 3 seconds. Monthly statements available for download in PDF and CSV. Annual tax reports generated automatically at year end.<br><br>
+          All transactions are permanently recorded on an immutable blockchain ledger with a full audit trail viewable from your account.<br><br>
+          <strong>Historical average returns (2024):</strong></p>
+          <ul style="margin-top:12px;">
+            <li>Global Stocks: +18.2% average</li>
+            <li>Precious Metals: +12.5% average</li>
+            <li>Real Estate: +9.8% average</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="full-block">
+        <h3>Investment Tiers Overview</h3>
+        <div class="full-block-grid">
+          <div class="fbg-item"><strong>Essential — $100 to $999</strong>Full access to all 68+ assets. Real-time tracking. Email support. 0.50% annual management fee. No per-trade commissions.</div>
+          <div class="fbg-item"><strong>Professional — $1,000 to $9,999</strong>Everything in Essential plus priority order execution, advanced analytics, quarterly performance reviews, and priority 4-hour support. 0.40% annual fee.</div>
+          <div class="fbg-item"><strong>Institutional — $10,000 and above</strong>Everything in Professional plus a dedicated investment advisor, custom portfolio construction, vault inspection rights, API access, and 24/7 phone support. 0.30% annual fee.</div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 
-<!-- ========== OTHER PAGES (How It Works, Investments, Markets, Vault, About) ========== -->
-<!-- Your existing HTML for these pages remains exactly the same - just keep them as they are -->
 
-<!-- ========== FOOTER ========== -->
+<!-- ════════════════════════════════
+     MARKETS PAGE
+════════════════════════════════ -->
+<div id="markets-page" class="page">
+  <div class="inner-hero">
+    <div class="wrap">
+      <div class="label-tag">Markets and Regulation</div>
+      <h1>Fully Regulated. Fully Transparent.</h1>
+      <p>Institutional-quality market data, strict compliance, and complete transparency on every aspect of our operations.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="wrap">
+      <div class="stat-row-4">
+        <div class="stat-box"><div class="stat-box-num">150+</div><div class="stat-box-lbl">Countries Served</div></div>
+        <div class="stat-box"><div class="stat-box-num">3s</div><div class="stat-box-lbl">Price Update Frequency</div></div>
+        <div class="stat-box"><div class="stat-box-num">24/7</div><div class="stat-box-lbl">Market Access</div></div>
+        <div class="stat-box"><div class="stat-box-num">100%</div><div class="stat-box-lbl">Audit Compliance Rate</div></div>
+      </div>
+
+      <div class="sec-grid">
+        <div class="sec-card">
+          <div class="sec-ico">⚖️</div>
+          <div class="sec-name">Regulatory Framework</div>
+          <div class="sec-text">Qubix operates under MSB registration with FINTRAC (Registration #M123456). Fully compliant with international anti-money laundering and know-your-customer regulations. Custodial partners are regulated in Switzerland, Singapore, and the United States.</div>
+          <div class="sec-badges"><span class="sec-badge">FINTRAC #M123456</span><span class="sec-badge">AML Compliant</span><span class="sec-badge">KYC Enforced</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">📡</div>
+          <div class="sec-name">Live Market Data Sources</div>
+          <div class="sec-text">Prices sourced directly from NYSE and NASDAQ (1-second delay), LBMA for gold and silver spot (3-second delay), CME Group for futures and commodities, CoinGecko and CoinMarketCap for crypto. No hidden spreads.</div>
+          <div class="sec-badges"><span class="sec-badge">NYSE/NASDAQ</span><span class="sec-badge">LBMA Official</span><span class="sec-badge">CME Group</span><span class="sec-badge">CoinGecko</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">🔒</div>
+          <div class="sec-name">Security Certifications</div>
+          <div class="sec-text">SOC 2 Type II certified. ISO 27001 information security management. 98% of digital assets in multi-signature cold wallet storage. Regular independent penetration testing. Full GDPR compliance. $500M Lloyd's of London insurance policy.</div>
+          <div class="sec-badges"><span class="sec-badge">SOC 2 Type II</span><span class="sec-badge">ISO 27001</span><span class="sec-badge">GDPR</span><span class="sec-badge">Lloyd's $500M</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">📊</div>
+          <div class="sec-name">Market Coverage</div>
+          <div class="sec-text">Stocks: NYSE, NASDAQ, LSE, TSX (4,500+ symbols via direct API). Commodities: LBMA Gold and Silver, LME Copper. Crypto: 20+ major assets. Real Estate: 15+ properties across US, UK, Europe, and Asia. Forex: 40+ currency pairs for reference.</div>
+          <div class="sec-badges"><span class="sec-badge">4,500+ Stocks</span><span class="sec-badge">20+ Crypto</span><span class="sec-badge">15+ Properties</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">🕐</div>
+          <div class="sec-name">Market Hours</div>
+          <div class="sec-text">Stocks: 9:30 AM to 4:00 PM ET, Monday through Friday. Commodities: 6:00 PM to 5:00 PM ET, Sunday through Friday. Cryptocurrency: 24 hours a day, 7 days a week, 365 days a year. Real estate order book: 24/7 with next-session execution.</div>
+          <div class="sec-badges"><span class="sec-badge">Pre-Market Orders</span><span class="sec-badge">24/7 Crypto</span><span class="sec-badge">After-Hours Queue</span></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-ico">📋</div>
+          <div class="sec-name">Audit and Transparency</div>
+          <div class="sec-text">Annual audits conducted by PwC. Quarterly reviews by Deloitte. Monthly internal audits. All reports are publicly available in our Transparency Hub. Every transaction is blockchain-timestamped with an immutable audit trail.</div>
+          <div class="sec-badges"><span class="sec-badge">PwC Annual</span><span class="sec-badge">Deloitte Quarterly</span><span class="sec-badge">Public Reports</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<!-- ════════════════════════════════
+     VAULT PAGE
+════════════════════════════════ -->
+<div id="vault-page" class="page">
+  <div class="inner-hero">
+    <div class="wrap">
+      <div class="label-tag">Qubix Vault</div>
+      <h1>Bank-Grade Physical Asset Storage</h1>
+      <p>Store your precious metals in our insured, allocated vaults — or have them shipped directly to your door with full transit insurance.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="wrap">
+      <div class="stat-row-4">
+        <div class="stat-box"><div class="stat-box-num">$500M+</div><div class="stat-box-lbl">Insured Assets</div></div>
+        <div class="stat-box"><div class="stat-box-num">24/7</div><div class="stat-box-lbl">Armed Vault Monitoring</div></div>
+        <div class="stat-box"><div class="stat-box-num">100%</div><div class="stat-box-lbl">Allocated Storage</div></div>
+        <div class="stat-box"><div class="stat-box-num">3</div><div class="stat-box-lbl">Global Vault Locations</div></div>
+      </div>
+
+      <div class="vault-grid">
+        <div class="vault-card">
+          <h3>Zurich Primary Vault (Switzerland)</h3>
+          <p><strong style="color:var(--t1);">Operator:</strong> Malca-Amit and Brinks<br>
+          <strong style="color:var(--t1);">Security:</strong> Armed guards, biometric access control, seismic protection<br>
+          <strong style="color:var(--t1);">Insurance:</strong> Lloyd's of London — full replacement value<br>
+          <strong style="color:var(--t1);">Storage fee:</strong> First year free, then 0.5% annually<br><br>
+          Every bar is allocated and registered in your name. Quarterly independent audits by PwC. You may request physical inspection with 48 hours notice (Institutional tier only).</p>
+        </div>
+        <div class="vault-card">
+          <h3>Physical Delivery to Your Address</h3>
+          <p><strong style="color:var(--t1);">Shipping time:</strong> 5–10 business days via insured courier<br>
+          <strong style="color:var(--t1);">Tracking:</strong> Real-time tracking number provided at dispatch<br>
+          <strong style="color:var(--t1);">Signature:</strong> Adult signature required upon delivery<br>
+          <strong style="color:var(--t1);">Insurance:</strong> Full replacement value coverage during transit<br>
+          <strong style="color:var(--t1);">Shipping fee:</strong> $25–$50 based on weight and destination<br><br>
+          Available to verified accounts in supported countries only.</p>
+        </div>
+        <div class="vault-card">
+          <h3>Vault Security Standards</h3>
+          <ul>
+            <li>24/7 armed security and CCTV surveillance</li>
+            <li>Biometric access control — authorized personnel only</li>
+            <li>Allocated storage — your assets are never pooled with others</li>
+            <li>Quarterly independent audits with publicly available reports</li>
+            <li>Climate-controlled environment with temperature and humidity monitoring</li>
+            <li>Sell your vaulted assets instantly from your dashboard without physical retrieval</li>
+          </ul>
+        </div>
+        <div class="vault-card">
+          <h3>Vault Documentation</h3>
+          <p>Every vault holding includes the following documents, downloadable from your account dashboard:</p>
+          <ul>
+            <li>Vault Storage Certificate</li>
+            <li>Proof of Ownership (notarized)</li>
+            <li>Insurance Certificate</li>
+            <li>Allocated Storage Agreement</li>
+            <li>Quarterly Audit Confirmation</li>
+          </ul>
+          <p style="margin-top:14px; color:var(--t3); font-size:0.78px;">All documents are blockchain-timestamped for authenticity verification.</p>
+        </div>
+      </div>
+
+      <div class="full-block" style="margin-top:24px;">
+        <h3>Global Vault Locations</h3>
+        <div class="vault-locs">
+          <div class="vault-loc">
+            <div class="vault-loc-l">
+              <div class="vault-loc-flag">🇨🇭</div>
+              <div>
+                <div class="vault-loc-name">Zurich, Switzerland</div>
+                <div class="vault-loc-sub">Primary vault — Malca-Amit / Brinks — Most secure facility in Europe</div>
+              </div>
+            </div>
+            <div class="vault-loc-stat live-stat">Live</div>
+          </div>
+          <div class="vault-loc">
+            <div class="vault-loc-l">
+              <div class="vault-loc-flag">🇸🇬</div>
+              <div>
+                <div class="vault-loc-name">Singapore</div>
+                <div class="vault-loc-sub">Asia-Pacific hub — Freeport facility</div>
+              </div>
+            </div>
+            <div class="vault-loc-stat live-stat">Live</div>
+          </div>
+          <div class="vault-loc">
+            <div class="vault-loc-l">
+              <div class="vault-loc-flag">🇺🇸</div>
+              <div>
+                <div class="vault-loc-name">Delaware, USA</div>
+                <div class="vault-loc-sub">East Coast storage facility</div>
+              </div>
+            </div>
+            <div class="vault-loc-stat soon-stat">Opening Q3 2025</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<!-- ════════════════════════════════
+     ABOUT PAGE
+════════════════════════════════ -->
+<div id="about-page" class="page">
+  <div class="inner-hero">
+    <div class="wrap">
+      <div class="label-tag">About Qubix</div>
+      <h1>10 Years of Bridging Traditional Finance and Digital Assets</h1>
+      <p>Founded in 2015 in Zug, Switzerland by veterans of Goldman Sachs, Morgan Stanley, and Coinbase. Trusted by investors in over 150 countries.</p>
+    </div>
+  </div>
+  <section class="section">
+    <div class="wrap">
+      <div class="stat-row-4">
+        <div class="stat-box"><div class="stat-box-num">10+</div><div class="stat-box-lbl">Years of Operation</div></div>
+        <div class="stat-box"><div class="stat-box-num">150K+</div><div class="stat-box-lbl">Global Users</div></div>
+        <div class="stat-box"><div class="stat-box-num">$2B+</div><div class="stat-box-lbl">Transactions Processed</div></div>
+        <div class="stat-box"><div class="stat-box-num">24/7</div><div class="stat-box-lbl">Customer Support</div></div>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Company History</h3>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2015</div><div class="tl-text">Qubix founded in Zug, Switzerland with $2M seed funding</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2016</div><div class="tl-text">First gold tokenization product launched to 5,000 early users</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2018</div><div class="tl-text">Real estate fractional investment platform launched</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2020</div><div class="tl-text">MSB registration completed, expanded to 50+ countries</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2022</div><div class="tl-text">Zurich vault partnership with Malca-Amit announced</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2023</div><div class="tl-text">$500M insured assets milestone achieved</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2024</div><div class="tl-text">Singapore vault opened, 100,000 users milestone</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+              <div><div class="tl-year">2025</div><div class="tl-text">10-year anniversary — 150,000+ users, $2.1B volume</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-card">
+          <h3>Leadership Team</h3>
+          <div class="team-list">
+            <div class="team-item">
+              <div class="team-av" style="background:rgba(22,89,255,0.15);color:#7aacff">MC</div>
+              <div><div class="team-name">Michael Chen</div><div class="team-role">Founder and CEO — previously Goldman Sachs</div></div>
+            </div>
+            <div class="team-item">
+              <div class="team-av" style="background:rgba(13,197,168,0.1);color:var(--teal)">SW</div>
+              <div><div class="team-name">Sarah Williams</div><div class="team-role">Chief Financial Officer — previously Morgan Stanley</div></div>
+            </div>
+            <div class="team-item">
+              <div class="team-av" style="background:rgba(139,92,246,0.1);color:#a78bfa">DK</div>
+              <div><div class="team-name">David Kim</div><div class="team-role">Chief Technology Officer — previously Coinbase</div></div>
+            </div>
+            <div class="team-item">
+              <div class="team-av" style="background:rgba(232,163,24,0.1);color:var(--gold)">ER</div>
+              <div><div class="team-name">Elena Rossi</div><div class="team-role">Head of Vault Operations — previously Brinks</div></div>
+            </div>
+            <div class="team-item">
+              <div class="team-av" style="background:rgba(23,201,100,0.1);color:var(--green)">JO</div>
+              <div><div class="team-name">James Okonkwo</div><div class="team-role">Head of Compliance — previously FINTRAC</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-card">
+          <h3>Mission and Vision</h3>
+          <p>Our mission is to democratize access to real assets — stocks, real estate, and physical metals — for everyone, anywhere in the world, through secure, regulated infrastructure that was previously only accessible to institutional investors.<br><br>
+          Our vision is to become the world's most trusted platform for owning real assets, combining the security of traditional finance with the transparency of blockchain technology.<br><br>
+          We believe that every person, regardless of where they are in the world, deserves access to the same investment opportunities that wealthy institutions have enjoyed for decades.</p>
+        </div>
+
+        <div class="about-card">
+          <h3>Global Partners and Infrastructure</h3>
+          <p style="margin-bottom:14px;"><strong style="color:var(--t1);">Headquarters:</strong> Zug, Switzerland<br>
+          <strong style="color:var(--t1);">Regional Offices:</strong> London, Singapore, New York</p>
+          <ul>
+            <li>Vault Partners: Malca-Amit, Brinks, Loomis</li>
+            <li>Insurance: Lloyd's of London, Zurich Insurance</li>
+            <li>Auditors: PwC (annual), Deloitte (quarterly)</li>
+            <li>Banking: Tier-1 regulated banking relationships</li>
+            <li>Data: NYSE, NASDAQ, LBMA, CME Group, CoinGecko</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<!-- ════════════════════════════════
+     FOOTER
+════════════════════════════════ -->
 <footer>
   <div class="footer-inner">
     <div class="footer-top">
-      <div class="footer-brand"><div class="footer-logo"><div class="footer-logo-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/></svg></div><div class="footer-logo-name">Qubix Investment Ltd.</div></div><div class="footer-tagline">Institutional-grade investment infrastructure for serious investors worldwide. Regulated, insured, and independently audited.</div><div class="footer-certs"><span class="footer-cert">FINTRAC Registered</span><span class="footer-cert">SOC 2 Type II</span><span class="footer-cert">ISO 27001</span><span class="footer-cert">Lloyd's Insured</span><span class="footer-cert">PwC Audited</span><span class="footer-cert">GDPR Compliant</span></div></div>
-      <div class="footer-col"><h4>Platform</h4><ul><li><a data-page="how">How It Works</a></li><li><a data-page="investments">Investments</a></li><li><a data-page="markets">Markets</a></li><li><a data-page="vault">Vault Storage</a></li><li><a href="#">Pricing</a></li><li><a href="#">API Access</a></li></ul></div>
-      <div class="footer-col"><h4>Assets</h4><ul><li><a href="#">Global Stocks</a></li><li><a href="#">Gold and Silver</a></li><li><a href="#">Real Estate</a></li><li><a href="#">Cryptocurrency</a></li><li><a href="#">Commodities</a></li><li><a href="#">Physical Gold Shop</a></li></ul></div>
-      <div class="footer-col"><h4>Company</h4><ul><li><a data-page="about">About Us</a></li><li><a href="#">Transparency Hub</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact Us</a></li></ul></div>
-      <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Security Overview</a></li><li><a href="#">KYC Guide</a></li><li><a href="#">Deposit Guide</a></li><li><a href="#">Withdrawal Guide</a></li><li><a href="#">System Status</a></li></ul></div>
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+              <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/>
+            </svg>
+          </div>
+          <div class="footer-logo-name">Qubix Investment Ltd.</div>
+        </div>
+        <div class="footer-tagline">Institutional-grade investment infrastructure for serious investors worldwide. Regulated, insured, and independently audited.</div>
+        <div class="footer-certs">
+          <span class="footer-cert">FINTRAC Registered</span>
+          <span class="footer-cert">SOC 2 Type II</span>
+          <span class="footer-cert">ISO 27001</span>
+          <span class="footer-cert">Lloyd's Insured</span>
+          <span class="footer-cert">PwC Audited</span>
+          <span class="footer-cert">GDPR Compliant</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a data-page="how">How It Works</a></li>
+          <li><a data-page="investments">Investments</a></li>
+          <li><a data-page="markets">Markets</a></li>
+          <li><a data-page="vault">Vault Storage</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">API Access</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Assets</h4>
+        <ul>
+          <li><a href="#">Global Stocks</a></li>
+          <li><a href="#">Gold and Silver</a></li>
+          <li><a href="#">Real Estate</a></li>
+          <li><a href="#">Cryptocurrency</a></li>
+          <li><a href="#">Commodities</a></li>
+          <li><a href="#">Physical Gold Shop</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a data-page="about">About Us</a></li>
+          <li><a href="#">Transparency Hub</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Security Overview</a></li>
+          <li><a href="#">KYC Guide</a></li>
+          <li><a href="#">Deposit Guide</a></li>
+          <li><a href="#">Withdrawal Guide</a></li>
+          <li><a href="#">System Status</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="footer-bottom"><div class="footer-copy">© 2025 Qubix Investment Ltd. All rights reserved. Registered in Zug, Switzerland. FINTRAC Registration #M123456. Investing involves risk. Past performance does not guarantee future results. Not available in all jurisdictions.</div><div class="footer-legal"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Risk Disclosure</a><a href="#">Cookie Policy</a></div></div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 Qubix Investment Ltd. All rights reserved. Registered in Zug, Switzerland. FINTRAC Registration #M123456. Investing involves risk. Past performance does not guarantee future results. Not available in all jurisdictions.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Risk Disclosure</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
   </div>
 </footer>
 
+
 <script>
-// Nav scroll
+/* ── NAV SCROLL ── */
 const navEl = document.getElementById('nav');
 window.addEventListener('scroll', () => navEl.classList.toggle('solid', scrollY > 10));
 
-// Mobile menu
-const menuBtn = document.getElementById('menuBtn');
-const mobileNav = document.getElementById('mobileNav');
-if (menuBtn && mobileNav) {
-  menuBtn.addEventListener('click', () => mobileNav.classList.toggle('open'));
-}
-
-// Page routing
+/* ── PAGE ROUTING ── */
 const pages = { home:'home-page', how:'how-page', investments:'investments-page', markets:'markets-page', vault:'vault-page', about:'about-page' };
 
 function showPage(id) {
@@ -1101,7 +2093,6 @@ function showPage(id) {
     el.classList.toggle('active', el.getAttribute('data-page') === id);
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (mobileNav) mobileNav.classList.remove('open');
 }
 
 document.querySelectorAll('[data-page]').forEach(el => {
@@ -1112,7 +2103,7 @@ document.querySelectorAll('[data-page]').forEach(el => {
 });
 showPage('home');
 
-// HIW Tabs
+/* ── HIW TABS ── */
 document.querySelectorAll('.hiw-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.hiw-tab').forEach(t => t.classList.remove('active'));
@@ -1123,7 +2114,7 @@ document.querySelectorAll('.hiw-tab').forEach(tab => {
   });
 });
 
-// Market filters
+/* ── MARKET FILTER BUTTONS ── */
 document.querySelectorAll('.mf').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.mf').forEach(b => b.classList.remove('on'));
@@ -1131,17 +2122,26 @@ document.querySelectorAll('.mf').forEach(btn => {
   });
 });
 
-// Ticker
+/* ── TICKER ── */
 const TICKS = [
-  { sym:'AAPL', px:'$213.42', chg:'+1.84%', up:true }, { sym:'NVDA', px:'$875.20', chg:'+3.12%', up:true },
-  { sym:'XAU/USD', px:'$3,234.70', chg:'+1.13%', up:true }, { sym:'BTC/USD', px:'$86,135', chg:'+2.40%', up:true },
-  { sym:'ETH/USD', px:'$3,241', chg:'+1.98%', up:true }, { sym:'MSFT', px:'$421.88', chg:'-0.62%', up:false },
-  { sym:'TSLA', px:'$182.60', chg:'-1.25%', up:false }, { sym:'XAG/USD', px:'$32.18', chg:'+0.88%', up:true },
-  { sym:'AMZN', px:'$198.44', chg:'+0.75%', up:true }, { sym:'GOOGL', px:'$175.30', chg:'+0.44%', up:true },
+  { sym:'AAPL', px:'$213.42', chg:'+1.84%', up:true },
+  { sym:'NVDA', px:'$875.20', chg:'+3.12%', up:true },
+  { sym:'XAU/USD', px:'$3,234.70', chg:'+1.13%', up:true },
+  { sym:'BTC/USD', px:'$86,135', chg:'+2.40%', up:true },
+  { sym:'ETH/USD', px:'$3,241', chg:'+1.98%', up:true },
+  { sym:'MSFT', px:'$421.88', chg:'-0.62%', up:false },
+  { sym:'TSLA', px:'$182.60', chg:'-1.25%', up:false },
+  { sym:'XAG/USD', px:'$32.18', chg:'+0.88%', up:true },
+  { sym:'AMZN', px:'$198.44', chg:'+0.75%', up:true },
+  { sym:'GOOGL', px:'$175.30', chg:'+0.44%', up:true },
+  { sym:'XPT/USD', px:'$1,028.50', chg:'+0.66%', up:true },
+  { sym:'QBX-RE01', px:'$342.80', chg:'+0.44%', up:true },
 ];
-const tickHTML = TICKS.map(t => `<div class="tick"><span class="tick-sym">${t.sym}</span><span class="tick-px">${t.px}</span><span class="${t.up?'up':'dn'}">${t.chg}</span></div><div class="tick-sep"></div>`).join('');
+const tickHTML = TICKS.map(t =>
+  `<div class="tick"><span class="tick-sym">${t.sym}</span><span class="tick-px">${t.px}</span><span class="${t.up?'up':'dn'}">${t.chg}</span></div><div class="tick-sep"></div>`
+).join('');
 const ticker = document.getElementById('ticker');
-if (ticker) ticker.innerHTML = tickHTML + tickHTML;
+ticker.innerHTML = tickHTML + tickHTML;
 </script>
 </body>
 </html>
