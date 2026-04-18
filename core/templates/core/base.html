@@ -361,42 +361,166 @@ nav {
 /* ── MOBILE MENU (HIDDEN BY DEFAULT) ── */
 .menu-btn { display: none; }
 
-.mobile-nav {
+/* Old full-screen mobile nav — hidden, replaced by bottom tab bar */
+.mobile-nav { display: none !important; }
+
+/* ── BOTTOM TAB BAR (mobile app style) ── */
+.bottom-tab-bar {
   display: none;
   position: fixed;
-  inset: 62px 0 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
   background: rgba(8,10,15,0.97);
-  z-index: 99;
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 0;
+  height: 60px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.bottom-tab-bar-inner {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
+.btab {
+  flex: 1;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  backdrop-filter: blur(20px);
-}
-.mobile-nav.open { display: flex; }
-.mobile-nav a {
-  color: var(--muted2);
+  gap: 3px;
   text-decoration: none;
-  font-size: 20px;
-  font-weight: 700;
-  padding: 14px 40px;
+  color: var(--muted2);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+  padding: 6px 0;
+  position: relative;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.btab i { font-size: 16px; transition: all 0.2s; }
+.btab span { font-size: 9px; font-weight: 600; letter-spacing: 0.2px; }
+.btab.active { color: var(--accent); }
+.btab.active i { transform: translateY(-1px); }
+.btab.active::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 28px; height: 2px;
+  background: var(--accent);
+  border-radius: 0 0 3px 3px;
+}
+.btab:hover { color: var(--text); }
+
+/* More menu drawer */
+.more-drawer {
+  display: none;
+  position: fixed;
+  bottom: 60px;
+  left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border2);
+  z-index: 199;
+  padding: 12px 16px;
+  gap: 8px;
+  flex-direction: column;
+  animation: drawerUp 0.2s ease;
+}
+.more-drawer.open { display: flex; }
+@keyframes drawerUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.more-drawer-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
   border-radius: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
   transition: all 0.2s;
 }
-.mobile-nav a.active { color: #fff; background: var(--accent); }
-.mobile-nav hr {
-  width: 80%;
-  margin: 16px 0;
-  border-color: var(--border);
+.drawer-item:hover, .drawer-item.active { border-color: var(--accent); color: var(--accent); }
+.drawer-item i { width: 18px; text-align: center; font-size: 14px; color: var(--muted2); }
+.drawer-item.active i { color: var(--accent); }
+.drawer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 198;
 }
+.drawer-overlay.open { display: block; }
 
-@media (max-width: 900px) {
+/* main content needs bottom padding on mobile */
+@media (max-width: 768px) {
+  .bottom-tab-bar { display: flex; }
   .nav-links { display: none; }
-  .menu-btn { display: flex; }
+  .menu-btn { display: none; }
+
+  nav {
+    height: 54px;
+    padding: 0 14px;
+  }
+
+  /* Shrink action buttons on mobile */
+  .nav-actions { gap: 5px; }
+  .nav-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  .theme-toggle {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+  .avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+    border-radius: 8px;
+  }
+
+  /* Logo smaller on mobile */
+  .logo-main { font-size: 15px; }
+  .logo-sub { font-size: 8px; }
+  .logo-icon { width: 30px; height: 30px; }
+
+  /* Pad bottom so content not behind tab bar */
+  main { padding-bottom: 72px; }
+  .main { padding: 16px 12px; padding-bottom: 72px; }
+
+  /* Page title smaller */
+  .page-title { font-size: 22px; }
+  .page-sub { font-size: 11px; }
 }
 
-@media (max-width: 600px) {
-  .main { padding: 20px 16px; }
+@media (max-width: 480px) {
+  nav { padding: 0 10px; }
+  .nav-actions { gap: 3px; }
+  /* Hide logout and theme on very small screens — accessible via drawer */
+  .logout-btn { display: none; }
+  .theme-toggle { display: none; }
+  .main { padding: 12px 10px; padding-bottom: 72px; }
 }
 
 /* ── MESSAGES ── */
@@ -1428,9 +1552,6 @@ textarea.form-input {
   </form>
   <!-- ========== END LOGOUT BUTTON ========== -->
   
-  <button class="nav-btn menu-btn" id="menuToggle"><i class="fas fa-bars" style="font-size:12px"></i></button>
-</div>
-    <button class="nav-btn menu-btn" id="menuToggle"><i class="fas fa-bars" style="font-size:12px"></i></button>
   </div>
 </nav>
 
@@ -1445,24 +1566,74 @@ textarea.form-input {
 </div>
 {% endif %}
 
-<!-- MOBILE NAV -->
-<div class="mobile-nav" id="mobileNav">
+<!-- MOBILE NAV (old full-screen, kept for JS compat but hidden) -->
+<div class="mobile-nav" id="mobileNav" style="display:none!important;"></div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeMoreDrawer()"></div>
+
+<!-- MORE DRAWER -->
+<div class="more-drawer" id="moreDrawer">
   {% if user.is_authenticated %}
-    <a href="{% url 'dashboard' %}">Portfolio</a>
-    <a href="{% url 'stocks' %}">Stocks</a>
-    <a href="{% url 'minerals' %}">Minerals</a>
-    <a href="{% url 'real_estate_list' %}">Real Estate</a>
-    <a href="{% url 'physical_investments' %}">Shop</a>
-    <a href="{% url 'market_news' %}">News</a>
-    <hr>
-    <a href="{% url 'transactions' %}">Transactions</a>
-    <a href="{% url 'withdraw' %}">Withdraw</a>
-    <a href="{% url 'logout' %}" style="color: var(--red);">Logout</a>
-  {% else %}
-    <a href="{% url 'login' %}">Login</a>
-    <a href="{% url 'register' %}">Register</a>
+  <div class="more-drawer-row">
+    <a href="{% url 'market_news' %}" class="drawer-item {% if '/news' in request.path %}active{% endif %}">
+      <i class="fas fa-newspaper"></i> News
+    </a>
+    <a href="{% url 'transactions' %}" class="drawer-item {% if '/transactions' in request.path %}active{% endif %}">
+      <i class="fas fa-list-alt"></i> Transactions
+    </a>
+    <a href="{% url 'withdraw' %}" class="drawer-item {% if '/withdraw' in request.path %}active{% endif %}">
+      <i class="fas fa-wallet"></i> Withdraw
+    </a>
+    <a href="{% url 'user_profile' %}" class="drawer-item {% if '/profile' in request.path %}active{% endif %}">
+      <i class="fas fa-user-circle"></i> Profile
+    </a>
+  </div>
+  <div class="more-drawer-row">
+    <button class="drawer-item" onclick="toggleTheme(); closeMoreDrawer();" style="border:none;cursor:pointer;">
+      <i class="fas fa-adjust"></i> Theme
+    </button>
+    <form action="{% url 'logout' %}" method="post" style="margin:0; display:contents;">
+      {% csrf_token %}
+      <button type="submit" class="drawer-item" style="border:none;cursor:pointer;color:var(--red);">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </form>
+  </div>
   {% endif %}
 </div>
+
+<!-- BOTTOM TAB BAR (mobile app nav) -->
+{% if user.is_authenticated %}
+<nav class="bottom-tab-bar" id="bottomTabBar">
+  <div class="bottom-tab-bar-inner">
+    <a href="{% url 'dashboard' %}" class="btab {% if '/dashboard' in request.path %}active{% endif %}">
+      <i class="fas fa-chart-pie"></i>
+      <span>Portfolio</span>
+    </a>
+    <a href="{% url 'stocks' %}" class="btab {% if '/stocks' in request.path %}active{% endif %}">
+      <i class="fas fa-chart-line"></i>
+      <span>Stocks</span>
+    </a>
+    <a href="{% url 'minerals' %}" class="btab {% if '/minerals' in request.path %}active{% endif %}">
+      <i class="fas fa-gem"></i>
+      <span>Minerals</span>
+    </a>
+    <a href="{% url 'real_estate_list' %}" class="btab {% if '/real-estate' in request.path %}active{% endif %}">
+      <i class="fas fa-building"></i>
+      <span>Real Estate</span>
+    </a>
+    <a href="{% url 'physical_investments' %}" class="btab {% if 'physical' in request.path %}active{% endif %}">
+      <i class="fas fa-store"></i>
+      <span>Shop</span>
+    </a>
+    <button class="btab" id="moreTabBtn" onclick="toggleMoreDrawer()">
+      <i class="fas fa-ellipsis-h"></i>
+      <span>More</span>
+    </button>
+  </div>
+</nav>
+{% endif %}
 
 <!-- TICKER TAPE -->
 <div class="ticker-tape">
@@ -1670,15 +1841,41 @@ async function markAllNotificationsRead() {
 }
 
 // ============= MOBILE MENU FUNCTIONS =============
+// Legacy menu toggle (no-op now, bottom tab bar handles mobile nav)
 const menuToggle = document.getElementById('menuToggle');
-const mobileNav = document.getElementById('mobileNav');
-if (menuToggle && mobileNav) {
-  menuToggle.addEventListener('click', () => mobileNav.classList.toggle('open'));
+if (menuToggle) menuToggle.style.display = 'none';
+
+// ============= BOTTOM TAB BAR / MORE DRAWER =============
+function toggleMoreDrawer() {
+  const drawer = document.getElementById('moreDrawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const btn = document.getElementById('moreTabBtn');
+  if (!drawer) return;
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    drawer.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
+    if (btn) btn.classList.remove('active');
+  } else {
+    drawer.classList.add('open');
+    if (overlay) overlay.classList.add('open');
+    if (btn) btn.classList.add('active');
+  }
 }
 
-document.querySelectorAll('.mobile-nav a').forEach(link => {
-  link.addEventListener('click', () => {
-    if (mobileNav) mobileNav.classList.remove('open');
+function closeMoreDrawer() {
+  const drawer = document.getElementById('moreDrawer');
+  const overlay = document.getElementById('drawerOverlay');
+  const btn = document.getElementById('moreTabBtn');
+  if (drawer) drawer.classList.remove('open');
+  if (overlay) overlay.classList.remove('open');
+  if (btn) btn.classList.remove('active');
+}
+
+// Close drawer when any drawer link is clicked
+document.querySelectorAll('.more-drawer .drawer-item').forEach(item => {
+  item.addEventListener('click', () => {
+    setTimeout(closeMoreDrawer, 80);
   });
 });
 
