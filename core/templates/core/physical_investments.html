@@ -118,7 +118,7 @@
 /* ── 3D FLOATING PRODUCT CARDS ── */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 28px 20px;
   padding-top: 70px;
 }
@@ -895,15 +895,103 @@
   .tx-head > *:nth-child(4), .tx-row > *:nth-child(4) { display: none; }
 }
 @media (max-width: 640px) {
-  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; padding-top: 60px; }
-  .portfolio-summary { grid-template-columns: repeat(2, 1fr); }
-  .vault-cards { grid-template-columns: 1fr; }
-  .page-tabs .tab-btn { padding: 10px 13px; font-size: 12px; }
+  .products-grid { 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; 
+    padding-top: 60px; 
+  }
+  .portfolio-summary { 
+    grid-template-columns: repeat(2, 1fr); 
+  }
+  .vault-cards { 
+    grid-template-columns: 1fr; 
+  }
+  .page-tabs .tab-btn { 
+    padding: 10px 13px; 
+    font-size: 12px; 
+  }
+  
+  /* Make cards smaller to fit 2 columns */
+  .product-float { 
+    height: 120px; 
+    margin-bottom: -20px; 
+  }
+  .product-float img { 
+    max-height: 110px; 
+    max-width: 130px; 
+  }
+  .product-float-emoji { 
+    font-size: 60px; 
+  }
+  .product-info { 
+    padding: 28px 10px 10px; 
+  }
+  .product-badge { 
+    font-size: 8px; 
+    top: 8px; 
+    right: 8px; 
+    padding: 2px 6px; 
+  }
+  .product-name { 
+    font-size: 12px; 
+    padding-right: 45px; 
+    margin-bottom: 2px;
+  }
+  .product-spec { 
+    font-size: 9px; 
+    margin-bottom: 8px; 
+    padding-right: 45px;
+  }
+  .product-price { 
+    font-size: 16px; 
+  }
+  .product-change { 
+    font-size: 9px; 
+    padding: 2px 5px; 
+  }
+  .product-spot { 
+    font-size: 9px; 
+    margin-bottom: 8px; 
+  }
+  .view-btn { 
+    padding: 7px 0; 
+    font-size: 10px; 
+  }
 }
-@media (max-width: 420px) {
-  .products-grid { grid-template-columns: 1fr; }
-  .portfolio-summary { grid-template-columns: 1fr; }
+
+@media (max-width: 480px) {
+  .products-grid { 
+    gap: 10px; 
+  }
+  .product-float img { 
+    max-height: 95px; 
+    max-width: 110px; 
+  }
+  .product-name { 
+    font-size: 11px; 
+    padding-right: 40px;
+  }
+  .product-spec { 
+    font-size: 8px; 
+  }
+  .product-price { 
+    font-size: 14px; 
+  }
+  .product-change { 
+    font-size: 8px; 
+  }
+  .product-spot { 
+    font-size: 8px; 
+  }
+  .view-btn { 
+    font-size: 9px; 
+  }
+  .portfolio-summary { 
+    grid-template-columns: 1fr; 
+  }
 }
+
+/* Remove the old @media (max-width: 420px) completely */
 </style>
 {% endblock %}
 
