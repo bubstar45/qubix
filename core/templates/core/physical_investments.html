@@ -277,6 +277,39 @@
   gap: 12px;
   margin-bottom: 28px;
 }
+
+/* Mobile: make summary cards smaller and 2x2 grid */
+@media (max-width: 640px) {
+  .portfolio-summary {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .summary-card {
+    padding: 12px 12px;
+  }
+  
+  .summary-card-icon {
+    font-size: 16px;
+    top: 10px;
+    right: 12px;
+  }
+  
+  .summary-card-label {
+    font-size: 9px;
+    margin-bottom: 6px;
+  }
+  
+  .summary-card-val {
+    font-size: 16px;
+  }
+  
+  .summary-card-sub {
+    font-size: 8px;
+    margin-top: 3px;
+  }
+}
 .summary-card {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -406,6 +439,80 @@
   grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: 14px;
   margin-bottom: 28px;
+}
+
+/* Mobile: make vault cards more compact */
+@media (max-width: 640px) {
+  .vault-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .vault-card {
+    padding: 14px;
+  }
+  
+  .vault-card-header {
+    margin-bottom: 10px;
+  }
+  
+  .vault-icon {
+    font-size: 20px;
+  }
+  
+  .vault-icon img {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .vault-name {
+    font-size: 13px;
+  }
+  
+  .vault-spec {
+    font-size: 9px;
+  }
+  
+  .vault-status-tag {
+    font-size: 8px;
+    padding: 2px 6px;
+  }
+  
+  .vault-progress-wrap {
+    margin-bottom: 10px;
+  }
+  
+  .vault-progress-label {
+    font-size: 9px;
+  }
+  
+  .vault-vals {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .vault-val-item label {
+    font-size: 8px;
+  }
+  
+  .vault-val-item span {
+    font-size: 12px;
+  }
+  
+  .lock-period {
+    font-size: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .vault-actions {
+    gap: 6px;
+  }
+  
+  .vault-action-btn {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
 }
 .vault-card {
   background: var(--surface2);
@@ -888,11 +995,49 @@
   .portfolio-summary { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 900px) {
-  .table-head, .table-row { grid-template-columns: 2fr 1fr 0.8fr 1fr; }
+  .table-head, .table-row { 
+    grid-template-columns: 2fr 1fr 0.8fr 1fr; 
+    gap: 8px;
+  }
   .table-head > *:nth-child(5), .table-head > *:nth-child(6),
-  .table-row > *:nth-child(5), .table-row > *:nth-child(6) { display: none; }
-  .tx-head, .tx-row { grid-template-columns: 2fr 1fr 1fr 1.4fr; }
-  .tx-head > *:nth-child(4), .tx-row > *:nth-child(4) { display: none; }
+  .table-row > *:nth-child(5), .table-row > *:nth-child(6) { 
+    display: none; 
+  }
+}
+
+@media (max-width: 640px) {
+  .holdings-table {
+    overflow-x: auto;
+  }
+  
+  .table-head, .table-row {
+    grid-template-columns: minmax(120px, 2fr) 0.8fr 0.8fr 1fr;
+    padding: 10px 12px;
+    gap: 6px;
+  }
+  
+  .holding-name {
+    font-size: 11px;
+  }
+  
+  .holding-spec {
+    font-size: 8px;
+  }
+  
+  .holding-img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .holding-type-badge {
+    font-size: 8px;
+    padding: 2px 5px;
+    white-space: nowrap;
+  }
+  
+  .mono {
+    font-size: 11px;
+  }
 }
 @media (max-width: 640px) {
   .products-grid { 
