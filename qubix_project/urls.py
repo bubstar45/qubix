@@ -14,6 +14,8 @@ urlpatterns = [
     
     # ============= CORE APP URLs =============
     path('', include('core.urls')),
+
+    path('admin/notifications/', views.admin_notification_center, name='admin_notification_center'),
 ]
 
 if settings.DEBUG:

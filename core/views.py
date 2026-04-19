@@ -6294,3 +6294,147 @@ def update_profile(request):
     
     messages.success(request, "Profile updated successfully!")
     return redirect('user_profile')    
+
+# ============= ADMIN NOTIFICATION CENTER =============
+
+@login_required
+@user_passes_test(is_admin)
+def admin_notification_center(request):
+    """Admin dashboard to see all pending actions in one place"""
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    # Get all pending items
+    pending_deposits = Transaction.objects.filter(
+        transaction_type='deposit', 
+        status='pending'
+    ).order_by('-created_at')
+    
+    pending_withdrawals = WithdrawalRequest.objects.filter(
+        status='pending'
+    ).order_by('-created_at')
+    
+    pending_orders = PhysicalTransaction.objects.filter(
+        status='under_review'
+    ).order_by('-created_at')
+    
+    pending_delivery_requests = PhysicalHolding.objects.filter(
+        service_type='vault',
+        delivery_status='pending_delivery'
+    ).order_by('-created_at')
+    
+    pending_sell_requests = PhysicalHolding.objects.filter(
+        service_type='vault',
+        delivery_status='pending_sell'
+    ).order_by('-created_at')
+    
+    # New users (registered in last 24 hours)
+    recent_users = CustomUser.objects.filter(
+        date_joined__gte=timezone.now() - timedelta(days=1)
+    ).order_by('-date_joined')
+    
+    open_tickets = SupportTicket.objects.filter(
+        status='open'
+    ).order_by('-created_at')
+    
+    # Combine all into one list
+    notifications = []
+    
+    for deposit in pending_deposits:
+        notifications.append({
+            'type': 'deposit',
+            'id': deposit.id,
+            'title': f'Deposit of ${deposit.total_amount:,.2f}',
+            'user': deposit.user.email,
+            'time': deposit.created_at,
+            'action_url': f'/admin/approve-transaction/{deposit.id}/',
+            'priority': 'high',
+        })
+    
+    for withdrawal in pending_withdrawals:
+        notifications.append({
+            'type': 'withdrawal',
+            'id': withdrawal.id,
+            'title': f'Withdrawal of ${withdrawal.amount:,.2f}',
+            'user': withdrawal.user.email,
+            'time': withdrawal.created_at,
+            'action_url': f'/admin/approve-withdrawal/{withdrawal.id}/',
+            'priority': 'high',
+        })
+    
+    for order in pending_orders:
+        notifications.append({
+            'type': 'order',
+            'id': order.id,
+            'title': f'New Order: {order.product.name} x{order.quantity}',
+            'user': order.user.email,
+            'amount': order.total_amount,
+            'time': order.created_at,
+            'action_url': f'/physical/team/verify/{order.id}/',
+            'priority': 'medium',
+        })
+    
+    for delivery in pending_delivery_requests:
+        notifications.append({
+            'type': 'delivery',
+            'id': delivery.id,
+            'title': f'Delivery Request: {delivery.product.name}',
+            'user': delivery.user.email,
+            'time': delivery.created_at,
+            'action_url': f'/physical/team/verify/{delivery.transaction.id}/' if delivery.transaction else '#',
+            'priority': 'medium',
+        })
+    
+    for sell in pending_sell_requests:
+        notifications.append({
+            'type': 'sell',
+            'id': sell.id,
+            'title': f'Sell Request: {sell.product.name}',
+            'user': sell.user.email,
+            'time': sell.created_at,
+            'action_url': f'/physical/team/verify/{sell.transaction.id}/' if sell.transaction else '#',
+            'priority': 'high',
+        })
+    
+    for user in recent_users:
+        notifications.append({
+            'type': 'user',
+            'id': user.id,
+            'title': f'New User Registration',
+            'user': user.email,
+            'time': user.date_joined,
+            'action_url': f'/admin/core/customuser/{user.id}/change/',
+            'priority': 'low',
+        })
+    
+    for ticket in open_tickets:
+        notifications.append({
+            'type': 'ticket',
+            'id': ticket.id,
+            'title': f'Support Ticket: {ticket.title}',
+            'user': ticket.user.email,
+            'time': ticket.created_at,
+            'action_url': f'/admin/support/reply/{ticket.id}/',
+            'priority': 'medium',
+        })
+    
+    # Sort by time (newest first)
+    notifications.sort(key=lambda x: x['time'], reverse=True)
+    
+    # Count by type
+    counts = {
+        'deposits': pending_deposits.count(),
+        'withdrawals': pending_withdrawals.count(),
+        'orders': pending_orders.count(),
+        'delivery': pending_delivery_requests.count(),
+        'sell': pending_sell_requests.count(),
+        'users': recent_users.count(),
+        'tickets': open_tickets.count(),
+        'total': len(notifications)
+    }
+    
+    context = {
+        'notifications': notifications,
+        'counts': counts,
+    }
+    return render(request, 'core/admin/notification_center.html', context)    
