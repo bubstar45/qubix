@@ -215,6 +215,149 @@
       width: auto;
     }
   }
+/* ========== MOBILE FIXES FOR DIVIDEND HISTORY PAGE ========== */
+
+/* Fix 1: Summary cards grid - 3 columns on mobile (not stacked) */
+@media (max-width: 640px) {
+  .summary-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .summary-card {
+    padding: 10px 6px !important;
+  }
+  
+  .summary-card .label {
+    font-size: 8px !important;
+    margin-bottom: 4px !important;
+    white-space: nowrap !important;
+  }
+  
+  .summary-card .amount {
+    font-size: 14px !important;
+  }
+  
+  .summary-card .amount.sm {
+    font-size: 12px !important;
+  }
+  
+  /* Hide icons on very small screens to save space */
+  .summary-card .label i {
+    display: none !important;
+  }
+}
+
+/* For very small screens, keep 3 columns but make text smaller */
+@media (max-width: 480px) {
+  .summary-grid {
+    gap: 6px !important;
+  }
+  
+  .summary-card {
+    padding: 8px 4px !important;
+  }
+  
+  .summary-card .label {
+    font-size: 7px !important;
+  }
+  
+  .summary-card .amount {
+    font-size: 12px !important;
+  }
+  
+  .summary-card .amount.sm {
+    font-size: 10px !important;
+  }
+}
+
+/* Fix 2: Table responsive - make it horizontally scrollable instead of breaking */
+@media (max-width: 640px) {
+  .table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  table {
+    min-width: 500px !important;
+  }
+  
+  thead th {
+    padding: 10px 12px !important;
+    font-size: 10px !important;
+  }
+  
+  tbody td {
+    padding: 10px 12px !important;
+    font-size: 12px !important;
+  }
+  
+  .td-property-name {
+    font-size: 12px !important;
+  }
+  
+  .td-property-loc {
+    font-size: 9px !important;
+  }
+  
+  .td-amount {
+    font-size: 12px !important;
+  }
+  
+  .download-btn {
+    padding: 4px 8px !important;
+    font-size: 9px !important;
+  }
+  
+  .download-btn i {
+    font-size: 9px !important;
+  }
+}
+
+/* Fix 3: Top bar on mobile */
+@media (max-width: 640px) {
+  .top-bar {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 12px 0 !important;
+  }
+  
+  .qx-nav-links a {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+  }
+  
+  .back-link {
+    font-size: 12px !important;
+  }
+}
+
+/* Fix 4: Page title on mobile */
+@media (max-width: 640px) {
+  .page-title {
+    font-size: 20px !important;
+    margin-bottom: 16px !important;
+  }
+}
+
+/* Fix 5: Info box on mobile */
+@media (max-width: 640px) {
+  .info-box {
+    padding: 14px !important;
+    margin-top: 24px !important;
+  }
+  
+  .info-box h3 {
+    font-size: 13px !important;
+  }
+  
+  .info-box p {
+    font-size: 11px !important;
+  }
+}  
 </style>
 {% endblock %}
 

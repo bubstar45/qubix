@@ -807,6 +807,227 @@
     .gallery-main { height: 250px; }
     .cash-summary { grid-template-columns: 1fr; }
   }
+/* ========== MOBILE FIXES FOR REAL ESTATE DETAIL PAGE ========== */
+
+/* Fix 1: Cash Summary Cards - 3 columns on mobile (not stacked) */
+@media (max-width: 640px) {
+  .cash-summary {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .cash-card {
+    padding: 10px 6px !important;
+  }
+  
+  .cash-card-label {
+    font-size: 8px !important;
+    margin-bottom: 3px !important;
+    white-space: nowrap !important;
+  }
+  
+  .cash-card-value {
+    font-size: 14px !important;
+  }
+  
+  .cash-card-sub {
+    font-size: 7px !important;
+    margin-top: 2px !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Hide icons on very small screens to save space */
+  .cash-card-label i {
+    display: none !important;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  .cash-summary {
+    gap: 6px !important;
+  }
+  
+  .cash-card {
+    padding: 8px 4px !important;
+  }
+  
+  .cash-card-label {
+    font-size: 7px !important;
+  }
+  
+  .cash-card-value {
+    font-size: 12px !important;
+  }
+  
+  .cash-card-sub {
+    font-size: 6px !important;
+  }
+}
+
+/* Fix 2: Property title on mobile */
+@media (max-width: 640px) {
+  .property-title {
+    font-size: 20px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .property-specs {
+    font-size: 11px !important;
+    gap: 12px !important;
+    margin: 10px 0 !important;
+  }
+  
+  .property-type-badge {
+    font-size: 10px !important;
+    padding: 3px 8px !important;
+  }
+}
+
+/* Fix 3: Gallery on mobile */
+@media (max-width: 640px) {
+  .gallery-main {
+    height: 200px !important;
+  }
+  
+  .thumbnail {
+    width: 70px !important;
+    height: 55px !important;
+  }
+}
+
+/* Fix 4: Tabs on mobile */
+@media (max-width: 640px) {
+  .tabs {
+    margin-bottom: 16px !important;
+  }
+  
+  .tab {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* Fix 5: Detail grid on mobile */
+@media (max-width: 640px) {
+  .detail-grid-2 {
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .detail-item {
+    padding: 8px 10px !important;
+  }
+  
+  .detail-item .value {
+    font-size: 14px !important;
+  }
+  
+  .detail-item label {
+    font-size: 9px !important;
+  }
+  
+  .section-title {
+    font-size: 14px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .about-text {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+  
+  .info-note {
+    padding: 10px !important;
+    margin-bottom: 12px !important;
+  }
+  
+  .info-note p {
+    font-size: 11px !important;
+  }
+}
+
+/* Fix 6: Financial highlight grid on mobile */
+@media (max-width: 640px) {
+  .fin-highlight-grid {
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .fin-highlight-card {
+    padding: 10px !important;
+  }
+  
+  .fin-highlight-card .big-val {
+    font-size: 14px !important;
+  }
+  
+  .fin-highlight-card label {
+    font-size: 9px !important;
+  }
+  
+  .calc-box {
+    padding: 12px !important;
+  }
+  
+  .calc-row {
+    font-size: 11px !important;
+    padding: 8px 0 !important;
+  }
+  
+  .form-input, .form-select {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+  }
+  
+  .calc-result {
+    padding: 12px !important;
+    margin-top: 12px !important;
+  }
+  
+  .return-rate {
+    font-size: 20px !important;
+  }
+}
+
+/* Fix 7: Offering table on mobile */
+@media (max-width: 640px) {
+  .offering-row {
+    padding: 10px !important;
+  }
+  
+  .offering-row .val {
+    font-size: 12px !important;
+  }
+  
+  .offering-row label {
+    font-size: 9px !important;
+  }
+}
+
+/* Fix 8: Invest card on mobile */
+@media (max-width: 640px) {
+  .invest-card, .withdraw-card {
+    padding: 16px !important;
+  }
+  
+  .invest-card-amount {
+    font-size: 20px !important;
+  }
+  
+  .btn-invest, .btn-withdraw {
+    padding: 10px !important;
+    font-size: 13px !important;
+  }
+  
+  .risk-bar {
+    font-size: 10px !important;
+    padding: 12px !important;
+    margin-top: 24px !important;
+  }
+}  
 </style>
 {% endblock %}
 
