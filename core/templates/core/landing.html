@@ -611,223 +611,34 @@ footer {
 .footer-legal a:hover { color:var(--t2); }
 
 /* ═══════════════════════════════════
-   RESPONSIVE — FULLY MOBILE FIRST
+   RESPONSIVE
 ═══════════════════════════════════ */
-
-/* --- Hamburger button (hidden on desktop) --- */
-.nav-hamburger {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  background: none;
-  border: 1px solid var(--border-2);
-  border-radius: 8px;
-  padding: 8px 9px;
-  cursor: pointer;
-  flex-shrink: 0;
+@media (max-width:1100px) {
+  .hero-inner { grid-template-columns:1fr; }
+  .hero-dash { display:none; }
+  .asset-grid { grid-template-columns:repeat(2,1fr); }
+  .tiers-grid { grid-template-columns:1fr; max-width:480px; margin-left:auto; margin-right:auto; }
+  .stats-grid { grid-template-columns:repeat(3,1fr); }
+  .footer-top { grid-template-columns:1fr 1fr; }
+  .hiw-two { grid-template-columns:1fr; }
 }
-.nav-hamburger span {
-  display: block;
-  width: 17px;
-  height: 2px;
-  background: var(--t1);
-  border-radius: 1px;
-  transition: all 0.25s;
-}
-.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-hamburger.open span:nth-child(2) { opacity: 0; }
-.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-/* --- Mobile drawer --- */
-.mobile-drawer {
-  display: none;
-  position: fixed;
-  top: 64px;
-  left: 0; right: 0; bottom: 0;
-  background: rgba(4,8,15,0.98);
-  backdrop-filter: blur(20px);
-  z-index: 998;
-  flex-direction: column;
-  padding: 20px 20px 40px;
-  overflow-y: auto;
-}
-.mobile-drawer.open { display: flex; animation: fadein 0.2s ease; }
-.mobile-drawer-links {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-}
-.mobile-drawer-links a {
-  display: flex;
-  align-items: center;
-  padding: 15px 18px;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--t2);
-  transition: all 0.2s;
-  cursor: pointer;
-  border: 1px solid transparent;
-}
-.mobile-drawer-links a:hover,
-.mobile-drawer-links a.active {
-  color: var(--white);
-  background: rgba(22,89,255,0.12);
-  border-color: rgba(22,89,255,0.2);
-}
-.mobile-drawer-divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 16px 0;
-}
-.mobile-drawer-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.mobile-drawer-actions a {
-  text-align: center;
-  padding: 13px;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-/* --- Table scroll wrapper (always) --- */
-.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.table-scroll table { min-width: 620px; }
-
-/* --- HIW tabs scroll wrapper --- */
-.hiw-tabs-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  margin-bottom: 40px;
-  padding-bottom: 2px;
-  scrollbar-width: none;
-}
-.hiw-tabs-wrap::-webkit-scrollbar { display: none; }
-.hiw-tabs { width: max-content; min-width: 100%; margin: 0; }
-
-/* 1100px breakpoint */
-@media (max-width: 1100px) {
-  .hero-inner { grid-template-columns: 1fr; }
-  .hero-dash { display: none; }
-  .asset-grid { grid-template-columns: repeat(2, 1fr); }
-  .tiers-grid { grid-template-columns: 1fr; max-width: 480px; margin-left: auto; margin-right: auto; }
-  .stats-grid { grid-template-columns: repeat(3, 1fr); }
-  .footer-top { grid-template-columns: 1fr 1fr; }
-  .hiw-two { grid-template-columns: 1fr; }
-  .hiw-side-note { position: static; }
-  .sec-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* 768px — main mobile breakpoint */
-@media (max-width: 768px) {
-  /* NAV */
-  #nav { height: 56px; padding: 0 16px; }
-  .nav-links { display: none; }
-  .nav-actions .btn-ghost,
-  .nav-actions .btn-solid { display: none; }
-  .nav-hamburger { display: flex; }
-  .mobile-drawer { top: 56px; }
-  .ticker-bar { margin-top: 56px; }
-
-  /* LAYOUT */
-  .wrap { padding: 0 16px; }
-  .section { padding: 48px 0; }
-  .cta-section { padding: 0 16px 48px; }
-  footer { padding: 40px 16px 24px; }
-
-  /* HERO */
-  .hero { min-height: auto; padding: 36px 0 32px; }
-  .hero-inner { grid-template-columns: 1fr; gap: 0; }
-  .hero-title { font-size: clamp(1.9rem, 7vw, 2.8rem); letter-spacing: -0.5px; }
-  .hero-desc { font-size: 0.92rem; max-width: 100%; margin-bottom: 24px; }
-  .hero-ctas { gap: 10px; }
-  .hero-ctas .btn-primary,
-  .hero-ctas .btn-secondary { padding: 11px 20px; font-size: 0.85rem; }
-  .hero-trust { gap: 10px; }
-  .trust-badge { font-size: 0.7rem; }
-
-  /* STATS */
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .stat-cell { padding: 18px 8px; border-right: none; border-bottom: 1px solid var(--border); }
-  .stat-cell:nth-child(odd) { border-right: 1px solid var(--border); }
-  .stat-cell:last-child { border-bottom: none; }
-  .stat-cell-num { font-size: 1.5rem; }
-  .stat-cell-lbl { font-size: 0.65rem; }
-
-  /* ASSETS */
-  .asset-grid { grid-template-columns: 1fr; }
-
-  /* MARKETS TABLE */
-  .market-table-head { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .market-filters { display: flex; flex-wrap: nowrap; overflow-x: auto; width: 100%; padding-bottom: 2px; scrollbar-width: none; }
-  .market-filters::-webkit-scrollbar { display: none; }
-  .mf { flex-shrink: 0; }
-
-  /* HOW IT WORKS */
-  .hiw-two { grid-template-columns: 1fr; gap: 24px; }
-  .hiw-side-note { position: static; }
-  .crypto-guide-grid { grid-template-columns: 1fr; gap: 10px; }
-  .step-connector { width: 40px; }
-  .step-num { width: 34px; height: 34px; font-size: 0.75rem; }
-  .step-body { padding: 0 0 28px 16px; }
-  .step-title { font-size: 0.9rem; }
-  .step-desc { font-size: 0.82rem; }
-  .addr-string { font-size: 0.72rem; }
-  .addr-amount { flex-direction: column; align-items: flex-start; gap: 3px; }
-
-  /* TIERS */
-  .tiers-grid { grid-template-columns: 1fr; max-width: 100%; }
-
-  /* SECURITY */
-  .sec-grid { grid-template-columns: 1fr; }
-
-  /* VAULT */
-  .vault-grid { grid-template-columns: 1fr; }
-  .vault-loc { flex-direction: column; align-items: flex-start; gap: 8px; }
-
-  /* ABOUT */
-  .about-grid { grid-template-columns: 1fr; }
-
-  /* INNER PAGES */
-  .inner-hero { padding: 36px 0 28px; }
-  .inner-hero h1 { font-size: 1.75rem; }
-  .stat-row-4 { grid-template-columns: repeat(2, 1fr); }
-  .stat-box { padding: 16px 18px; }
-  .stat-box-num { font-size: 1.5rem; }
-  .info-2col { grid-template-columns: 1fr; }
-  .full-block { padding: 20px 16px; }
-  .full-block-grid { grid-template-columns: 1fr; gap: 16px; }
-
-  /* FOOTER */
-  .footer-top { grid-template-columns: 1fr 1fr; gap: 24px; }
-  .footer-bottom { flex-direction: column; align-items: flex-start; }
-  .footer-legal { flex-wrap: wrap; gap: 10px; }
-
-  /* CTA */
-  .cta-banner { padding: 36px 20px; }
-  .cta-btns { flex-direction: column; align-items: stretch; }
-  .cta-btns .btn-primary,
-  .cta-btns .btn-secondary { justify-content: center; width: 100%; }
-
-  /* SECTION HEADINGS */
-  .section-heading { font-size: 1.75rem; }
-  .label-tag { font-size: 0.68rem; }
-}
-
-/* 480px — small phones */
-@media (max-width: 480px) {
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .stat-row-4 { grid-template-columns: 1fr 1fr; }
-  .footer-top { grid-template-columns: 1fr; }
-  .hero-trust { gap: 8px; }
-  .trust-badge { font-size: 0.67rem; }
-  .section-heading { font-size: 1.6rem; }
-  .hero-title { font-size: 1.9rem; }
-  .tier-fee { font-size: 2rem; }
+@media (max-width:768px) {
+  .wrap { padding:0 20px; }
+  .nav-links { display:none; }
+  #nav { padding:0 20px; }
+  .hero-inner { padding:40px 0; }
+  .asset-grid { grid-template-columns:1fr; }
+  .info-2col { grid-template-columns:1fr; }
+  .sec-grid { grid-template-columns:1fr; }
+  .about-grid { grid-template-columns:1fr; }
+  .vault-grid { grid-template-columns:1fr; }
+  .stat-row-4 { grid-template-columns:repeat(2,1fr); }
+  .full-block-grid { grid-template-columns:1fr 1fr; }
+  .footer-top { grid-template-columns:1fr 1fr; }
+  .crypto-guide-grid { grid-template-columns:1fr; }
+  .cta-banner { padding:40px 28px; }
+  footer { padding:40px 20px 24px; }
+  .cta-section { padding:0 20px 60px; }
 }
 </style>
 </head>
@@ -863,28 +674,8 @@ footer {
   <div class="nav-actions">
     <a href="/login" class="btn-ghost">Log In</a>
     <a href="/register" class="btn-solid">Open Account</a>
-    <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
   </div>
 </nav>
-
-<!-- MOBILE DRAWER -->
-<div class="mobile-drawer" id="mobileDrawer">
-  <div class="mobile-drawer-links">
-    <a data-page="home">Home</a>
-    <a data-page="how">How It Works</a>
-    <a data-page="investments">Investments</a>
-    <a data-page="markets">Markets</a>
-    <a data-page="vault">Vault</a>
-    <a data-page="about">About</a>
-  </div>
-  <hr class="mobile-drawer-divider" style="border:none;border-top:1px solid var(--border);margin:20px 0;">
-  <div class="mobile-drawer-actions">
-    <a href="/login" style="display:block;text-align:center;padding:13px;border:1px solid var(--border-2);border-radius:10px;font-size:0.9rem;font-weight:600;color:var(--t1);margin-bottom:10px;">Log In</a>
-    <a href="/register" style="display:block;text-align:center;padding:13px;background:var(--blue);border-radius:10px;font-size:0.9rem;font-weight:600;color:white;">Open Account</a>
-  </div>
-</div>
 
 <!-- ════════════════════════════════
      TICKER BAR
@@ -2302,7 +2093,6 @@ function showPage(id) {
     el.classList.toggle('active', el.getAttribute('data-page') === id);
   });
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (typeof closeDrawer === 'function') closeDrawer();
 }
 
 document.querySelectorAll('[data-page]').forEach(el => {
@@ -2331,27 +2121,6 @@ document.querySelectorAll('.mf').forEach(btn => {
     btn.classList.add('on');
   });
 });
-
-/* ── HAMBURGER / MOBILE DRAWER ── */
-const hamburger = document.getElementById('hamburger');
-const mobileDrawer = document.getElementById('mobileDrawer');
-function closeDrawer() {
-  if (!hamburger || !mobileDrawer) return;
-  hamburger.classList.remove('open');
-  mobileDrawer.classList.remove('open');
-  document.body.style.overflow = '';
-}
-if (hamburger && mobileDrawer) {
-  hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('open');
-    mobileDrawer.classList.toggle('open');
-    document.body.style.overflow = mobileDrawer.classList.contains('open') ? 'hidden' : '';
-  });
-  // close drawer when any drawer link clicked
-  mobileDrawer.querySelectorAll('[data-page]').forEach(el => {
-    el.addEventListener('click', closeDrawer);
-  });
-}
 
 /* ── TICKER ── */
 const TICKS = [
