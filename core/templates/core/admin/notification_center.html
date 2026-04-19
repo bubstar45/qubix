@@ -5,29 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>Admin Notification Center | Qubix</title>
 
-<!-- Favicon -->
 <link rel="shortcut icon" type="image/x-icon" href="/static/favicon/favicon.ico">
-
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  body {
-    background: #0e0f13;
-    font-family: 'Syne', sans-serif;
-    color: #f0f1f5;
-    min-height: 100vh;
-  }
-
-  /* Scrollbar */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0e0f13; font-family: 'Syne', sans-serif; color: #f0f1f5; min-height: 100vh; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #252836; border-radius: 2px; }
@@ -46,41 +30,19 @@
     top: 0;
     z-index: 100;
   }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
+  .logo { display: flex; align-items: center; gap: 10px; }
   .logo-icon {
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     background: linear-gradient(135deg, #3d7eff, #a855f7);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 14px;
   }
-
-  .logo-text {
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-  }
-
-  .logo-text span {
-    color: #3d7eff;
-  }
-
-  .admin-nav {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
+  .logo-text { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo-text span { color: #3d7eff; }
+  .admin-nav { display: flex; align-items: center; gap: 16px; }
   .admin-nav a {
     color: #8891a8;
     text-decoration: none;
@@ -90,46 +52,15 @@
     border-radius: 8px;
     transition: all 0.2s;
   }
+  .admin-nav a:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .admin-nav a.active { background: rgba(61,126,255,0.15); color: #3d7eff; }
 
-  .admin-nav a:hover {
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-  }
-
-  .admin-nav a.active {
-    background: rgba(61,126,255,0.15);
-    color: #3d7eff;
-  }
-
-  /* Main Container */
-  .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 32px 28px;
-  }
-
-  /* Page Header */
-  .page-header {
-    margin-bottom: 32px;
-  }
-
-  .page-title {
-    font-size: 32px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    margin-bottom: 8px;
-  }
-
-  .page-title i {
-    color: #f0b90b;
-    margin-right: 10px;
-  }
-
-  .page-sub {
-    font-size: 13px;
-    color: #6b7080;
-    font-family: 'JetBrains Mono', monospace;
-  }
+  /* Container */
+  .container { max-width: 1400px; margin: 0 auto; padding: 32px 28px; }
+  .page-header { margin-bottom: 32px; }
+  .page-title { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .page-title i { color: #f0b90b; margin-right: 10px; }
+  .page-sub { font-size: 13px; color: #6b7080; font-family: 'JetBrains Mono', monospace; }
 
   /* Summary Cards */
   .summary-grid {
@@ -138,7 +69,6 @@
     gap: 16px;
     margin-bottom: 32px;
   }
-
   .summary-card {
     background: #16181f;
     border: 1px solid rgba(255,255,255,0.07);
@@ -147,31 +77,10 @@
     text-align: center;
     transition: all 0.2s;
   }
-
-  .summary-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(240,185,11,0.3);
-  }
-
-  .summary-card .count {
-    font-size: 36px;
-    font-weight: 800;
-    color: #f0b90b;
-    font-family: 'JetBrains Mono', monospace;
-    line-height: 1;
-  }
-
-  .summary-card .label {
-    font-size: 11px;
-    color: #6b7080;
-    margin-top: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .summary-card .label i {
-    margin-right: 4px;
-  }
+  .summary-card:hover { transform: translateY(-2px); border-color: rgba(240,185,11,0.3); }
+  .summary-card .count { font-size: 36px; font-weight: 800; color: #f0b90b; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+  .summary-card .label { font-size: 11px; color: #6b7080; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .summary-card .label i { margin-right: 4px; }
 
   /* Filter Tabs */
   .filter-tabs {
@@ -182,7 +91,6 @@
     padding-bottom: 12px;
     border-bottom: 1px solid rgba(255,255,255,0.07);
   }
-
   .filter-btn {
     padding: 8px 18px;
     border-radius: 30px;
@@ -194,25 +102,11 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-
-  .filter-btn:hover {
-    border-color: rgba(240,185,11,0.3);
-    color: #f0b90b;
-  }
-
-  .filter-btn.active {
-    background: #f0b90b;
-    color: #000;
-    border-color: #f0b90b;
-  }
+  .filter-btn:hover { border-color: rgba(240,185,11,0.3); color: #f0b90b; }
+  .filter-btn.active { background: #f0b90b; color: #000; border-color: #f0b90b; }
 
   /* Notifications List */
-  .notifications-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
+  .notifications-list { display: flex; flex-direction: column; gap: 12px; }
   .notification-item {
     background: #16181f;
     border: 1px solid rgba(255,255,255,0.07);
@@ -220,28 +114,13 @@
     padding: 18px 22px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
     gap: 16px;
     transition: all 0.2s;
   }
-
-  .notification-item:hover {
-    border-color: rgba(240,185,11,0.3);
-    transform: translateX(4px);
-  }
-
-  .notification-item.priority-high {
-    border-left: 4px solid #f6465d;
-  }
-
-  .notification-item.priority-medium {
-    border-left: 4px solid #f0b90b;
-  }
-
-  .notification-item.priority-low {
-    border-left: 4px solid #0ecb81;
-  }
+  .notification-item:hover { border-color: rgba(240,185,11,0.3); transform: translateX(4px); }
+  .notification-item.priority-high { border-left: 4px solid #f6465d; }
+  .notification-item.priority-medium { border-left: 4px solid #f0b90b; }
+  .notification-item.priority-low { border-left: 4px solid #0ecb81; }
 
   .notification-icon {
     width: 52px;
@@ -253,7 +132,6 @@
     font-size: 26px;
     flex-shrink: 0;
   }
-
   .icon-deposit { background: rgba(14,203,129,0.12); color: #0ecb81; }
   .icon-withdrawal { background: rgba(246,70,93,0.12); color: #f6465d; }
   .icon-order { background: rgba(240,185,11,0.12); color: #f0b90b; }
@@ -262,18 +140,8 @@
   .icon-user { background: rgba(14,203,129,0.12); color: #0ecb81; }
   .icon-ticket { background: rgba(240,185,11,0.12); color: #f0b90b; }
 
-  .notification-content {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .notification-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #f0f1f5;
-    margin-bottom: 6px;
-  }
-
+  .notification-content { flex: 1; }
+  .notification-title { font-size: 16px; font-weight: 700; color: #f0f1f5; margin-bottom: 6px; }
   .notification-badge {
     display: inline-block;
     padding: 2px 8px;
@@ -282,59 +150,12 @@
     font-weight: 700;
     margin-left: 10px;
   }
-
   .badge-deposit { background: rgba(14,203,129,0.15); color: #0ecb81; }
   .badge-withdrawal { background: rgba(246,70,93,0.15); color: #f6465d; }
   .badge-order { background: rgba(240,185,11,0.15); color: #f0b90b; }
-
-  .notification-user {
-    font-size: 12px;
-    color: #8891a8;
-    margin-bottom: 6px;
-  }
-
-  .notification-user i {
-    margin-right: 5px;
-    width: 14px;
-  }
-
-  .notification-time {
-    font-size: 11px;
-    color: #6b7080;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .notification-actions {
-    display: flex;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-
-  .btn-action {
-    padding: 10px 24px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    border: none;
-  }
-
-  .btn-primary {
-    background: #f0b90b;
-    color: #000;
-  }
-
-  .btn-primary:hover {
-    background: #e0a800;
-    transform: translateY(-1px);
-  }
+  .notification-user { font-size: 12px; color: #8891a8; margin-bottom: 6px; }
+  .notification-user i { margin-right: 5px; width: 14px; }
+  .notification-time { font-size: 11px; color: #6b7080; display: flex; align-items: center; gap: 5px; }
 
   /* Empty State */
   .empty-state {
@@ -344,24 +165,9 @@
     border: 1px solid rgba(255,255,255,0.07);
     border-radius: 20px;
   }
-
-  .empty-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
-    opacity: 0.5;
-  }
-
-  .empty-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #f0f1f5;
-    margin-bottom: 8px;
-  }
-
-  .empty-desc {
-    font-size: 13px;
-    color: #6b7080;
-  }
+  .empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+  .empty-title { font-size: 18px; font-weight: 600; color: #f0f1f5; margin-bottom: 8px; }
+  .empty-desc { font-size: 13px; color: #6b7080; }
 
   /* Footer */
   .admin-footer {
@@ -376,75 +182,21 @@
 
   /* Responsive */
   @media (max-width: 768px) {
-    .container {
-      padding: 20px 16px;
-    }
-    
-    .page-title {
-      font-size: 24px;
-    }
-    
-    .summary-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    
-    .summary-card .count {
-      font-size: 28px;
-    }
-    
-    .notification-item {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .notification-actions {
-      width: 100%;
-    }
-    
-    .btn-action {
-      flex: 1;
-      text-align: center;
-      justify-content: center;
-    }
-    
-    .filter-tabs {
-      gap: 6px;
-    }
-    
-    .filter-btn {
-      padding: 6px 12px;
-      font-size: 11px;
-    }
+    .container { padding: 20px 16px; }
+    .page-title { font-size: 24px; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .summary-card .count { font-size: 28px; }
+    .notification-item { flex-direction: column; align-items: flex-start; }
+    .filter-tabs { gap: 6px; }
+    .filter-btn { padding: 6px 12px; font-size: 11px; }
   }
-
   @media (max-width: 480px) {
-    .summary-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-    
-    .summary-card {
-      padding: 12px 8px;
-    }
-    
-    .summary-card .count {
-      font-size: 22px;
-    }
-    
-    .summary-card .label {
-      font-size: 9px;
-    }
-    
-    .notification-title {
-      font-size: 14px;
-    }
-    
-    .notification-icon {
-      width: 42px;
-      height: 42px;
-      font-size: 20px;
-    }
+    .summary-grid { gap: 8px; }
+    .summary-card { padding: 12px 8px; }
+    .summary-card .count { font-size: 22px; }
+    .summary-card .label { font-size: 9px; }
+    .notification-title { font-size: 14px; }
+    .notification-icon { width: 42px; height: 42px; font-size: 20px; }
   }
 </style>
 </head>
@@ -469,43 +221,19 @@
     <h1 class="page-title">
       <i class="fas fa-bell"></i> Admin Notification Center
     </h1>
-    <p class="page-sub">// All pending actions in one place — review and take action</p>
+    <p class="page-sub">// All pending actions in one place — review and take action in Django Admin</p>
   </div>
 
   <!-- Summary Cards -->
   <div class="summary-grid">
-    <div class="summary-card">
-      <div class="count">{{ counts.deposits }}</div>
-      <div class="label"><i class="fas fa-arrow-down"></i> Deposits</div>
-    </div>
-    <div class="summary-card">
-      <div class="count">{{ counts.withdrawals }}</div>
-      <div class="label"><i class="fas fa-arrow-up"></i> Withdrawals</div>
-    </div>
-    <div class="summary-card">
-      <div class="count">{{ counts.orders }}</div>
-      <div class="label"><i class="fas fa-shopping-cart"></i> Orders</div>
-    </div>
-    <div class="summary-card">
-      <div class="count">{{ counts.delivery }}</div>
-      <div class="label"><i class="fas fa-truck"></i> Delivery</div>
-    </div>
-    <div class="summary-card">
-      <div class="count">{{ counts.sell }}</div>
-      <div class="label"><i class="fas fa-dollar-sign"></i> Sell Requests</div>
-    </div>
-    <div class="summary-card">
-      <div class="count">{{ counts.users }}</div>
-      <div class="label"><i class="fas fa-user-plus"></i> New Users</div>
-    </div>
-    <div class="summary-card">
-      <div class="count">{{ counts.tickets }}</div>
-      <div class="label"><i class="fas fa-ticket-alt"></i> Tickets</div>
-    </div>
-    <div class="summary-card">
-      <div class="count">{{ counts.total }}</div>
-      <div class="label"><i class="fas fa-clock"></i> Total Pending</div>
-    </div>
+    <div class="summary-card"><div class="count">{{ counts.deposits }}</div><div class="label"><i class="fas fa-arrow-down"></i> Deposits</div></div>
+    <div class="summary-card"><div class="count">{{ counts.withdrawals }}</div><div class="label"><i class="fas fa-arrow-up"></i> Withdrawals</div></div>
+    <div class="summary-card"><div class="count">{{ counts.orders }}</div><div class="label"><i class="fas fa-shopping-cart"></i> Orders</div></div>
+    <div class="summary-card"><div class="count">{{ counts.delivery }}</div><div class="label"><i class="fas fa-truck"></i> Delivery</div></div>
+    <div class="summary-card"><div class="count">{{ counts.sell }}</div><div class="label"><i class="fas fa-dollar-sign"></i> Sell Requests</div></div>
+    <div class="summary-card"><div class="count">{{ counts.users }}</div><div class="label"><i class="fas fa-user-plus"></i> New Users</div></div>
+    <div class="summary-card"><div class="count">{{ counts.tickets }}</div><div class="label"><i class="fas fa-ticket-alt"></i> Tickets</div></div>
+    <div class="summary-card"><div class="count">{{ counts.total }}</div><div class="label"><i class="fas fa-clock"></i> Total Pending</div></div>
   </div>
 
   <!-- Filter Tabs -->
@@ -520,7 +248,7 @@
     <button class="filter-btn" data-filter="ticket">Tickets ({{ counts.tickets }})</button>
   </div>
 
-  <!-- Notifications List -->
+  <!-- Notifications List (Read-only - no action buttons) -->
   <div class="notifications-list" id="notificationsList">
     {% for notif in notifications %}
     <div class="notification-item priority-{{ notif.priority }}" data-type="{{ notif.type }}">
@@ -548,11 +276,6 @@
           <i class="far fa-clock"></i> {{ notif.time|timesince }} ago
         </div>
       </div>
-      <div class="notification-actions">
-        <a href="{{ notif.action_url }}" class="btn-action btn-primary">
-          <i class="fas fa-check-circle"></i> Review &amp; Take Action
-        </a>
-      </div>
     </div>
     {% empty %}
     <div class="empty-state">
@@ -566,21 +289,15 @@
 
 <!-- Footer -->
 <div class="admin-footer">
-  <span>Qubix Admin Notification Center — Review and approve pending actions</span>
+  <span>Qubix Admin Notification Center — Use Django Admin to approve actions</span>
 </div>
 
 <script>
-// Filter notifications by type
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', function() {
-    // Update active button
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
-    
-    // Get filter value
     const filter = this.dataset.filter;
-    
-    // Filter notifications
     document.querySelectorAll('.notification-item').forEach(item => {
       if (filter === 'all' || item.dataset.type === filter) {
         item.style.display = 'flex';
