@@ -6318,15 +6318,17 @@ def admin_notification_center(request):
         status='under_review'
     ).order_by('-created_at')
     
+    # FIXED: Changed '-created_at' to '-purchased_at' for PhysicalHolding
     pending_delivery_requests = PhysicalHolding.objects.filter(
         service_type='vault',
         delivery_status='pending_delivery'
-    ).order_by('-created_at')
+    ).order_by('-purchased_at')
     
+    # FIXED: Changed '-created_at' to '-purchased_at' for PhysicalHolding
     pending_sell_requests = PhysicalHolding.objects.filter(
         service_type='vault',
         delivery_status='pending_sell'
-    ).order_by('-created_at')
+    ).order_by('-purchased_at')
     
     # New users (registered in last 24 hours)
     recent_users = CustomUser.objects.filter(
@@ -6374,24 +6376,26 @@ def admin_notification_center(request):
             'priority': 'medium',
         })
     
+    # FIXED: Changed 'delivery.created_at' to 'delivery.purchased_at'
     for delivery in pending_delivery_requests:
         notifications.append({
             'type': 'delivery',
             'id': delivery.id,
             'title': f'Delivery Request: {delivery.product.name}',
             'user': delivery.user.email,
-            'time': delivery.created_at,
+            'time': delivery.purchased_at,
             'action_url': f'/physical/team/verify/{delivery.transaction.id}/' if delivery.transaction else '#',
             'priority': 'medium',
         })
     
+    # FIXED: Changed 'sell.created_at' to 'sell.purchased_at'
     for sell in pending_sell_requests:
         notifications.append({
             'type': 'sell',
             'id': sell.id,
             'title': f'Sell Request: {sell.product.name}',
             'user': sell.user.email,
-            'time': sell.created_at,
+            'time': sell.purchased_at,
             'action_url': f'/physical/team/verify/{sell.transaction.id}/' if sell.transaction else '#',
             'priority': 'high',
         })
@@ -6437,4 +6441,4 @@ def admin_notification_center(request):
         'notifications': notifications,
         'counts': counts,
     }
-    return render(request, 'core/admin/notification_center.html', context)    
+    return render(request, 'core/admin/notification_center.html', context)
