@@ -9,13 +9,14 @@ urlpatterns = [
     path('admin/impersonate/start/<int:user_id>/', views.admin_impersonate_start, name='admin_impersonate_start'),
     path('admin/impersonate/stop/', views.admin_impersonate_stop, name='admin_impersonate_stop'),
     
+    # ============= NOTIFICATION CENTER URL - MUST COME BEFORE admin/ =============
+    path('admin/notifications/', views.admin_notification_center, name='admin_notification_center'),
+    
     # ============= ADMIN URL =============
     path('admin/', admin.site.urls),
     
     # ============= CORE APP URLs =============
     path('', include('core.urls')),
-
-    path('admin/notifications/', views.admin_notification_center, name='admin_notification_center'),
 ]
 
 if settings.DEBUG:
