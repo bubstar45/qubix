@@ -1,23 +1,345 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}{{ post.title }} | Qubix{% endblock %}
+{% block meta_description %}{{ post.meta_description|default:post.excerpt }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.blog-post {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.blog-post-header {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.blog-post-meta {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: var(--muted2);
+}
+
+.blog-post-category {
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.blog-post-title {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    color: var(--text);
+}
+
+.blog-post-author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.author-info {
+    text-align: left;
+}
+
+.author-name {
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+}
+
+.author-date {
+    font-size: 13px;
+    color: var(--muted2);
+}
+
+.blog-post-featured-image {
+    margin: 40px 0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.blog-post-featured-image img {
+    width: 100%;
+    height: auto;
+}
+
+.blog-post-content {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text2);
+}
+
+.blog-post-content h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 40px 0 20px;
+    color: var(--text);
+}
+
+.blog-post-content h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 32px 0 16px;
+    color: var(--text);
+}
+
+.blog-post-content p {
+    margin-bottom: 20px;
+}
+
+.blog-post-content ul, .blog-post-content ol {
+    margin: 20px 0;
+    padding-left: 24px;
+}
+
+.blog-post-content li {
+    margin-bottom: 10px;
+}
+
+.blog-post-content blockquote {
+    border-left: 4px solid var(--gold);
+    padding: 16px 24px;
+    margin: 24px 0;
+    background: var(--surface2);
+    border-radius: 12px;
+    font-style: italic;
+}
+
+.blog-post-content code {
+    background: var(--surface3);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-family: monospace;
+}
+
+.blog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 40px 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.tag {
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    font-size: 13px;
+    color: var(--muted2);
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.tag:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.blog-cta {
+    background: linear-gradient(135deg, var(--surface2), var(--surface3));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 40px;
+    text-align: center;
+    margin: 48px 0;
+}
+
+.blog-cta h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.blog-cta p {
+    font-size: 16px;
+    color: var(--muted2);
+    margin-bottom: 24px;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: var(--gold);
+    color: #000;
+    padding: 12px 28px;
+    border-radius: 40px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: #e0a800;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 28px;
+    border-radius: 40px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.cta-disclaimer {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 16px;
+}
+
+.related-posts {
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+}
+
+.related-posts h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 32px;
+}
+
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 24px;
+}
+
+.related-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.related-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold);
+}
+
+.related-card h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+.related-card p {
+    font-size: 13px;
+    color: var(--muted2);
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .blog-post-title { font-size: 32px; }
+    .blog-post-content { font-size: 16px; }
+    .blog-post-content h2 { font-size: 24px; }
+    .blog-cta { padding: 32px 24px; }
+    .blog-cta h3 { font-size: 22px; }
+    .related-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<article style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
-    <h1>{{ post.title }}</h1>
-    <p style="color: #666;">{{ post.published_at|date:"F j, Y" }} | {{ post.read_time }} min read</p>
-    
+<article class="blog-post">
+    <header class="blog-post-header">
+        <div class="blog-post-meta">
+            <span class="blog-post-category">{{ post.get_category_display }}</span>
+            <span>{{ post.published_at|date:"F j, Y" }}</span>
+            <span>{{ post.read_time }} min read</span>
+        </div>
+        <h1 class="blog-post-title">{{ post.title }}</h1>
+        <div class="blog-post-author">
+            <div class="author-avatar">
+                {{ post.author_name|slice:":1" }}
+            </div>
+            <div class="author-info">
+                <span class="author-name">By {{ post.author_name }}</span>
+                <span class="author-date">Published on {{ post.published_at|date:"F j, Y" }}</span>
+            </div>
+        </div>
+    </header>
+
     {% if post.featured_image %}
-    <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" style="width: 100%; margin: 20px 0;">
+    <div class="blog-post-featured-image">
+        <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+    </div>
     {% endif %}
-    
-    <div style="line-height: 1.8;">
-        {{ post.content|linebreaks }}
+
+    <div class="blog-post-content">
+        {{ post.content|safe }}
     </div>
-    
-    <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-        <p><strong>Ready to invest?</strong></p>
-        <a href="/register/" style="background: #f0b90b; color: #000; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Free Account</a>
+
+    <div class="blog-tags">
+        <strong>Topics:</strong>
+        <a href="/blog/?tag=gold" class="tag">#Gold</a>
+        <a href="/blog/?tag=investing" class="tag">#Investing</a>
+        <a href="/blog/?tag=beginner" class="tag">#Beginner</a>
     </div>
+
+    <div class="blog-cta">
+        <h3>Ready to start investing?</h3>
+        <p>Simply verify your ID, add a payment method, and buy assets.</p>
+        <div class="cta-buttons">
+            <a href="{% url 'register' %}" class="btn-primary">Get started</a>
+            <a href="{% url 'dashboard' %}" class="btn-secondary">View dashboard</a>
+        </div>
+        <p class="cta-disclaimer">Start with as little as $10. No hidden fees.</p>
+    </div>
+
+    {% if related_posts %}
+    <div class="related-posts">
+        <h3>You might also like</h3>
+        <div class="related-grid">
+            {% for post in related_posts %}
+            <a href="{{ post.get_absolute_url }}" class="related-card">
+                <h4>{{ post.title }}</h4>
+                <p>{{ post.excerpt|truncatewords:15 }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </article>
 {% endblock %}

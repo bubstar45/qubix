@@ -1,20 +1,288 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}Blog | Qubix{% endblock %}
 
+{% block extra_css %}
+<style>
+.blog-header {
+    padding: 60px 0 40px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.blog-header h1 {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.blog-header p {
+    font-size: 18px;
+    color: var(--muted2);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.blog-search {
+    max-width: 500px;
+    margin: 0 auto 40px;
+}
+
+.blog-search input {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 16px;
+}
+
+.blog-categories {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 48px;
+}
+
+.category-btn {
+    padding: 8px 20px;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted2);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.category-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.category-btn.active {
+    background: var(--gold);
+    color: #000;
+    border-color: var(--gold);
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.blog-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.blog-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.blog-card-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.blog-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.blog-card:hover .blog-card-image img {
+    transform: scale(1.05);
+}
+
+.blog-card-content {
+    padding: 24px;
+}
+
+.blog-card-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--muted2);
+}
+
+.blog-card-category {
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.blog-card-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.blog-card-title a {
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.blog-card-title a:hover {
+    color: var(--gold);
+}
+
+.blog-card-excerpt {
+    font-size: 15px;
+    color: var(--muted2);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.blog-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 48px;
+}
+
+.page-btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted2);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.page-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.page-btn.active {
+    background: var(--gold);
+    color: #000;
+    border-color: var(--gold);
+}
+
+@media (max-width: 768px) {
+    .blog-header h1 { font-size: 32px; }
+    .blog-grid { grid-template-columns: 1fr; gap: 20px; }
+    .blog-card-image { height: 180px; }
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
-    <h1>Qubix Blog</h1>
-    
+<div class="blog-header">
+    <h1>Stories and updates from Qubix</h1>
+    <p>Investment insights, market analysis, and platform news</p>
+</div>
+
+<div class="blog-search">
+    <form method="get">
+        <input type="text" name="q" placeholder="Search articles..." value="{{ query|default:'' }}">
+    </form>
+</div>
+
+<div class="blog-categories">
+    <button class="category-btn {% if not active_category %}active{% endif %}" data-category="">All</button>
+    <button class="category-btn {% if active_category == 'beginner' %}active{% endif %}" data-category="beginner">Beginner Guides</button>
+    <button class="category-btn {% if active_category == 'market' %}active{% endif %}" data-category="market">Market Analysis</button>
+    <button class="category-btn {% if active_category == 'platform' %}active{% endif %}" data-category="platform">Platform Updates</button>
+    <button class="category-btn {% if active_category == 'comparison' %}active{% endif %}" data-category="comparison">Comparisons</button>
+    <button class="category-btn {% if active_category == 'industry' %}active{% endif %}" data-category="industry">Industry News</button>
+</div>
+
+<div class="blog-grid">
     {% for post in posts %}
-    <article style="margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
-        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
-        <p style="color: #666;">{{ post.published_at|date:"F j, Y" }} | {{ post.read_time }} min read</p>
-        <p>{{ post.excerpt }}</p>
-        <a href="{{ post.get_absolute_url }}">Read more →</a>
-    </article>
+    <div class="blog-card" onclick="window.location.href='{{ post.get_absolute_url }}'">
+        {% if post.featured_image %}
+        <div class="blog-card-image">
+            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
+        </div>
+        {% else %}
+        <div class="blog-card-image" style="background: linear-gradient(135deg, var(--surface3), var(--surface2)); display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 48px;">📈</span>
+        </div>
+        {% endif %}
+        <div class="blog-card-content">
+            <div class="blog-card-meta">
+                <span class="blog-card-category">{{ post.get_category_display }}</span>
+                <span>{{ post.published_at|date:"M d, Y" }}</span>
+                <span>{{ post.read_time }} min read</span>
+            </div>
+            <h2 class="blog-card-title">
+                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+            </h2>
+            <p class="blog-card-excerpt">{{ post.excerpt|truncatewords:25 }}</p>
+            <div class="blog-card-footer">
+                <span>By {{ post.author_name }}</span>
+                <span>→</span>
+            </div>
+        </div>
+    </div>
     {% empty %}
-    <p>No posts yet.</p>
+    <div style="text-align: center; padding: 60px; grid-column: 1/-1;">
+        <p>No articles found.</p>
+    </div>
     {% endfor %}
 </div>
+
+{% if posts.has_other_pages %}
+<div class="pagination">
+    {% if posts.has_previous %}
+    <button class="page-btn" onclick="window.location.href='?page={{ posts.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if active_category %}&category={{ active_category }}{% endif %}'">← Previous</button>
+    {% endif %}
+    
+    {% for num in posts.paginator.page_range %}
+    <button class="page-btn {% if posts.number == num %}active{% endif %}" onclick="window.location.href='?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if active_category %}&category={{ active_category }}{% endif %}'">{{ num }}</button>
+    {% endfor %}
+    
+    {% if posts.has_next %}
+    <button class="page-btn" onclick="window.location.href='?page={{ posts.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if active_category %}&category={{ active_category }}{% endif %}'">Next →</button>
+    {% endif %}
+</div>
+{% endif %}
+
+<script>
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const category = this.dataset.category;
+        const url = new URL(window.location.href);
+        if (category) {
+            url.searchParams.set('category', category);
+        } else {
+            url.searchParams.delete('category');
+        }
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+    });
+});
+</script>
 {% endblock %}
