@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Blog | Qubix{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
+    <h1>Qubix Blog</h1>
+    
+    {% for post in posts %}
+    <article style="margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+        <p style="color: #666;">{{ post.published_at|date:"F j, Y" }} | {{ post.read_time }} min read</p>
+        <p>{{ post.excerpt }}</p>
+        <a href="{{ post.get_absolute_url }}">Read more →</a>
+    </article>
+    {% empty %}
+    <p>No posts yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

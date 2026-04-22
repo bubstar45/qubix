@@ -15,6 +15,8 @@ urlpatterns = [
     # ============= ADMIN URL =============
     path('admin/', admin.site.urls),
     
+    path('', include('blog.urls')), 
+    
     # ============= CORE APP URLs =============
     path('', include('core.urls')),
 ]

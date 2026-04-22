@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ post.title }} | Qubix{% endblock %}
+
+{% block content %}
+<article style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
+    <h1>{{ post.title }}</h1>
+    <p style="color: #666;">{{ post.published_at|date:"F j, Y" }} | {{ post.read_time }} min read</p>
+    
+    {% if post.featured_image %}
+    <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" style="width: 100%; margin: 20px 0;">
+    {% endif %}
+    
+    <div style="line-height: 1.8;">
+        {{ post.content|linebreaks }}
+    </div>
+    
+    <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+        <p><strong>Ready to invest?</strong></p>
+        <a href="/register/" style="background: #f0b90b; color: #000; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Open Free Account</a>
+    </div>
+</article>
+{% endblock %}
