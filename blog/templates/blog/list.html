@@ -2,287 +2,639 @@
 {% load static %}
 
 {% block title %}Blog | Qubix{% endblock %}
+{% block meta_description %}Investment insights, market analysis, and platform news from Qubix.{% endblock %}
 
 {% block extra_css %}
 <style>
-.blog-header {
-    padding: 60px 0 40px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
+/* ── PAGE SHELL ── */
+.bl-page {
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: 'Syne', sans-serif;
 }
 
-.blog-header h1 {
-    font-size: 48px;
-    font-weight: 800;
-    margin-bottom: 16px;
+/* ── HEADER ── */
+.bl-header {
+  padding: 64px 24px 48px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
 }
 
-.blog-header p {
-    font-size: 18px;
-    color: var(--muted2);
-    max-width: 600px;
-    margin: 0 auto;
+.bl-header h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
 }
 
-.blog-search {
-    max-width: 500px;
-    margin: 0 auto 40px;
+.bl-header-sub {
+  font-size: 16px;
+  color: var(--muted2);
+  margin-bottom: 28px;
+  font-weight: 400;
 }
 
-.blog-search input {
-    width: 100%;
-    padding: 14px 20px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text);
-    font-size: 16px;
+/* ── SEARCH ── */
+.bl-search-wrap {
+  max-width: 440px;
+  margin: 0 auto;
 }
 
-.blog-categories {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 48px;
+.bl-search-form {
+  position: relative;
 }
 
-.category-btn {
-    padding: 8px 20px;
-    border-radius: 40px;
-    font-size: 14px;
-    font-weight: 600;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--muted2);
-    cursor: pointer;
-    transition: all 0.2s;
+.bl-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  display: flex;
+}
+.bl-search-icon svg { width: 16px; height: 16px; }
+
+.bl-search-input {
+  width: 100%;
+  padding: 13px 18px 13px 42px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.bl-search-input::placeholder { color: var(--muted); }
+.bl-search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
-.category-btn:hover {
-    border-color: var(--gold);
-    color: var(--gold);
+/* ── TOPIC FILTERS ── */
+.bl-topics-section {
+  padding: 28px 24px 0;
+  max-width: 1160px;
+  margin: 0 auto;
 }
 
-.category-btn.active {
-    background: var(--gold);
-    color: #000;
-    border-color: var(--gold);
+.bl-topics-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted2);
+  margin-bottom: 14px;
 }
 
-.blog-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 32px;
-    max-width: 1200px;
-    margin: 0 auto;
+.bl-topics {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.blog-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    overflow: hidden;
-    transition: all 0.3s;
-    cursor: pointer;
+.bl-topic-btn {
+  padding: 7px 18px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+  line-height: 1;
+}
+.bl-topic-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(240,185,11,0.06);
+}
+.bl-topic-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
-.blog-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--gold);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+/* ── ARTICLES GRID ── */
+.bl-grid-section {
+  padding: 32px 24px 0;
+  max-width: 1160px;
+  margin: 0 auto;
 }
 
-.blog-card-image {
-    height: 200px;
-    overflow: hidden;
+.bl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
 }
 
-.blog-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s;
+/* ── CARD ── */
+.bl-card {
+  display: block;
+  text-decoration: none;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  transition: all 0.22s;
+  cursor: pointer;
+}
+.bl-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.25);
 }
 
-.blog-card:hover .blog-card-image img {
-    transform: scale(1.05);
+/* Card image */
+.bl-card-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--surface3);
+  position: relative;
+}
+.bl-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.bl-card:hover .bl-card-img img {
+  transform: scale(1.04);
 }
 
-.blog-card-content {
-    padding: 24px;
+/* Placeholder when no image */
+.bl-card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--surface3) 0%, var(--surface2) 100%);
+  position: absolute;
+  inset: 0;
+}
+.bl-card-img-placeholder span {
+  font-size: 40px;
+  opacity: 0.5;
 }
 
-.blog-card-meta {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
-    font-size: 13px;
-    color: var(--muted2);
+/* Card body */
+.bl-card-body {
+  padding: 16px 16px 18px;
 }
 
-.blog-card-category {
-    color: var(--gold);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.bl-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.45;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.blog-card-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    line-height: 1.4;
+.bl-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.bl-card-footer-sep { color: var(--border2); }
+
+/* ── EMPTY STATE ── */
+.bl-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 24px;
+}
+.bl-empty-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.bl-empty-icon svg { width: 24px; height: 24px; }
+.bl-empty h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.bl-empty p {
+  font-size: 14px;
+  color: var(--muted2);
 }
 
-.blog-card-title a {
-    color: var(--text);
-    text-decoration: none;
-    transition: color 0.2s;
+/* ── LOAD MORE ── */
+.bl-load-more-wrap {
+  text-align: center;
+  padding: 40px 24px 56px;
 }
 
-.blog-card-title a:hover {
-    color: var(--gold);
+.bl-load-more-btn {
+  display: inline-block;
+  padding: 12px 36px;
+  border: 1px solid var(--border2);
+  border-radius: 50px;
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.bl-load-more-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(240,185,11,0.05);
 }
 
-.blog-card-excerpt {
-    font-size: 15px;
-    color: var(--muted2);
-    line-height: 1.6;
-    margin-bottom: 16px;
+/* ── FULL-WIDTH CTA BANNER ── */
+.bl-cta-banner {
+  background: linear-gradient(135deg, #0d1b35 0%, #0a1525 60%, #081020 100%);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  overflow: hidden;
+  min-height: 300px;
+  position: relative;
+}
+.bl-cta-banner::before {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0; width: 55%;
+  background: radial-gradient(ellipse at right center, rgba(61,126,255,0.07), transparent 70%);
+  pointer-events: none;
 }
 
-.blog-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-    font-size: 13px;
-    color: var(--muted);
+/* Left visual */
+.bl-cta-visual {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 300px;
+  padding: 0 24px 0 60px;
+}
+.bl-cta-mockup {
+  width: 230px;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  box-shadow: 0 -24px 60px rgba(0,0,0,0.45);
+}
+.bl-cta-mockup-bar {
+  background: var(--surface2);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.bl-cta-mockup-time {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+}
+.bl-cta-mockup-tabs {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.bl-cta-mockup-tab { color: var(--muted); }
+.bl-cta-mockup-tab.active { color: var(--text); }
+.bl-cta-mockup-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bl-cta-mockup-body { padding: 14px; }
+.bl-cta-mockup-user-icon {
+  width: 28px; height: 28px;
+  background: var(--surface2);
+  border-radius: 50%;
+  margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted);
+}
+.bl-cta-mockup-portfolio-label {
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+.bl-cta-mockup-portfolio-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -1px;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.bl-cta-mockup-portfolio-chg {
+  font-size: 10px;
+  color: #0ecb81;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.bl-cta-mockup-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.bl-cta-mockup-btn {
+  padding: 9px 6px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.bl-cta-mockup-btn.deposit {
+  background: rgba(61,126,255,0.15);
+  color: var(--accent, #3d7eff);
+  border: 1px solid rgba(61,126,255,0.2);
+}
+.bl-cta-mockup-btn.trade {
+  background: rgba(14,203,129,0.1);
+  color: #0ecb81;
+  border: 1px solid rgba(14,203,129,0.2);
+}
+.bl-cta-mockup-btn svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+/* Right text */
+.bl-cta-content {
+  padding: 48px 60px 48px 32px;
+  position: relative; z-index: 1;
+}
+.bl-cta-content h2 {
+  font-size: clamp(1.7rem, 2.5vw, 2.4rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.18;
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+}
+.bl-cta-content p {
+  font-size: 14px;
+  color: var(--muted2, #8891a8);
+  margin-bottom: 24px;
+  line-height: 1.65;
+}
+.bl-cta-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  background: var(--accent, #3d7eff);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.bl-cta-btn:hover {
+  background: var(--accent2, #5c9eff);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px var(--accent-glow, rgba(61,126,255,0.35));
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 48px;
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  .bl-grid { grid-template-columns: repeat(2, 1fr); }
+  .bl-cta-banner { grid-template-columns: 1fr; }
+  .bl-cta-visual { display: none; }
+  .bl-cta-content { padding: 40px 32px; }
 }
 
-.page-btn {
-    padding: 10px 16px;
-    border-radius: 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--muted2);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.page-btn:hover {
-    border-color: var(--gold);
-    color: var(--gold);
-}
-
-.page-btn.active {
-    background: var(--gold);
-    color: #000;
-    border-color: var(--gold);
-}
-
-@media (max-width: 768px) {
-    .blog-header h1 { font-size: 32px; }
-    .blog-grid { grid-template-columns: 1fr; gap: 20px; }
-    .blog-card-image { height: 180px; }
+@media (max-width: 640px) {
+  .bl-header { padding: 48px 20px 36px; }
+  .bl-header h1 { font-size: 1.9rem; }
+  .bl-grid { grid-template-columns: 1fr; gap: 16px; }
+  .bl-topics-section,
+  .bl-grid-section { padding-left: 16px; padding-right: 16px; }
+  .bl-cta-content { padding: 32px 20px; }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="blog-header">
-    <h1>Stories and updates from Qubix</h1>
-    <p>Investment insights, market analysis, and platform news</p>
-</div>
+<div class="bl-page">
 
-<div class="blog-search">
-    <form method="get">
-        <input type="text" name="q" placeholder="Search articles..." value="{{ query|default:'' }}">
-    </form>
-</div>
+  <!-- ── HEADER ── -->
+  <div class="bl-header">
+    <h1>Blog</h1>
+    <p class="bl-header-sub">Stories and updates from Qubix</p>
 
-<div class="blog-categories">
-    <button class="category-btn {% if not active_category %}active{% endif %}" data-category="">All</button>
-    <button class="category-btn {% if active_category == 'beginner' %}active{% endif %}" data-category="beginner">Beginner Guides</button>
-    <button class="category-btn {% if active_category == 'market' %}active{% endif %}" data-category="market">Market Analysis</button>
-    <button class="category-btn {% if active_category == 'platform' %}active{% endif %}" data-category="platform">Platform Updates</button>
-    <button class="category-btn {% if active_category == 'comparison' %}active{% endif %}" data-category="comparison">Comparisons</button>
-    <button class="category-btn {% if active_category == 'industry' %}active{% endif %}" data-category="industry">Industry News</button>
-</div>
-
-<div class="blog-grid">
-    {% for post in posts %}
-    <div class="blog-card" onclick="window.location.href='{{ post.get_absolute_url }}'">
-        {% if post.featured_image %}
-        <div class="blog-card-image">
-            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}">
-        </div>
-        {% else %}
-        <div class="blog-card-image" style="background: linear-gradient(135deg, var(--surface3), var(--surface2)); display: flex; align-items: center; justify-content: center;">
-            <span style="font-size: 48px;">📈</span>
-        </div>
+    <div class="bl-search-wrap">
+      <form method="get" class="bl-search-form" action="">
+        {% if active_category %}
+          <input type="hidden" name="category" value="{{ active_category }}">
         {% endif %}
-        <div class="blog-card-content">
-            <div class="blog-card-meta">
-                <span class="blog-card-category">{{ post.get_category_display }}</span>
-                <span>{{ post.published_at|date:"M d, Y" }}</span>
-                <span>{{ post.read_time }} min read</span>
-            </div>
-            <h2 class="blog-card-title">
-                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-            </h2>
-            <p class="blog-card-excerpt">{{ post.excerpt|truncatewords:25 }}</p>
-            <div class="blog-card-footer">
-                <span>By {{ post.author_name }}</span>
-                <span>→</span>
-            </div>
-        </div>
+        <span class="bl-search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </span>
+        <input
+          type="text"
+          name="q"
+          class="bl-search-input"
+          placeholder="Search"
+          value="{{ query|default:'' }}"
+          autocomplete="off"
+        >
+      </form>
     </div>
-    {% empty %}
-    <div style="text-align: center; padding: 60px; grid-column: 1/-1;">
-        <p>No articles found.</p>
-    </div>
-    {% endfor %}
-</div>
+  </div>
 
-{% if posts.has_other_pages %}
-<div class="pagination">
-    {% if posts.has_previous %}
-    <button class="page-btn" onclick="window.location.href='?page={{ posts.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if active_category %}&category={{ active_category }}{% endif %}'">← Previous</button>
-    {% endif %}
-    
-    {% for num in posts.paginator.page_range %}
-    <button class="page-btn {% if posts.number == num %}active{% endif %}" onclick="window.location.href='?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if active_category %}&category={{ active_category }}{% endif %}'">{{ num }}</button>
-    {% endfor %}
-    
+  <!-- ── BROWSE TOPICS ── -->
+  <div class="bl-topics-section">
+    <div class="bl-topics-label">Browse topics</div>
+    <div class="bl-topics">
+      <button class="bl-topic-btn {% if not active_category %}active{% endif %}"
+              data-category="">All</button>
+      <button class="bl-topic-btn {% if active_category == 'beginner' %}active{% endif %}"
+              data-category="beginner">Beginner Guides</button>
+      <button class="bl-topic-btn {% if active_category == 'market' %}active{% endif %}"
+              data-category="market">Market Analysis</button>
+      <button class="bl-topic-btn {% if active_category == 'platform' %}active{% endif %}"
+              data-category="platform">Platform Updates</button>
+      <button class="bl-topic-btn {% if active_category == 'comparison' %}active{% endif %}"
+              data-category="comparison">Comparisons</button>
+      <button class="bl-topic-btn {% if active_category == 'industry' %}active{% endif %}"
+              data-category="industry">Industry News</button>
+    </div>
+  </div>
+
+  <!-- ── ARTICLES GRID ── -->
+  <div class="bl-grid-section">
+    <div class="bl-grid" id="articleGrid">
+
+      {% for post in posts %}
+      <a class="bl-card" href="{{ post.get_absolute_url }}">
+
+        <!-- Image -->
+        <div class="bl-card-img">
+          {% if post.featured_image %}
+            <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" loading="lazy">
+          {% else %}
+            <div class="bl-card-img-placeholder">
+              <span>
+                {% if post.get_category_display == "Market Analysis" %}📊
+                {% elif post.get_category_display == "Platform Updates" %}🚀
+                {% elif post.get_category_display == "Beginner Guides" %}📖
+                {% elif post.get_category_display == "Industry News" %}🌐
+                {% else %}📈{% endif %}
+              </span>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Body -->
+        <div class="bl-card-body">
+          <div class="bl-card-title">{{ post.title }}</div>
+          <div class="bl-card-footer">
+            <span>{{ post.read_time }} min</span>
+          </div>
+        </div>
+
+      </a>
+      {% empty %}
+      <div class="bl-empty">
+        <div class="bl-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <h3>No articles found</h3>
+        <p>Try a different search term or browse all topics.</p>
+      </div>
+      {% endfor %}
+
+    </div><!-- /.bl-grid -->
+  </div>
+
+  <!-- ── LOAD MORE / PAGINATION ── -->
+  {% if posts.has_other_pages %}
+  <div class="bl-load-more-wrap">
     {% if posts.has_next %}
-    <button class="page-btn" onclick="window.location.href='?page={{ posts.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if active_category %}&category={{ active_category }}{% endif %}'">Next →</button>
+    <a class="bl-load-more-btn"
+       href="?page={{ posts.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if active_category %}&category={{ active_category }}{% endif %}">
+      Load more
+    </a>
     {% endif %}
-</div>
-{% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ── FULL-WIDTH CTA BANNER ── -->
+  <div class="bl-cta-banner">
+
+    <!-- Left: phone mockup visual -->
+    <div class="bl-cta-visual">
+      <div class="bl-cta-mockup">
+        <div class="bl-cta-mockup-bar">
+          <span class="bl-cta-mockup-time">9:41</span>
+          <div class="bl-cta-mockup-tabs">
+            <span class="bl-cta-mockup-tab active">Trading</span>
+            <span class="bl-cta-mockup-tab">Wallet</span>
+          </div>
+          <div class="bl-cta-mockup-icons">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted2)" stroke-width="2">
+              <circle cx="12" cy="12" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>
+            </svg>
+          </div>
+        </div>
+        <div class="bl-cta-mockup-body">
+          <div class="bl-cta-mockup-user-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="bl-cta-mockup-portfolio-label">Portfolio</div>
+          <div class="bl-cta-mockup-portfolio-value">
+            $3,897.52
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <div class="bl-cta-mockup-portfolio-chg">+$176.56 (4.53%) Past 24h</div>
+          <div class="bl-cta-mockup-btns">
+            <div class="bl-cta-mockup-btn deposit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Deposit
+            </div>
+            <div class="bl-cta-mockup-btn trade">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                <polyline points="17 6 23 6 23 12"/>
+              </svg>
+              Trade
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: CTA text -->
+    <div class="bl-cta-content">
+      <h2>It's not too late<br>to be early</h2>
+      <p>Simply verify your ID, add a payment method, and buy assets.</p>
+      <a href="{% url 'register' %}" class="bl-cta-btn">Get started</a>
+    </div>
+
+  </div><!-- /.bl-cta-banner -->
+
+</div><!-- /.bl-page -->
 
 <script>
-document.querySelectorAll('.category-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const category = this.dataset.category;
-        const url = new URL(window.location.href);
-        if (category) {
-            url.searchParams.set('category', category);
-        } else {
-            url.searchParams.delete('category');
-        }
-        url.searchParams.delete('page');
-        window.location.href = url.toString();
-    });
+/* Category filter buttons */
+document.querySelectorAll('.bl-topic-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var category = this.dataset.category;
+    var url = new URL(window.location.href);
+    if (category) {
+      url.searchParams.set('category', category);
+    } else {
+      url.searchParams.delete('category');
+    }
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
+  });
 });
 </script>
 {% endblock %}
