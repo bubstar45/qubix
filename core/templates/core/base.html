@@ -1771,7 +1771,7 @@ main {
 </div>
 {% endif %}
 
-<!-- ============= FLOATING BOTTOM NAVIGATION (MOBILE ONLY) ============= -->
+<!-- ============= FLOATING BOTTOM NAVIGATION (MOBILE ONLY) - LOGGED IN USERS ONLY ============= -->
 {% if user.is_authenticated %}
 <div class="bottom-nav">
   <a href="{% url 'dashboard' %}" class="bottom-nav-item {% if '/dashboard' in request.path %}active{% endif %}">
@@ -1797,30 +1797,6 @@ main {
   <a href="{% url 'market_news' %}" class="bottom-nav-item {% if '/news' in request.path %}active{% endif %}">
     <i class="fas fa-newspaper"></i>
     <span>News</span>
-  </a>
-</div>
-{% else %}
-<!-- Bottom Nav for Non-Logged-In Users (Blog/Public Pages) -->
-<div class="bottom-nav">
-  <a href="{% url 'landing' %}" class="bottom-nav-item {% if '/' == request.path %}active{% endif %}">
-    <i class="fas fa-home"></i>
-    <span>Home</span>
-  </a>
-  <a href="{% url 'blog_list' %}" class="bottom-nav-item {% if '/blog' in request.path %}active{% endif %}">
-    <i class="fas fa-newspaper"></i>
-    <span>Blog</span>
-  </a>
-  <a href="{% url 'real_estate_list' %}" class="bottom-nav-item">
-    <i class="fas fa-building"></i>
-    <span>Invest</span>
-  </a>
-  <a href="{% url 'login' %}" class="bottom-nav-item">
-    <i class="fas fa-sign-in-alt"></i>
-    <span>Login</span>
-  </a>
-  <a href="{% url 'register' %}" class="bottom-nav-item">
-    <i class="fas fa-user-plus"></i>
-    <span>Sign Up</span>
   </a>
 </div>
 {% endif %}
